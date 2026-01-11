@@ -1,13 +1,13 @@
 /**
- * sx_help config 主题
- * sx_config 工具帮助信息
+ * sx-help config 主题
+ * sx-config 工具帮助信息
  */
 
 /**
- * sx_config 帮助内容
+ * sx-config 帮助内容
  */
 export const CONFIG_HELP = `
-# sx_config 工具帮助
+# sx-config 工具帮助
 
 配置管理工具，支持以下操作：
 
@@ -15,25 +15,25 @@ export const CONFIG_HELP = `
 
 ### get - 获取配置
 \`\`\`
-sx_config action=get [scope=global|project] [projectRoot=/path/to/project] [key=configKey]
+sx-config action=get [scope=global|project] [projectRoot=/path/to/project] [key=configKey]
 \`\`\`
 获取全局或项目配置，可指定特定键。
 
 ### set - 设置配置
 \`\`\`
-sx_config action=set key=configKey value=configValue [scope=global|project] [projectRoot=/path/to/project]
+sx-config action=set key=configKey value=configValue [scope=global|project] [projectRoot=/path/to/project]
 \`\`\`
 设置配置值。
 
 ### init - 初始化项目配置
 \`\`\`
-sx_config action=init projectRoot=/path/to/project
+sx-config action=init projectRoot=/path/to/project
 \`\`\`
 在项目中初始化 .skillix/ 目录和配置文件。
 
 ### sources - 管理技能源
 \`\`\`
-sx_config action=sources sourceAction=list|add|remove [source={name, url, ...}] [sourceName=name] [scope=global|project] [projectRoot=/path/to/project]
+sx-config action=sources sourceAction=list|add|remove [source={name, url, ...}] [sourceName=name] [scope=global|project] [projectRoot=/path/to/project]
 \`\`\`
 管理技能源（列出、添加、删除）。
 

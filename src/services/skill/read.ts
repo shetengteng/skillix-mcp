@@ -2,7 +2,7 @@
  * 读取技能内容
  */
 
-import type { SkillMetadata } from './types.js';
+import type { SkillMetadata } from '../../types/skill/metadata.js';
 import * as paths from '../../utils/paths.js';
 import * as fs from '../../utils/fs.js';
 import * as markdown from '../../utils/markdown.js';

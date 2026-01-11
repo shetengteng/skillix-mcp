@@ -1,10 +1,10 @@
 /**
- * sx_skill 工具
+ * sx-skill 工具
  * 本地技能管理：list, read, create, update, delete
  */
 
-import type { ToolResponse } from '../../types/response.js';
-import type { SxSkillParams } from './types.js';
+import type { ToolResponse } from '../../types/response/tool.js';
+import type { SxSkillParams } from '../../types/tools/sx-skill-params.js';
 import { handleList } from './list.js';
 import { handleRead } from './read.js';
 import { handleCreate } from './create.js';
@@ -18,7 +18,7 @@ export { handleList, handleRead, handleCreate, handleUpdate, handleDelete };
 export type { SxSkillParams };
 
 /**
- * sx_skill 工具主入口
+ * sx-skill 工具主入口
  */
 export function sxSkill(params: SxSkillParams): ToolResponse {
   const { action } = params;
@@ -47,7 +47,7 @@ export function sxSkill(params: SxSkillParams): ToolResponse {
  * 工具定义（用于 MCP 注册）
  */
 export const sxSkillDefinition = {
-  name: 'sx_skill',
+  name: 'sx-skill',
   description: '本地技能管理工具，支持列出、读取、创建、更新、删除技能',
   inputSchema: {
     type: 'object',

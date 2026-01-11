@@ -58,13 +58,13 @@ function createServer(): Server {
       let result;
 
       switch (name) {
-        case 'sx_skill':
+        case 'sx-skill':
           result = sxSkill(args as unknown as SxSkillParams);
           break;
-        case 'sx_config':
+        case 'sx-config':
           result = sxConfig(args as unknown as SxConfigParams);
           break;
-        case 'sx_help':
+        case 'sx-help':
           result = sxHelp(args as unknown as SxHelpParams);
           break;
         default:
@@ -75,7 +75,7 @@ function createServer(): Server {
                 text: JSON.stringify({
                   success: false,
                   message: `未知工具: ${name}`,
-                  errors: ['可用工具: sx_skill, sx_config, sx_help'],
+                  errors: ['可用工具: sx-skill, sx-config, sx-help'],
                 }),
               },
             ],

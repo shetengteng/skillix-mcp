@@ -1,0 +1,235 @@
+---
+description: TypeScript 代码规范
+globs: 
+  - "**/*.ts"
+alwaysApply: false
+---
+
+# TypeScript 代码规范
+
+## 模块系统
+
+- 使用 ES Module (ESM) 规范
+- 导入路径必须包含 `.js` 扩展名（TypeScript ESM 要求）
+- 使用 `type` 关键字导入类型：`import type { Skill } from './types/index.js';`
+
+```typescript
+// ✅ 正确
+import type { Skill, SkillMetadata } from '../../types/index.js';
+import { skillService } from '../../services/index.js';
+
+// ❌ 错误
+import { Skill } from '../../types/index';  // 缺少 .js 扩展名
+import { Skill } from '../../types/index.ts';  // 不应使用 .ts 扩展名
+```
+
+## 类型定义
+
+### 类型导入导出
+
+```typescript
+// 类型导出使用 export type
+export type { Skill, SkillMetadata, SkillScope };
+
+// 类型导入使用 import type
+import type { ToolResponse } from '../../types/response.js';
+```
+
+### 接口定义
+
+```typescript
+/**
+ * 技能元数据 (YAML frontmatter)
+ */
+export interface SkillMetadata {
+  name: string;
+  description: string;
+  version?: string;
+  author?: string;
+  tags?: string[];
+}
+```
+
+### 类型别名
+
+```typescript
+// 简单类型别名
+export type SkillScope = 'global' | 'project';
+
+// 联合类型
+export type ResultStatus = 'success' | 'error' | 'warning';
+```
+
+## 函数定义
+
+### 函数签名
+
+```typescript
+/**
+ * 创建技能
+ */
+export function createSkill(
+  skillName: string,
+  metadata: SkillMetadata,
+  body: string,
+  scope: SkillScope,
+  projectRoot?: string
+): Skill {
+  // 实现
+}
+```
+
+### 返回类型
+
+- 始终显式声明返回类型
+- 可能返回 null 时使用联合类型：`Skill | null`
+
+```typescript
+export function getSkill(skillName: string, projectRoot?: string): Skill | null {
+  // 实现
+}
+```
+
+## 错误处理
+
+### try-catch 模式
+
+```typescript
+try {
+  const skill = skillService.createSkill(name, metadata, body, scope, projectRoot);
+  return {
+    success: true,
+    message: `成功创建技能 "${name}"`,
+    data: skill,
+  };
+} catch (error) {
+  return {
+    success: false,
+    message: `创建技能 "${name}" 失败`,
+    errors: [error instanceof Error ? error.message : String(error)],
+  };
+}
+```
+
+## 工具响应格式
+
+所有 MCP 工具统一使用 `ToolResponse` 接口：
+
+```typescript
+interface ToolResponse {
+  success: boolean;
+  message: string;
+  data?: unknown;
+  errors?: string[];
+  warnings?: string[];
+}
+```
+
+### 成功响应
+
+```typescript
+return {
+  success: true,
+  message: `成功创建技能 "${name}"`,
+  data: {
+    name: skill.name,
+    scope: skill.scope,
+    path: skill.path,
+  },
+};
+```
+
+### 错误响应
+
+```typescript
+return {
+  success: false,
+  message: '缺少技能名称',
+  errors: ['参数 name 是必需的'],
+};
+```
+
+### 警告响应
+
+```typescript
+return {
+  success: true,
+  message: '项目配置已存在',
+  data: existingConfig,
+  warnings: ['项目配置已存在，未进行覆盖'],
+};
+```
+
+## 命名规范
+
+### 变量和函数
+
+- 使用 camelCase：`skillName`, `handleCreate`, `listAllSkills`
+
+### 接口和类型
+
+- 使用 PascalCase：`Skill`, `SkillMetadata`, `ToolResponse`
+
+### 常量
+
+- 使用 UPPER_SNAKE_CASE：`DEFAULT_GLOBAL_CONFIG`, `ERROR_CODES`
+- 或使用 PascalCase（对象常量）：`ErrorCodes`
+
+### 文件名
+
+- 使用 kebab-case：`skill.ts`, `sx-skill-params.ts`, `markdown.ts`
+
+## 注释规范
+
+### 文件头注释
+
+```typescript
+/**
+ * sx-skill create 子命令
+ * 创建新技能
+ */
+```
+
+### 函数注释
+
+```typescript
+/**
+ * 创建技能
+ */
+export function createSkill(...): Skill {
+  // 实现
+}
+```
+
+### 接口属性注释
+
+```typescript
+export interface SkillMetadata {
+  /** 技能名称（hyphen-case） */
+  name: string;
+  /** 技能描述（含触发场景） */
+  description: string;
+  /** 版本号 */
+  version?: string;
+}
+```
+
+## 目录结构约定
+
+### 服务层 (services/)
+
+- 每个服务一个目录或文件
+- 复杂服务拆分为多个文件，通过 `index.ts` 统一导出
+- 示例：`services/skill/` 包含 `create.ts`, `read.ts`, `update.ts` 等
+
+### 工具层 (tools/)
+
+- 每个 MCP 工具一个目录
+- 目录名使用复数形式：`skills/`, `configs/`, `helps/`
+- 每个子命令一个文件：`list.ts`, `read.ts`, `create.ts`
+
+### 类型层 (types/)
+
+- 所有类型统一在此目录管理
+- 按领域分文件：`skill.ts`, `config.ts`, `response.ts`
+- 工具参数类型使用 `sx-` 前缀：`sx-skill-params.ts`

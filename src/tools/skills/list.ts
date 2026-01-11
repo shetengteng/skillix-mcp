@@ -1,10 +1,11 @@
 /**
- * sx_skill list 子命令
+ * sx-skill list 子命令
  * 列出所有技能
  */
 
-import type { ToolResponse, ListSkillsResponse } from '../../types/response.js';
-import type { SxSkillParams } from './types.js';
+import type { ToolResponse } from '../../types/response/tool.js';
+import type { ListSkillsResponse } from '../../types/response/list-skills.js';
+import type { SxSkillParams } from '../../types/tools/sx-skill-params.js';
 import { skillService } from '../../services/index.js';
 
 /**

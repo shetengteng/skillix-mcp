@@ -3,8 +3,11 @@
  * 处理全局和项目级配置的读写
  */
 
-import type { GlobalConfig, ProjectConfig, SourceConfig, SkillSource } from '../types/config.js';
-import { DEFAULT_GLOBAL_CONFIG, DEFAULT_PROJECT_CONFIG } from '../types/config.js';
+import type { GlobalConfig } from '../types/config/global.js';
+import type { ProjectConfig } from '../types/config/project.js';
+import type { SourceConfig, SkillSource } from '../types/config/source.js';
+import { DEFAULT_GLOBAL_CONFIG } from '../types/config/global.js';
+import { DEFAULT_PROJECT_CONFIG } from '../types/config/project.js';
 import * as paths from '../utils/paths.js';
 import * as fs from '../utils/fs.js';
 

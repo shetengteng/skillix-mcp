@@ -1,11 +1,11 @@
 /**
- * sx_config 工具类型定义
+ * sx-config 工具参数类型定义
  */
 
-import type { SourceConfig } from '../../types/config.js';
+import type { SourceConfig } from '../config/source.js';
 
 /**
- * sx_config 工具参数
+ * sx-config 工具参数
  */
 export interface SxConfigParams {
   action: 'get' | 'set' | 'init' | 'sources';

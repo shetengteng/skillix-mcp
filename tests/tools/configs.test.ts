@@ -1,5 +1,5 @@
 /**
- * sx_config 工具测试
+ * sx-config 工具测试
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
@@ -8,7 +8,7 @@ import * as nodeFs from 'node:fs';
 import { createTempDir, cleanupTempDir } from '../helpers/setup.js';
 import { sxConfig } from '../../src/tools/configs/index.js';
 
-describe('sx_config tool', () => {
+describe('sx-config tool', () => {
   let tempDir: string;
   let originalHome: string | undefined;
 

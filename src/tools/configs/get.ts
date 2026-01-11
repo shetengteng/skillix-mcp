@@ -1,10 +1,10 @@
 /**
- * sx_config get 子命令
+ * sx-config get 子命令
  * 获取配置
  */
 
-import type { ToolResponse } from '../../types/response.js';
-import type { SxConfigParams } from './types.js';
+import type { ToolResponse } from '../../types/response/tool.js';
+import type { SxConfigParams } from '../../types/tools/sx-config-params.js';
 import { configService } from '../../services/index.js';
 
 /**

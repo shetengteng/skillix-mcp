@@ -1,10 +1,10 @@
 /**
- * sx_config 工具
+ * sx-config 工具
  * 配置管理：get, set, init, sources
  */
 
-import type { ToolResponse } from '../../types/response.js';
-import type { SxConfigParams } from './types.js';
+import type { ToolResponse } from '../../types/response/tool.js';
+import type { SxConfigParams } from '../../types/tools/sx-config-params.js';
 import { handleGet } from './get.js';
 import { handleSet } from './set.js';
 import { handleInit } from './init.js';
@@ -17,7 +17,7 @@ export { handleGet, handleSet, handleInit, handleSources };
 export type { SxConfigParams };
 
 /**
- * sx_config 工具主入口
+ * sx-config 工具主入口
  */
 export function sxConfig(params: SxConfigParams): ToolResponse {
   const { action } = params;
@@ -44,7 +44,7 @@ export function sxConfig(params: SxConfigParams): ToolResponse {
  * 工具定义（用于 MCP 注册）
  */
 export const sxConfigDefinition = {
-  name: 'sx_config',
+  name: 'sx-config',
   description: '配置管理工具，支持获取、设置配置和管理技能源',
   inputSchema: {
     type: 'object',

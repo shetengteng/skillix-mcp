@@ -1,10 +1,10 @@
 /**
- * sx_help 工具
+ * sx-help 工具
  * 帮助信息和使用指南
  */
 
-import type { ToolResponse } from '../../types/response.js';
-import type { SxHelpParams } from './types.js';
+import type { ToolResponse } from '../../types/response/tool.js';
+import type { SxHelpParams } from '../../types/tools/sx-help-params.js';
 import { OVERVIEW_HELP } from './overview.js';
 import { SKILL_HELP } from './skill.js';
 import { CONFIG_HELP } from './config.js';
@@ -16,7 +16,7 @@ export { OVERVIEW_HELP, SKILL_HELP, CONFIG_HELP };
 export type { SxHelpParams };
 
 /**
- * sx_help 工具主入口
+ * sx-help 工具主入口
  */
 export function sxHelp(params: SxHelpParams): ToolResponse {
   const { topic = 'overview' } = params;
@@ -58,7 +58,7 @@ export function sxHelp(params: SxHelpParams): ToolResponse {
  * 工具定义（用于 MCP 注册）
  */
 export const sxHelpDefinition = {
-  name: 'sx_help',
+  name: 'sx-help',
   description: '帮助信息工具，提供 Skillix 使用指南',
   inputSchema: {
     type: 'object',

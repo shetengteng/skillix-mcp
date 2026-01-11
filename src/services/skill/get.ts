@@ -3,7 +3,7 @@
  * 获取技能详情
  */
 
-import type { Skill } from './types.js';
+import type { Skill } from '../../types/skill/skill.js';
 import * as paths from '../../utils/paths.js';
 import { loadSkillFromDir } from './load.js';
 

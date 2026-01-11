@@ -1,10 +1,10 @@
 /**
- * sx_skill create 子命令
+ * sx-skill create 子命令
  * 创建新技能
  */
 
-import type { ToolResponse } from '../../types/response.js';
-import type { SxSkillParams } from './types.js';
+import type { ToolResponse } from '../../types/response/tool.js';
+import type { SxSkillParams } from '../../types/tools/sx-skill-params.js';
 import { skillService } from '../../services/index.js';
 
 /**

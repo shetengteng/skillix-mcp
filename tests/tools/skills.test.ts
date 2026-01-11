@@ -1,5 +1,5 @@
 /**
- * sx_skill 工具测试
+ * sx-skill 工具测试
  * 注意：由于全局路径依赖 os.homedir()，这里主要测试项目级技能
  */
 
@@ -10,7 +10,7 @@ import { createTempDir, cleanupTempDir, createTestSkill } from '../helpers/setup
 import { sxSkill } from '../../src/tools/skills/index.js';
 import { TEST_SKILL_MD, SIMPLE_SKILL_MD } from '../fixtures/skills.js';
 
-describe('sx_skill tool', () => {
+describe('sx-skill tool', () => {
   let tempDir: string;
 
   beforeEach(() => {

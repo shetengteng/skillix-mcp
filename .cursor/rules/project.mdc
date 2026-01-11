@@ -30,35 +30,59 @@ skillix-mp/
 │   ├── services/          # 业务服务层
 │   │   ├── index.ts       # 统一导出
 │   │   ├── config.ts      # 配置管理服务
-│   │   └── skill.ts       # 技能管理服务
+│   │   ├── skill.ts       # 技能管理服务（门面）
+│   │   └── skill/         # 技能服务实现
+│   │       ├── index.ts   # 统一导出
+│   │       ├── create.ts  # 创建技能
+│   │       ├── delete.ts  # 删除技能
+│   │       ├── exists.ts  # 检查技能存在
+│   │       ├── get.ts     # 获取技能
+│   │       ├── list.ts    # 列出技能
+│   │       ├── load.ts    # 加载技能
+│   │       ├── read.ts    # 读取技能内容
+│   │       ├── search.ts  # 搜索技能
+│   │       └── update.ts  # 更新技能
 │   ├── tools/             # MCP 工具实现
 │   │   ├── index.ts       # 工具统一导出（从子目录导出）
-│   │   ├── skills/        # sx_skill 工具
+│   │   ├── skills/        # sx-skill 工具
 │   │   │   ├── index.ts   # 工具入口 + 子命令导出
-│   │   │   ├── types.ts   # 工具参数类型
 │   │   │   ├── list.ts    # 列出技能
 │   │   │   ├── read.ts    # 读取技能
 │   │   │   ├── create.ts  # 创建技能
 │   │   │   ├── update.ts  # 更新技能
 │   │   │   └── delete.ts  # 删除技能
-│   │   ├── configs/       # sx_config 工具
+│   │   ├── configs/       # sx-config 工具
 │   │   │   ├── index.ts   # 工具入口 + 子命令导出
-│   │   │   ├── types.ts   # 工具参数类型
 │   │   │   ├── get.ts     # 获取配置
 │   │   │   ├── set.ts     # 设置配置
 │   │   │   ├── init.ts    # 初始化项目
 │   │   │   └── sources.ts # 管理技能源
-│   │   └── helps/         # sx_help 工具
+│   │   └── helps/         # sx-help 工具
 │   │       ├── index.ts   # 工具入口 + 帮助内容导出
-│   │       ├── types.ts   # 工具参数类型
 │   │       ├── overview.ts # 概述帮助
 │   │       ├── skill.ts   # 技能工具帮助
 │   │       └── config.ts  # 配置工具帮助
-│   ├── types/             # 领域类型定义
-│   │   ├── index.ts       # 统一导出
-│   │   ├── config.ts      # 配置相关类型
-│   │   ├── response.ts    # 响应相关类型
-│   │   └── skill.ts       # 技能相关类型
+│   ├── types/             # 所有类型定义（按功能分目录）
+│   │   ├── skill/         # 技能相关类型
+│   │   │   ├── skill.ts   # Skill 接口
+│   │   │   ├── scope.ts   # SkillScope 类型
+│   │   │   ├── metadata.ts # SkillMetadata 接口
+│   │   │   ├── info.ts    # SkillInfo 接口
+│   │   │   └── *-params.ts # 技能操作参数类型
+│   │   ├── config/        # 配置相关类型
+│   │   │   ├── global.ts  # GlobalConfig 接口 + 默认值
+│   │   │   ├── project.ts # ProjectConfig 接口 + 默认值
+│   │   │   ├── source.ts  # SkillSource 接口
+│   │   │   └── ...        # 其他配置类型
+│   │   ├── response/      # 响应相关类型
+│   │   │   ├── tool.ts    # ToolResponse 接口
+│   │   │   ├── listed-skill.ts # ListedSkill 接口
+│   │   │   ├── list-skills.ts  # ListSkillsResponse 接口
+│   │   │   └── ...        # 其他响应类型
+│   │   └── tools/         # 工具参数类型
+│   │       ├── sx-skill-params.ts  # sx-skill 工具参数
+│   │       ├── sx-config-params.ts # sx-config 工具参数
+│   │       └── sx-help-params.ts   # sx-help 工具参数
 │   ├── utils/             # 工具函数
 │   │   ├── fs.ts          # 文件系统操作
 │   │   ├── markdown.ts    # Markdown 解析
@@ -74,15 +98,15 @@ skillix-mp/
 
 ## MCP 工具命名规范
 
-采用 `sx_` 前缀的精简版工具设计：
+采用 `sx-` 前缀的精简版工具设计（使用 kebab-case 命名）：
 
 | 工具名 | 说明 | 包含操作 |
 |--------|------|----------|
-| `sx_skill` | 技能管理 | list, read, create, update, delete |
-| `sx_config` | 配置管理 | get, set, init, sources |
-| `sx_help` | 帮助信息 | 显示使用说明和示例 |
-| `sx_market` | 市场操作 | search, install, uninstall (待实现) |
-| `sx_triage` | 智能分流 | 分析任务，推荐技能 (待实现) |
+| `sx-skill` | 技能管理 | list, read, create, update, delete |
+| `sx-config` | 配置管理 | get, set, init, sources |
+| `sx-help` | 帮助信息 | 显示使用说明和示例 |
+| `sx-market` | 市场操作 | search, install, uninstall (待实现) |
+| `sx-triage` | 智能分流 | 分析任务，推荐技能 (待实现) |
 
 ## 本地存储设计
 
@@ -148,25 +172,32 @@ skill-name/
 - 启用严格模式
 - 导入使用 `.js` 扩展名（ESM 规范）
 
-### 文件命名
+### 文件命名规范
 
-- 工具文件: `sx_*.ts` (如 `sx_skill.ts`)
-- 服务文件: `*.ts` (如 `skill.ts`, `config.ts`)
-- 类型文件: `*.ts` (如 `skill.ts`, `response.ts`)
+| 类型 | 命名格式 | 示例 |
+|------|----------|------|
+| 目录 | kebab-case（复数形式） | `skills/`, `configs/`, `helps/` |
+| 服务文件 | kebab-case | `skill.ts`, `config.ts` |
+| 工具文件 | kebab-case | `create.ts`, `list.ts`, `read.ts` |
+| 类型文件 | kebab-case | `skill.ts`, `response.ts`, `sx-skill-params.ts` |
+| 工具函数文件 | kebab-case | `fs.ts`, `markdown.ts`, `paths.ts` |
 
-### 类型文件区别
+### 类型文件管理原则
 
-项目中有两类类型文件，职责不同：
+所有类型定义统一放在 `src/types/` 目录下，**按功能分目录，一个类型一个文件**：
 
-| 位置 | 用途 | 示例 |
-|------|------|------|
-| `src/types/` | **领域类型** - 业务实体和数据结构 | `SkillMetadata`, `SkillInfo`, `Skill`, `GlobalConfig` |
-| `src/tools/*/types.ts` | **工具参数类型** - MCP 工具的输入参数 | `SxSkillParams`, `SxConfigParams`, `SxHelpParams` |
+| 目录 | 用途 | 包含类型 |
+|------|------|----------|
+| `skill/` | 技能相关类型 | `Skill`, `SkillScope`, `SkillMetadata`, `SkillInfo`, 操作参数 |
+| `config/` | 配置相关类型 | `GlobalConfig`, `ProjectConfig`, `SkillSource`, 子配置 |
+| `response/` | 响应相关类型 | `ToolResponse`, `ListedSkill`, `ListSkillsResponse`, 错误码 |
+| `tools/` | 工具参数类型 | `SxSkillParams`, `SxConfigParams`, `SxHelpParams` |
 
 **设计原则**：
-- `src/types/` 定义核心业务模型，被 services 和 tools 共同使用
-- `tools/*/types.ts` 定义工具特定的参数接口，引用 `src/types/` 中的领域类型
-- 工具参数类型与工具实现放在同一目录，便于维护
+- 按功能领域分目录，每个类型/接口单独一个文件
+- 文件名使用 kebab-case，不使用 `index.ts` 统一导出
+- 类型之间有依赖时，使用相对路径导入（如 `../skill/scope.js`）
+- 工具参数类型放在 `tools/` 目录，使用 `sx-` 前缀命名
 
 ### 响应格式
 

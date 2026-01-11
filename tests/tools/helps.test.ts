@@ -1,11 +1,11 @@
 /**
- * sx_help 工具测试
+ * sx-help 工具测试
  */
 
 import { describe, it, expect } from 'vitest';
 import { sxHelp } from '../../src/tools/helps/index.js';
 
-describe('sx_help tool', () => {
+describe('sx-help tool', () => {
   describe('overview topic', () => {
     it('should return overview help', () => {
       const result = sxHelp({ topic: 'overview' });

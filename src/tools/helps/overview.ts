@@ -1,5 +1,5 @@
 /**
- * sx_help overview 主题
+ * sx-help overview 主题
  * 概述帮助信息
  */
 
@@ -19,18 +19,18 @@ Skillix 是一个 AI 技能管理系统，帮助 AI 编程助手更好地完成�
 
 ## 可用工具
 
-1. **sx_skill** - 本地技能管理（list/read/create/update/delete）
-2. **sx_config** - 配置管理（get/set/init/sources）
-3. **sx_help** - 帮助信息
+1. **sx-skill** - 本地技能管理（list/read/create/update/delete）
+2. **sx-config** - 配置管理（get/set/init/sources）
+3. **sx-help** - 帮助信息
 
 ## 快速开始
 
 1. 初始化项目配置：
-   \`sx_config action=init projectRoot=/path/to/project\`
+   \`sx-config action=init projectRoot=/path/to/project\`
 
 2. 列出所有技能：
-   \`sx_skill action=list\`
+   \`sx-skill action=list\`
 
 3. 创建新技能：
-   \`sx_skill action=create name=my-skill metadata={...} body="..."\`
+   \`sx-skill action=create name=my-skill metadata={...} body="..."\`
 `;

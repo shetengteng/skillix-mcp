@@ -2,7 +2,7 @@
  * 搜索技能
  */
 
-import type { ListedSkill } from './types.js';
+import type { ListedSkill } from '../../types/response/listed-skill.js';
 import { listAllSkills } from './list.js';
 
 /**

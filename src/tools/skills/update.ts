@@ -1,10 +1,10 @@
 /**
- * sx_skill update 子命令
+ * sx-skill update 子命令
  * 更新现有技能
  */
 
-import type { ToolResponse } from '../../types/response.js';
-import type { SxSkillParams } from './types.js';
+import type { ToolResponse } from '../../types/response/tool.js';
+import type { SxSkillParams } from '../../types/tools/sx-skill-params.js';
 import { skillService } from '../../services/index.js';
 
 /**

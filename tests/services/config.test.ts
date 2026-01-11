@@ -7,7 +7,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as path from 'node:path';
 import * as nodeFs from 'node:fs';
 import { createTempDir, cleanupTempDir } from '../helpers/setup.js';
-import * as configService from '../../src/services/config.js';
+import * as configService from '../../src/services/config/index.js';
 
 describe('config service', () => {
   let tempDir: string;

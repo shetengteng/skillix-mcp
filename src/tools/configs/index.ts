@@ -3,8 +3,7 @@
  * 配置管理：get, set, init, sources
  */
 
-import type { ToolResponse } from '../../types/response/tool.js';
-import type { SxConfigParams } from '../types.js';
+import type { ToolResponse, SxConfigParams } from '../types.js';
 import { handleGet } from './get.js';
 import { handleSet } from './set.js';
 import { handleInit } from './init.js';

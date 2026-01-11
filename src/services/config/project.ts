@@ -2,8 +2,8 @@
  * 项目配置服务
  */
 
-import type { ProjectConfig } from './types.js';
-import { DEFAULT_PROJECT_CONFIG } from './types.js';
+import type { ProjectConfig } from '../types.js';
+import { DEFAULT_PROJECT_CONFIG } from '../types.js';
 import * as paths from '../../utils/paths.js';
 import * as fs from '../../utils/fs.js';
 

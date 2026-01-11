@@ -3,7 +3,7 @@
  * 处理 SKILL.md 文件的解析
  */
 
-import type { SkillMetadata } from '../types/skill/metadata.js';
+import type { SkillMetadata } from '../services/types.js';
 
 /**
  * YAML frontmatter 正则表达式

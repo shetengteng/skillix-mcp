@@ -2,7 +2,7 @@
  * 技能源管理服务
  */
 
-import type { SourceConfig } from '../../types/config/source.js';
+import type { SourceConfig } from '../types.js';
 import { getGlobalConfig, saveGlobalConfig } from './global.js';
 import { getProjectConfig, saveProjectConfig, initProjectConfig } from './project.js';
 import { getEffectiveConfig } from './effective.js';

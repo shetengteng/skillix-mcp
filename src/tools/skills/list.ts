@@ -3,9 +3,8 @@
  * 列出所有技能
  */
 
-import type { ToolResponse } from '../../types/response/tool.js';
-import type { ListSkillsResponse } from '../../types/response/list-skills.js';
-import type { SxSkillParams } from '../types.js';
+import type { ToolResponse, SxSkillParams } from '../types.js';
+import type { ListSkillsResponse } from '../../services/types.js';
 import { skillService } from '../../services/index.js';
 
 /**

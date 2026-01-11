@@ -7,7 +7,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as path from 'node:path';
 import * as nodeFs from 'node:fs';
 import { createTempDir, cleanupTempDir, createTestSkill } from '../helpers/setup.js';
-import * as skillService from '../../src/services/skill.js';
+import * as skillService from '../../src/services/skill/index.js';
 import { TEST_SKILL_MD, SIMPLE_SKILL_MD } from '../fixtures/skills.js';
 
 describe('skill service', () => {

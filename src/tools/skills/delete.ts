@@ -3,8 +3,7 @@
  * 删除技能
  */
 
-import type { ToolResponse } from '../../types/response/tool.js';
-import type { SxSkillParams } from '../types.js';
+import type { ToolResponse, SxSkillParams } from '../types.js';
 import { skillService } from '../../services/index.js';
 
 /**

@@ -1,10 +1,27 @@
 /**
- * MCP 工具参数类型定义
+ * MCP 工具类型定义
  */
 
-import type { SkillMetadata } from '../types/skill/metadata.js';
-import type { SkillScope } from '../types/skill/scope.js';
-import type { SourceConfig } from '../types/config/source.js';
+import type { SkillMetadata, SkillScope, SourceConfig } from '../services/types.js';
+
+// ============================================
+// 工具响应类型
+// ============================================
+
+/**
+ * 工具响应
+ */
+export interface ToolResponse {
+  success: boolean;
+  message: string;
+  data?: unknown;
+  errors?: string[];
+  warnings?: string[];
+}
+
+// ============================================
+// 工具参数类型
+// ============================================
 
 /**
  * sx-skill 工具参数

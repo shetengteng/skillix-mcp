@@ -3,8 +3,7 @@
  * 列出全局/项目/所有技能
  */
 
-import type { Skill, ListedSkill } from './types.js';
-import type { ListSkillsResponse } from '../../types/response/list-skills.js';
+import type { Skill, ListedSkill, ListSkillsResponse } from '../types.js';
 import * as paths from '../../utils/paths.js';
 import * as fs from '../../utils/fs.js';
 import { loadSkillFromDir } from './load.js';

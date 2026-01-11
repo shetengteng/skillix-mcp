@@ -1,8 +1,48 @@
 /**
- * 配置服务专用类型定义
+ * 服务层类型定义
+ * 
+ * 包含所有被 services 使用的类型
  */
 
-import type { SkillSource } from '../../types/config/source.js';
+// ============================================
+// 基础类型
+// ============================================
+
+/**
+ * 技能范围
+ */
+export type SkillScope = 'global' | 'project';
+
+/**
+ * 技能元数据 (YAML frontmatter)
+ */
+export interface SkillMetadata {
+  name: string;
+  description: string;
+  version?: string;
+  author?: string;
+  tags?: string[];
+  license?: string;
+}
+
+/**
+ * 技能源配置
+ */
+export interface SkillSource {
+  name: string;
+  url: string;
+  branch?: string;
+  default?: boolean;
+}
+
+/**
+ * 技能源配置别名（兼容）
+ */
+export type SourceConfig = SkillSource;
+
+// ============================================
+// 配置相关类型
+// ============================================
 
 /**
  * 缓存配置
@@ -104,3 +144,48 @@ export const DEFAULT_PROJECT_CONFIG: ProjectConfig = {
     autoRecord: false,
   },
 };
+
+// ============================================
+// 技能相关类型
+// ============================================
+
+/**
+ * 技能完整内容
+ */
+export interface Skill {
+  name: string;
+  description: string;
+  version?: string;
+  author?: string;
+  tags?: string[];
+  scope: SkillScope;
+  path: string;
+  source?: string;
+  content: string;
+  metadata: SkillMetadata;
+  hasScripts: boolean;
+  hasReferences: boolean;
+  hasAssets: boolean;
+}
+
+/**
+ * 列出的技能项
+ */
+export interface ListedSkill {
+  name: string;
+  description: string;
+  source: string;
+  path?: string;
+}
+
+// ============================================
+// 响应相关类型
+// ============================================
+
+/**
+ * 技能列表响应
+ */
+export interface ListSkillsResponse {
+  global_skills: ListedSkill[];
+  project_skills: ListedSkill[];
+}

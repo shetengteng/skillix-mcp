@@ -3,8 +3,7 @@
  * 本地技能管理：list, read, create, update, delete
  */
 
-import type { ToolResponse } from '../../types/response/tool.js';
-import type { SxSkillParams } from '../types.js';
+import type { ToolResponse, SxSkillParams } from '../types.js';
 import { handleList } from './list.js';
 import { handleRead } from './read.js';
 import { handleCreate } from './create.js';

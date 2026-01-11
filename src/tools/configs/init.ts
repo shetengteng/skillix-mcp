@@ -3,8 +3,7 @@
  * 初始化项目配置
  */
 
-import type { ToolResponse } from '../../types/response/tool.js';
-import type { SxConfigParams } from '../types.js';
+import type { ToolResponse, SxConfigParams } from '../types.js';
 import { configService } from '../../services/index.js';
 
 /**

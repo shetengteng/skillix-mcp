@@ -3,8 +3,7 @@
  * 从目录加载技能
  */
 
-import type { Skill } from './types.js';
-import type { SkillScope } from '../../types/skill/scope.js';
+import type { Skill, SkillScope } from '../types.js';
 import * as paths from '../../utils/paths.js';
 import * as fs from '../../utils/fs.js';
 import * as markdown from '../../utils/markdown.js';

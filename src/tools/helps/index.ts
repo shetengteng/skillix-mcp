@@ -4,7 +4,7 @@
  */
 
 import type { ToolResponse } from '../../types/response/tool.js';
-import type { SxHelpParams } from '../../types/tools/sx-help-params.js';
+import type { SxHelpParams } from '../types.js';
 import { OVERVIEW_HELP } from './overview.js';
 import { SKILL_HELP } from './skill.js';
 import { CONFIG_HELP } from './config.js';

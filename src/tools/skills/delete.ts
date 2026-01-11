@@ -4,7 +4,7 @@
  */
 
 import type { ToolResponse } from '../../types/response/tool.js';
-import type { SxSkillParams } from '../../types/tools/sx-skill-params.js';
+import type { SxSkillParams } from '../types.js';
 import { skillService } from '../../services/index.js';
 
 /**

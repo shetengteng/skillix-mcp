@@ -4,7 +4,7 @@
  */
 
 import type { ToolResponse } from '../../types/response/tool.js';
-import type { SxConfigParams } from '../../types/tools/sx-config-params.js';
+import type { SxConfigParams } from '../types.js';
 import { handleGet } from './get.js';
 import { handleSet } from './set.js';
 import { handleInit } from './init.js';

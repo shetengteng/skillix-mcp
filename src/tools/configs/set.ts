@@ -5,6 +5,13 @@
 
 import type { ToolResponse, SxConfigParams } from '../types.js';
 import { configService } from '../../services/index.js';
+import {
+  isValidGlobalConfigKey,
+  isValidProjectConfigKey,
+  validateConfigValue,
+  VALID_GLOBAL_CONFIG_KEYS,
+  VALID_PROJECT_CONFIG_KEYS,
+} from '../../utils/validation.js';
 
 /**
  * 设置配置
@@ -38,13 +45,32 @@ export function handleSet(params: SxConfigParams): ToolResponse {
         };
       }
       
+      // 验证配置键是否有效
+      if (!isValidProjectConfigKey(key)) {
+        return {
+          success: false,
+          message: `无效的项目配置键: ${key}`,
+          errors: [`有效的配置键: ${VALID_PROJECT_CONFIG_KEYS.join(', ')}`],
+        };
+      }
+      
+      // 验证配置值是否有效
+      const valueValidation = validateConfigValue(key, value);
+      if (!valueValidation.valid) {
+        return {
+          success: false,
+          message: `配置值无效`,
+          errors: [valueValidation.errorMessage!],
+        };
+      }
+      
       let config = configService.getProjectConfig(projectRoot);
       
       if (!config) {
         config = configService.initProjectConfig(projectRoot);
       }
       
-      (config as any)[key] = value;
+      config[key] = value;
       configService.saveProjectConfig(projectRoot, config);
       
       return {
@@ -54,9 +80,28 @@ export function handleSet(params: SxConfigParams): ToolResponse {
       };
     }
     
+    // 验证全局配置键是否有效
+    if (!isValidGlobalConfigKey(key)) {
+      return {
+        success: false,
+        message: `无效的全局配置键: ${key}`,
+        errors: [`有效的配置键: ${VALID_GLOBAL_CONFIG_KEYS.join(', ')}`],
+      };
+    }
+    
+    // 验证配置值是否有效
+    const valueValidation = validateConfigValue(key, value);
+    if (!valueValidation.valid) {
+      return {
+        success: false,
+        message: `配置值无效`,
+        errors: [valueValidation.errorMessage!],
+      };
+    }
+    
     // 默认设置全局配置
     const config = configService.getGlobalConfig();
-    (config as any)[key] = value;
+    config[key] = value;
     configService.saveGlobalConfig(config);
     
     return {

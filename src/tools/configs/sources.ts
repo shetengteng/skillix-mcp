@@ -15,11 +15,22 @@ export function handleSources(params: SxConfigParams): ToolResponse {
   try {
     switch (sourceAction) {
       case 'list': {
-        const sources = configService.getAllSources(projectRoot);
+        // 获取有效配置（本地优先策略）
+        const effectiveConfig = configService.getEffectiveConfig(projectRoot);
+        const sources = effectiveConfig.effective.sources;
+        
+        // 确定源来自哪里
+        const hasProjectSources = effectiveConfig.project?.sources && effectiveConfig.project.sources.length > 0;
+        const sourceOrigin = hasProjectSources ? '项目配置' : '全局配置';
+        
         return {
           success: true,
-          message: `找到 ${sources.length} 个技能源`,
-          data: sources,
+          message: `找到 ${sources.length} 个技能源（来自${sourceOrigin}）`,
+          data: {
+            sources,
+            origin: hasProjectSources ? 'project' : 'global',
+            projectRoot: projectRoot || null,
+          },
         };
       }
       

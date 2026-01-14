@@ -251,3 +251,146 @@ export function validateCreateParams(
 export function formatError(errorCode: ErrorCode, message: string): string {
   return `[${errorCode}] ${message}`;
 }
+
+// ============================================
+// 配置验证
+// ============================================
+
+/**
+ * 全局配置有效键列表
+ */
+export const VALID_GLOBAL_CONFIG_KEYS = [
+  'version',
+  'sources',
+  'defaultScope',
+  'format',
+  'autoSuggest',
+  'suggestThreshold',
+  'logging',
+  'cache',
+] as const;
+
+/**
+ * 项目配置有效键列表
+ */
+export const VALID_PROJECT_CONFIG_KEYS = [
+  'sources',
+  'format',
+  'autoSuggest',
+  'feedback',
+] as const;
+
+export type GlobalConfigKey = typeof VALID_GLOBAL_CONFIG_KEYS[number];
+export type ProjectConfigKey = typeof VALID_PROJECT_CONFIG_KEYS[number];
+
+/**
+ * 验证全局配置键是否有效
+ */
+export function isValidGlobalConfigKey(key: string): key is GlobalConfigKey {
+  return VALID_GLOBAL_CONFIG_KEYS.includes(key as GlobalConfigKey);
+}
+
+/**
+ * 验证项目配置键是否有效
+ */
+export function isValidProjectConfigKey(key: string): key is ProjectConfigKey {
+  return VALID_PROJECT_CONFIG_KEYS.includes(key as ProjectConfigKey);
+}
+
+/**
+ * 配置值验证结果
+ */
+export interface ConfigValidationResult {
+  valid: boolean;
+  errorMessage?: string;
+}
+
+/**
+ * 验证配置值
+ */
+export function validateConfigValue(key: string, value: unknown): ConfigValidationResult {
+  switch (key) {
+    case 'format':
+      if (value !== 'xml' && value !== 'json') {
+        return {
+          valid: false,
+          errorMessage: `format 的值必须是 "xml" 或 "json"，收到: "${value}"`,
+        };
+      }
+      break;
+    
+    case 'autoSuggest':
+      if (typeof value !== 'boolean') {
+        return {
+          valid: false,
+          errorMessage: `autoSuggest 的值必须是布尔值，收到: ${typeof value}`,
+        };
+      }
+      break;
+    
+    case 'defaultScope':
+      if (value !== 'global' && value !== 'project') {
+        return {
+          valid: false,
+          errorMessage: `defaultScope 的值必须是 "global" 或 "project"，收到: "${value}"`,
+        };
+      }
+      break;
+    
+    case 'version':
+      if (typeof value !== 'string' || !/^\d+\.\d+\.\d+$/.test(value)) {
+        return {
+          valid: false,
+          errorMessage: `version 的值必须是语义化版本格式（如 "1.0.0"），收到: "${value}"`,
+        };
+      }
+      break;
+    
+    case 'sources':
+      if (!Array.isArray(value)) {
+        return {
+          valid: false,
+          errorMessage: `sources 的值必须是数组`,
+        };
+      }
+      break;
+    
+    case 'suggestThreshold':
+      if (typeof value !== 'object' || value === null) {
+        return {
+          valid: false,
+          errorMessage: `suggestThreshold 的值必须是对象`,
+        };
+      }
+      break;
+    
+    case 'logging':
+      if (typeof value !== 'object' || value === null) {
+        return {
+          valid: false,
+          errorMessage: `logging 的值必须是对象`,
+        };
+      }
+      break;
+    
+    case 'cache':
+      if (typeof value !== 'object' || value === null) {
+        return {
+          valid: false,
+          errorMessage: `cache 的值必须是对象`,
+        };
+      }
+      break;
+    
+    case 'feedback':
+      if (typeof value !== 'object' || value === null) {
+        return {
+          valid: false,
+          errorMessage: `feedback 的值必须是对象`,
+        };
+      }
+      break;
+  }
+  
+  return { valid: true };
+}

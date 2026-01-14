@@ -54,8 +54,9 @@ export function initProjectConfig(projectRoot: string, options?: Partial<Project
   
   saveProjectConfig(projectRoot, config);
   
-  // 确保技能目录存在
+  // 确保技能目录和日志目录存在
   fs.ensureDir(paths.getProjectSkillsDir(projectRoot));
+  fs.ensureDir(paths.getProjectLogsDir(projectRoot));
   
   return config;
 }

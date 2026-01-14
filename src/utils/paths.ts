@@ -71,6 +71,14 @@ export function getProjectSkillsDir(projectRoot: string): string {
 }
 
 /**
+ * 获取项目日志目录路径
+ * .skillix/logs/
+ */
+export function getProjectLogsDir(projectRoot: string): string {
+  return path.join(getProjectDir(projectRoot), 'logs');
+}
+
+/**
  * 获取特定技能的目录路径
  */
 export function getSkillDir(skillsDir: string, skillName: string): string {

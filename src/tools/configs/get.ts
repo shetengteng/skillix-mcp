@@ -5,6 +5,12 @@
 
 import type { ToolResponse, SxConfigParams } from '../types.js';
 import { configService } from '../../services/index.js';
+import {
+  isValidGlobalConfigKey,
+  isValidProjectConfigKey,
+  VALID_GLOBAL_CONFIG_KEYS,
+  VALID_PROJECT_CONFIG_KEYS,
+} from '../../utils/validation.js';
 
 /**
  * 获取配置
@@ -33,7 +39,16 @@ export function handleGet(params: SxConfigParams): ToolResponse {
       }
       
       if (key) {
-        const value = (config as any)[key];
+        // 验证配置键是否有效
+        if (!isValidProjectConfigKey(key)) {
+          return {
+            success: false,
+            message: `无效的项目配置键: ${key}`,
+            errors: [`有效的配置键: ${VALID_PROJECT_CONFIG_KEYS.join(', ')}`],
+          };
+        }
+        
+        const value = config[key];
         return {
           success: true,
           message: `项目配置 ${key}`,
@@ -52,7 +67,16 @@ export function handleGet(params: SxConfigParams): ToolResponse {
     const config = configService.getGlobalConfig();
     
     if (key) {
-      const value = (config as any)[key];
+      // 验证配置键是否有效
+      if (!isValidGlobalConfigKey(key)) {
+        return {
+          success: false,
+          message: `无效的全局配置键: ${key}`,
+          errors: [`有效的配置键: ${VALID_GLOBAL_CONFIG_KEYS.join(', ')}`],
+        };
+      }
+      
+      const value = config[key];
       return {
         success: true,
         message: `全局配置 ${key}`,

@@ -44,10 +44,21 @@ export function sxSkill(params: SxSkillParams): ToolResponse {
 
 /**
  * 工具定义（用于 MCP 注册）
+ * 
+ * AI First 设计说明：
+ * - create 操作采用 AI First 模式
+ * - AI 代理应先通过对话收集用户需求，再调用此工具
+ * - 详见 sx-help topic=skill 获取完整引导流程
  */
 export const sxSkillDefinition = {
   name: 'sx-skill',
-  description: '本地技能管理工具，支持列出、读取、创建、更新、删除技能',
+  description: `本地技能管理工具，支持列出、读取、创建、更新、删除技能。
+
+【AI First 创建模式】
+创建技能时，若用户需求模糊，请先通过对话引导收集信息，再调用 create。
+详细引导流程请调用: sx-help topic=skill
+
+【技能命名】hyphen-case 格式，如 pdf-converter`,
   inputSchema: {
     type: 'object',
     properties: {
@@ -58,12 +69,12 @@ export const sxSkillDefinition = {
       },
       name: {
         type: 'string',
-        description: '技能名称（read/create/update/delete 时必需）',
+        description: '技能名称（hyphen-case 格式，如 pdf-converter）',
       },
       scope: {
         type: 'string',
         enum: ['global', 'project'],
-        description: '技能范围（create 时使用，默认 global）',
+        description: '技能范围（默认 global）',
       },
       projectRoot: {
         type: 'string',
@@ -71,18 +82,21 @@ export const sxSkillDefinition = {
       },
       metadata: {
         type: 'object',
-        description: '技能元数据（create/update 时使用）',
+        description: '技能元数据',
         properties: {
-          name: { type: 'string' },
-          description: { type: 'string' },
-          version: { type: 'string' },
-          author: { type: 'string' },
-          tags: { type: 'array', items: { type: 'string' } },
+          name: { type: 'string', description: '技能名称' },
+          description: { 
+            type: 'string', 
+            description: '技能描述（包含触发场景，如"当用户需要...时使用"）' 
+          },
+          version: { type: 'string', description: '版本号（默认 1.0.0）' },
+          author: { type: 'string', description: '作者' },
+          tags: { type: 'array', items: { type: 'string' }, description: '标签' },
         },
       },
       body: {
         type: 'string',
-        description: 'SKILL.md 正文内容（create/update 时使用）',
+        description: 'SKILL.md 正文内容（Markdown 格式，包含使用说明、步骤、示例等）',
       },
     },
     required: ['action'],

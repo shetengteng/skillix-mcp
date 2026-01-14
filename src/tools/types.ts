@@ -4,6 +4,9 @@
 
 import type { SkillMetadata, SkillScope, SourceConfig } from '../services/types.js';
 
+// 导出验证相关类型
+export { ErrorCode, type ValidationResult } from '../utils/validation.js';
+
 // ============================================
 // 工具响应类型
 // ============================================

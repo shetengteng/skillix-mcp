@@ -1,0 +1,1962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skillix - Mix Skills, Empower AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Inter + Geist Mono (shadcn style) + 思源黑体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* shadcn/ui Design System - Light Theme */
+            --background: #ffffff;
+            --foreground: #09090b;
+            --card: #ffffff;
+            --card-foreground: #09090b;
+            --popover: #ffffff;
+            --popover-foreground: #09090b;
+            --primary: #18181b;
+            --primary-foreground: #fafafa;
+            --secondary: #f4f4f5;
+            --secondary-foreground: #18181b;
+            --muted: #f4f4f5;
+            --muted-foreground: #71717a;
+            --accent: #f4f4f5;
+            --accent-foreground: #18181b;
+            --destructive: #ef4444;
+            --destructive-foreground: #fafafa;
+            --border: #e4e4e7;
+            --input: #e4e4e7;
+            --ring: #a1a1aa;
+            
+            /* Extended colors */
+            --success: #22c55e;
+            --warning: #eab308;
+            --info: #3b82f6;
+        }
+
+        /* Dark theme */
+        [data-theme="dark"] {
+            --background: #09090b;
+            --foreground: #fafafa;
+            --card: #09090b;
+            --card-foreground: #fafafa;
+            --popover: #09090b;
+            --popover-foreground: #fafafa;
+            --primary: #fafafa;
+            --primary-foreground: #18181b;
+            --secondary: #27272a;
+            --secondary-foreground: #fafafa;
+            --muted: #27272a;
+            --muted-foreground: #a1a1aa;
+            --accent: #27272a;
+            --accent-foreground: #fafafa;
+            --destructive: #7f1d1d;
+            --destructive-foreground: #fafafa;
+            --border: #27272a;
+            --input: #27272a;
+            --ring: #d4d4d8;
+        }
+
+        :root {
+            
+            /* Spacing */
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-8: 32px;
+            --space-10: 40px;
+            --space-12: 48px;
+            --space-16: 64px;
+            --space-20: 80px;
+            --space-24: 96px;
+            
+            /* Border radius (shadcn uses subtle radius) */
+            --radius: 8px;
+            --radius-sm: 6px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --radius-full: 9999px;
+            
+            /* Typography - Inter (shadcn default) + 思源黑体 */
+            --font-sans: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+            --font-zh: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            
+            /* Shadows (subtle, shadcn style) */
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--background);
+            color: var(--foreground);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Language switcher styles */
+        [data-lang="zh"] .lang-en,
+        [data-lang="en"] .lang-zh {
+            display: none !important;
+        }
+
+        [data-lang="zh"] .lang-zh,
+        [data-lang="en"] .lang-en {
+            display: inline !important;
+        }
+
+        /* 中文字体优化 */
+        [data-lang="zh"] {
+            font-family: var(--font-zh);
+        }
+
+        /* Skip link for accessibility */
+        .skip-link {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: var(--primary-foreground);
+            padding: var(--space-3) var(--space-5);
+            border-radius: var(--radius);
+            font-weight: 500;
+            font-size: 0.875rem;
+            z-index: 9999;
+            transition: top 0.3s ease;
+            text-decoration: none;
+        }
+
+        .skip-link:focus {
+            top: var(--space-4);
+            outline: 2px solid var(--ring);
+            outline-offset: 2px;
+        }
+
+        /* Scroll progress indicator */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--info), var(--success));
+            width: 0%;
+            z-index: 9999;
+            transition: width 0.1s ease-out;
+        }
+
+        /* Loading animation */
+        .page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #09090b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .page-loader .loader-logo {
+            color: #fafafa;
+        }
+
+        .page-loader.loaded {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-logo {
+            font-weight: 700;
+            font-size: 2rem;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; transform: scale(0.98); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Smooth scroll indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: var(--space-8);
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-2);
+            color: var(--muted-foreground);
+            font-size: 0.75rem;
+            animation: bounce 2s infinite;
+        }
+
+        .scroll-indicator svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--muted-foreground);
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-10px); }
+            60% { transform: translateX(-50%) translateY(-5px); }
+        }
+
+        /* Animated grid background */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+            background-size: 64px 64px;
+            pointer-events: none;
+            z-index: 0;
+            animation: gridMove 20s linear infinite;
+        }
+
+        [data-theme="dark"] .bg-grid {
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(64px, 64px); }
+        }
+
+        /* Gradient orbs with animation */
+        .bg-gradient {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(150px);
+            opacity: 0.08;
+            pointer-events: none;
+            z-index: 0;
+            animation: float 15s ease-in-out infinite;
+        }
+
+        [data-theme="dark"] .bg-gradient {
+            opacity: 0.15;
+        }
+
+        .bg-gradient-1 {
+            top: -200px;
+            right: -200px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        }
+
+        .bg-gradient-2 {
+            bottom: -200px;
+            left: -200px;
+            background: linear-gradient(135deg, #22c55e 0%, #3b82f6 100%);
+            opacity: 0.05;
+            animation-delay: -7.5s;
+        }
+
+        [data-theme="dark"] .bg-gradient-2 {
+            opacity: 0.1;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, -30px) scale(1.05); }
+            50% { transform: translate(0, 20px) scale(1); }
+            75% { transform: translate(-30px, -10px) scale(0.95); }
+        }
+
+        /* Particle effect */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--muted-foreground);
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFloat 8s ease-in-out infinite;
+        }
+
+        [data-theme="dark"] .particle {
+            background: var(--ring);
+        }
+
+        @keyframes particleFloat {
+            0% { opacity: 0; transform: translateY(100vh) scale(0); }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { opacity: 0; transform: translateY(-100px) scale(1); }
+        }
+
+        /* Glow line effect */
+        .glow-line {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            width: 1px;
+            height: 100%;
+            background: linear-gradient(180deg, transparent 0%, var(--border) 50%, transparent 100%);
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 0;
+            animation: glowPulse 3s ease-in-out infinite;
+        }
+
+        [data-theme="dark"] .glow-line {
+            background: linear-gradient(180deg, transparent 0%, var(--ring) 50%, transparent 100%);
+            opacity: 0.1;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { opacity: 0.05; }
+            50% { opacity: 0.15; }
+        }
+
+        [data-theme="light"] .glow-line {
+            animation: glowPulseLight 3s ease-in-out infinite;
+        }
+
+        @keyframes glowPulseLight {
+            0%, 100% { opacity: 0.1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Navigation - shadcn style */
+        nav {
+            position: fixed;
+            top: var(--space-4);
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-full);
+            padding: var(--space-2) var(--space-4);
+            display: flex;
+            align-items: center;
+            gap: var(--space-6);
+        }
+
+        [data-theme="dark"] nav {
+            background: rgba(9, 9, 11, 0.8);
+        }
+
+        .nav-logo {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--foreground);
+            letter-spacing: -0.02em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: var(--space-1);
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--muted-foreground);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: var(--space-2) var(--space-3);
+            border-radius: var(--radius-sm);
+            transition: all 150ms ease;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover {
+            color: var(--foreground);
+            background: var(--accent);
+        }
+
+        .nav-links a:focus-visible {
+            outline: 2px solid var(--ring);
+            outline-offset: 2px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        /* Unified height for all nav-right buttons: 32px */
+        .lang-switch {
+            display: flex;
+            align-items: center;
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-full);
+            padding: 2px;
+            gap: 2px;
+            height: 32px;
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: var(--muted-foreground);
+            padding: 0 var(--space-3);
+            height: 26px;
+            line-height: 26px;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: var(--font-sans);
+            position: relative;
+            z-index: 1;
+        }
+
+        .lang-btn.active {
+            background: var(--background);
+            color: var(--foreground);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .lang-btn:hover:not(.active) {
+            color: var(--foreground);
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        [data-theme="dark"] .lang-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .lang-btn:focus-visible {
+            outline: 2px solid var(--ring);
+            outline-offset: 1px;
+        }
+
+        /* Theme toggle button - circular, same height as other buttons */
+        .theme-toggle {
+            width: 32px;
+            height: 32px;
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 200ms ease;
+            color: var(--muted-foreground);
+            flex-shrink: 0;
+        }
+
+        .theme-toggle:hover {
+            background: var(--accent);
+            color: var(--foreground);
+            transform: rotate(15deg);
+        }
+
+        .theme-toggle:focus-visible {
+            outline: 2px solid var(--ring);
+            outline-offset: 2px;
+        }
+
+        .theme-toggle svg {
+            width: 16px;
+            height: 16px;
+            transition: transform 200ms ease;
+        }
+
+        .theme-toggle:hover svg {
+            transform: scale(1.1);
+        }
+
+        /* Sun icon for dark mode, moon icon for light mode */
+        .theme-toggle .sun-icon {
+            display: none;
+        }
+
+        .theme-toggle .moon-icon {
+            display: block;
+        }
+
+        [data-theme="dark"] .theme-toggle .sun-icon {
+            display: block;
+        }
+
+        [data-theme="dark"] .theme-toggle .moon-icon {
+            display: none;
+        }
+
+        .nav-cta {
+            background: var(--primary);
+            color: var(--primary-foreground);
+            padding: 0 var(--space-4);
+            height: 32px;
+            line-height: 32px;
+            border-radius: var(--radius-full);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.8rem;
+            transition: all 200ms ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .nav-cta:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .nav-cta:focus-visible {
+            outline: 2px solid var(--ring);
+            outline-offset: 2px;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-24) var(--space-4);
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            padding: var(--space-1) var(--space-3);
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+            color: var(--muted-foreground);
+            margin-bottom: var(--space-6);
+            animation: fadeIn 0.5s ease;
+        }
+
+        .hero-badge-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--success);
+            border-radius: 50%;
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            margin-bottom: var(--space-4);
+            animation: fadeIn 0.5s ease 0.1s both;
+        }
+
+        .hero-title-muted {
+            color: var(--muted-foreground);
+        }
+
+        .hero-subtitle {
+            font-size: 1.125rem;
+            color: var(--muted-foreground);
+            max-width: 600px;
+            margin: 0 auto var(--space-8);
+            line-height: 1.7;
+            animation: fadeIn 0.5s ease 0.2s both;
+        }
+
+        .hero-cta-group {
+            display: flex;
+            gap: var(--space-3);
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeIn 0.5s ease 0.3s both;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--primary-foreground);
+            padding: var(--space-3) var(--space-5);
+            border-radius: var(--radius-full);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            transition: all 200ms ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--foreground);
+            padding: var(--space-3) var(--space-5);
+            border-radius: var(--radius-full);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            border: 1px solid var(--border);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            transition: all 200ms ease;
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        /* Code Block - shadcn style */
+        .hero-code {
+            margin-top: var(--space-12);
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            text-align: left;
+            animation: fadeIn 0.5s ease 0.4s both;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-3) var(--space-4);
+            background: var(--secondary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .code-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .code-dot-red { background: #ef4444; }
+        .code-dot-yellow { background: #eab308; }
+        .code-dot-green { background: #22c55e; }
+
+        .code-title {
+            margin-left: var(--space-2);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+        }
+
+        .code-body {
+            padding: var(--space-4);
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            line-height: 1.7;
+            overflow-x: auto;
+        }
+
+        .code-comment { color: var(--muted-foreground); }
+        .code-key { color: #a78bfa; }
+        .code-string { color: #4ade80; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Typing cursor effect for hero badge */
+        .hero-badge::after {
+            content: '';
+            display: inline-block;
+            width: 2px;
+            height: 14px;
+            background: var(--foreground);
+            margin-left: 4px;
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Gradient text animation */
+        .hero-title-gradient {
+            background: linear-gradient(90deg, var(--foreground), #a1a1aa, var(--foreground));
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% center; }
+            50% { background-position: 100% center; }
+        }
+
+        /* Button hover glow */
+        .btn-primary {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        .btn-primary:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary:focus-visible,
+        .btn-secondary:focus-visible {
+            outline: 2px solid var(--ring);
+            outline-offset: 2px;
+        }
+
+        /* Code block shimmer effect */
+        .hero-code {
+            position: relative;
+        }
+
+        .hero-code::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
+            animation: shimmer 3s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Section Styles */
+        section {
+            padding: var(--space-20) var(--space-4);
+            position: relative;
+            z-index: 1;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: var(--space-12);
+        }
+
+        .section-label {
+            font-size: 0.8rem;
+            color: var(--muted-foreground);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 500;
+            margin-bottom: var(--space-3);
+        }
+
+        .section-title {
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: var(--space-3);
+        }
+
+        .section-desc {
+            color: var(--muted-foreground);
+            max-width: 550px;
+            margin: 0 auto;
+            font-size: 1rem;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: var(--space-4);
+        }
+
+        .feature-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-6);
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--ring), transparent);
+            opacity: 0;
+            transition: opacity 300ms ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--ring);
+            background: var(--secondary);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-card:focus-visible {
+            outline: 2px solid var(--ring);
+            outline-offset: 2px;
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--secondary);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: var(--space-4);
+        }
+
+        .feature-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--foreground);
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .feature-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: var(--space-2);
+            letter-spacing: -0.01em;
+        }
+
+        .feature-desc {
+            color: var(--muted-foreground);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        /* Tools Section */
+        .tools {
+            background: var(--secondary);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-4);
+        }
+
+        .tool-card {
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-5);
+            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .tool-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: var(--radius-lg);
+            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255,255,255,0.06) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 300ms ease;
+            pointer-events: none;
+        }
+
+        .tool-card:hover {
+            border-color: var(--ring);
+            transform: translateY(-2px);
+        }
+
+        .tool-card:hover::after {
+            opacity: 1;
+        }
+
+        .tool-card:focus-visible {
+            outline: 2px solid var(--ring);
+            outline-offset: 2px;
+        }
+
+        .tool-name {
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--foreground);
+            margin-bottom: var(--space-2);
+        }
+
+        .tool-desc {
+            color: var(--muted-foreground);
+            font-size: 0.8rem;
+            margin-bottom: var(--space-3);
+            line-height: 1.5;
+        }
+
+        .tool-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-1);
+        }
+
+        .tool-action {
+            background: var(--secondary);
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--muted-foreground);
+        }
+
+        /* Workflow Section */
+        .workflow-demo {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .workflow-header {
+            background: var(--secondary);
+            padding: var(--space-4) var(--space-5);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .workflow-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .workflow-icon svg {
+            width: 18px;
+            height: 18px;
+            stroke: var(--foreground);
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .workflow-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .workflow-steps {
+            padding: var(--space-5);
+        }
+
+        .workflow-step {
+            display: flex;
+            gap: var(--space-4);
+            padding: var(--space-4) 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .workflow-step:last-child {
+            border-bottom: none;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            flex-shrink: 0;
+            color: var(--muted-foreground);
+        }
+
+        .step-content h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: var(--space-1);
+        }
+
+        .step-content p {
+            color: var(--muted-foreground);
+            font-size: 0.8rem;
+        }
+
+        .step-code {
+            background: var(--secondary);
+            padding: var(--space-2) var(--space-3);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            margin-top: var(--space-2);
+            color: var(--success);
+            display: inline-block;
+        }
+
+        /* Stats Section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: var(--space-6);
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: var(--space-4);
+        }
+
+        .stat-value {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: var(--space-1);
+            background: linear-gradient(135deg, var(--foreground) 0%, var(--muted-foreground) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-item:hover .stat-value {
+            animation: countPulse 0.5s ease;
+        }
+
+        @keyframes countPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .stat-label {
+            color: var(--muted-foreground);
+            font-size: 0.875rem;
+        }
+
+        /* CTA Section */
+        .cta-box {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-12) var(--space-6);
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .cta-title {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: var(--space-3);
+        }
+
+        .cta-desc {
+            color: var(--muted-foreground);
+            margin-bottom: var(--space-6);
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+            font-size: 0.95rem;
+        }
+
+        .cta-code {
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: var(--space-3) var(--space-4);
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-3);
+            margin-bottom: var(--space-6);
+        }
+
+        .cta-code-text {
+            color: var(--foreground);
+        }
+
+        .cta-copy {
+            background: var(--background);
+            border: 1px solid var(--border);
+            padding: var(--space-1) var(--space-2);
+            border-radius: var(--radius-sm);
+            color: var(--muted-foreground);
+            cursor: pointer;
+            font-family: var(--font-sans);
+            font-size: 0.75rem;
+            transition: all 150ms ease;
+        }
+
+        .cta-copy:hover {
+            background: var(--accent);
+            color: var(--foreground);
+        }
+
+        /* Footer */
+        footer {
+            padding: var(--space-12) var(--space-4) var(--space-6);
+            border-top: 1px solid var(--border);
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--space-4);
+        }
+
+        .footer-logo {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--foreground);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: var(--space-6);
+            list-style: none;
+        }
+
+        .footer-links a {
+            color: var(--muted-foreground);
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: color 150ms ease;
+            cursor: pointer;
+        }
+
+        .footer-links a:hover {
+            color: var(--foreground);
+        }
+
+        .footer-copy {
+            color: var(--muted-foreground);
+            font-size: 0.75rem;
+        }
+
+        /* Scroll Animation */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: var(--space-2) var(--space-3);
+                gap: var(--space-3);
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                padding: var(--space-20) var(--space-4);
+            }
+
+            section {
+                padding: var(--space-16) var(--space-4);
+            }
+
+            .features-grid,
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body data-lang="en" data-theme="dark">
+    <!-- Page loader -->
+    <div class="page-loader" id="pageLoader">
+        <span class="loader-logo">Skillix</span>
+    </div>
+
+    <!-- Scroll progress indicator -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <!-- Skip to main content link for accessibility -->
+    <a href="#features" class="skip-link">
+        <span class="lang-en">Skip to main content</span>
+        <span class="lang-zh">跳转到主要内容</span>
+    </a>
+
+    <!-- Background Effects -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient bg-gradient-1"></div>
+    <div class="bg-gradient bg-gradient-2"></div>
+    <div class="glow-line"></div>
+    <div class="particles" id="particles"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <span class="nav-logo">Skillix</span>
+        <ul class="nav-links">
+            <li><a href="#features">
+                <span class="lang-en">Features</span>
+                <span class="lang-zh">功能</span>
+            </a></li>
+            <li><a href="#tools">
+                <span class="lang-en">Tools</span>
+                <span class="lang-zh">工具</span>
+            </a></li>
+            <li><a href="#workflow">
+                <span class="lang-en">Workflow</span>
+                <span class="lang-zh">工作流</span>
+            </a></li>
+            <li><a href="https://github.com/shetengteng/skillix-mcp" target="_blank">GitHub</a></li>
+        </ul>
+        <div class="nav-right">
+            <div class="lang-switch">
+                <button class="lang-btn active" data-lang-btn="en">EN</button>
+                <button class="lang-btn" data-lang-btn="zh">中文</button>
+            </div>
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"/>
+                    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                </svg>
+                <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+            </button>
+            <a href="#get-started" class="nav-cta">
+                <span class="lang-en">Get Started</span>
+                <span class="lang-zh">开始使用</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="hero-badge-dot"></span>
+                <span class="lang-en">MCP-Powered Skill Management</span>
+                <span class="lang-zh">基于 MCP 的技能管理系统</span>
+            </div>
+            <h1 class="hero-title">
+                <span class="lang-en">Mix Skills,</span>
+                <span class="lang-zh">混合技能，</span><br>
+                <span class="hero-title-muted lang-en">Empower AI</span>
+                <span class="hero-title-muted lang-zh">智能赋能</span>
+            </h1>
+            <p class="hero-subtitle">
+                <span class="lang-en">Skillix is an MCP-based skill management system that provides AI coding agents with the ability to create, manage, load, and evolve skills.</span>
+                <span class="lang-zh">Skillix 是一个基于 MCP 的技能管理系统，为 AI 编码代理提供技能的创建、管理、加载和进化能力。</span>
+            </p>
+            <div class="hero-cta-group">
+                <a href="#get-started" class="btn-primary">
+                    <span class="lang-en">Get Started</span>
+                    <span class="lang-zh">快速开始</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                <a href="https://github.com/shetengteng/skillix-mcp" target="_blank" class="btn-secondary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    GitHub
+                </a>
+            </div>
+
+            <!-- Code Preview -->
+            <div class="hero-code">
+                <div class="code-header">
+                    <span class="code-dot code-dot-red"></span>
+                    <span class="code-dot code-dot-yellow"></span>
+                    <span class="code-dot code-dot-green"></span>
+                    <span class="code-title">~/.cursor/mcp.json</span>
+                </div>
+                <div class="code-body">
+                    <span class="code-comment lang-en">// Add Skillix to your MCP configuration</span>
+                    <span class="code-comment lang-zh">// 将 Skillix 添加到你的 MCP 配置</span><br>
+                    {<br>
+                    &nbsp;&nbsp;<span class="code-key">"mcpServers"</span>: {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-string">"skillix"</span>: {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-key">"command"</span>: <span class="code-string">"npx"</span>,<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-key">"args"</span>: [<span class="code-string">"skillix-mcp"</span>]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                    &nbsp;&nbsp;}<br>
+                    }
+                </div>
+            </div>
+
+            <!-- Scroll indicator -->
+            <div class="scroll-indicator">
+                <span class="lang-en">Scroll</span>
+                <span class="lang-zh">滚动</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14M19 12l-7 7-7-7"/>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features">
+        <div class="container">
+            <div class="section-header animate-on-scroll">
+                <p class="section-label">
+                    <span class="lang-en">Features</span>
+                    <span class="lang-zh">功能特性</span>
+                </p>
+                <h2 class="section-title">
+                    <span class="lang-en">Everything you need for AI skills</span>
+                    <span class="lang-zh">AI 技能管理的一站式解决方案</span>
+                </h2>
+                <p class="section-desc">
+                    <span class="lang-en">A comprehensive toolkit for managing, evolving, and sharing AI skills.</span>
+                    <span class="lang-zh">一套完整的工具包，用于管理、进化和共享 AI 技能。</span>
+                </p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card animate-on-scroll" tabindex="0" role="article">
+                    <div class="feature-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    </div>
+                    <h3 class="feature-title">
+                        <span class="lang-en">Skill Management</span>
+                        <span class="lang-zh">技能管理</span>
+                    </h3>
+                    <p class="feature-desc">
+                        <span class="lang-en">Create, read, update, and delete local skills with built-in version control and automatic backup.</span>
+                        <span class="lang-zh">创建、读取、更新和删除本地技能，内置版本控制和自动备份。</span>
+                    </p>
+                </div>
+
+                <div class="feature-card animate-on-scroll" tabindex="0" role="article">
+                    <div class="feature-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                    </div>
+                    <h3 class="feature-title">
+                        <span class="lang-en">Smart Triage</span>
+                        <span class="lang-zh">智能分流</span>
+                    </h3>
+                    <p class="feature-desc">
+                        <span class="lang-en">Intelligent task analysis that automatically recommends the best skill for your task.</span>
+                        <span class="lang-zh">智能任务分析，自动推荐最适合的技能。</span>
+                    </p>
+                </div>
+
+                <div class="feature-card animate-on-scroll" tabindex="0" role="article">
+                    <div class="feature-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                    </div>
+                    <h3 class="feature-title">
+                        <span class="lang-en">Skill Market</span>
+                        <span class="lang-zh">技能市场</span>
+                    </h3>
+                    <p class="feature-desc">
+                        <span class="lang-en">Search, install, and share skills from remote sources with the community.</span>
+                        <span class="lang-zh">从远程源搜索、安装技能，与社区分享。</span>
+                    </p>
+                </div>
+
+                <div class="feature-card animate-on-scroll" tabindex="0" role="article">
+                    <div class="feature-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+                    </div>
+                    <h3 class="feature-title">
+                        <span class="lang-en">Local-First</span>
+                        <span class="lang-zh">本地优先</span>
+                    </h3>
+                    <p class="feature-desc">
+                        <span class="lang-en">Project skills take precedence over global skills for context-aware resolution.</span>
+                        <span class="lang-zh">项目技能优先于全局技能，实现上下文感知。</span>
+                    </p>
+                </div>
+
+                <div class="feature-card animate-on-scroll" tabindex="0" role="article">
+                    <div class="feature-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+                    </div>
+                    <h3 class="feature-title">
+                        <span class="lang-en">Version Rollback</span>
+                        <span class="lang-zh">版本回退</span>
+                    </h3>
+                    <p class="feature-desc">
+                        <span class="lang-en">Built-in backup and version history. Never lose your skill improvements.</span>
+                        <span class="lang-zh">内置备份和版本历史，永不丢失改进。</span>
+                    </p>
+                </div>
+
+                <div class="feature-card animate-on-scroll" tabindex="0" role="article">
+                    <div class="feature-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </div>
+                    <h3 class="feature-title">
+                        <span class="lang-en">Configuration</span>
+                        <span class="lang-zh">配置管理</span>
+                    </h3>
+                    <p class="feature-desc">
+                        <span class="lang-en">Flexible global and project-level configuration with multiple skill sources.</span>
+                        <span class="lang-zh">灵活的全局和项目级配置，支持多个技能源。</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tools Section -->
+    <section class="tools" id="tools">
+        <div class="container">
+            <div class="section-header animate-on-scroll">
+                <p class="section-label">
+                    <span class="lang-en">MCP Tools</span>
+                    <span class="lang-zh">MCP 工具</span>
+                </p>
+                <h2 class="section-title">
+                    <span class="lang-en">Five powerful tools</span>
+                    <span class="lang-zh">五个强大的工具</span>
+                </h2>
+                <p class="section-desc">
+                    <span class="lang-en">Streamlined tools designed for seamless AI integration.</span>
+                    <span class="lang-zh">精简工具，专为 AI 无缝集成设计。</span>
+                </p>
+            </div>
+
+            <div class="tools-grid">
+                <div class="tool-card animate-on-scroll" tabindex="0" role="article">
+                    <h3 class="tool-name">sx-triage</h3>
+                    <p class="tool-desc">
+                        <span class="lang-en">Smart task analysis and skill recommendation.</span>
+                        <span class="lang-zh">智能任务分析和技能推荐。</span>
+                    </p>
+                    <div class="tool-actions">
+                        <span class="tool-action">USE_EXISTING</span>
+                        <span class="tool-action">CREATE_NEW</span>
+                        <span class="tool-action">INSTALL</span>
+                    </div>
+                </div>
+
+                <div class="tool-card animate-on-scroll" tabindex="0" role="article">
+                    <h3 class="tool-name">sx-skill</h3>
+                    <p class="tool-desc">
+                        <span class="lang-en">Local skill management with CRUD operations.</span>
+                        <span class="lang-zh">本地技能管理，支持 CRUD 操作。</span>
+                    </p>
+                    <div class="tool-actions">
+                        <span class="tool-action">list</span>
+                        <span class="tool-action">read</span>
+                        <span class="tool-action">create</span>
+                        <span class="tool-action">update</span>
+                        <span class="tool-action">delete</span>
+                    </div>
+                </div>
+
+                <div class="tool-card animate-on-scroll" tabindex="0" role="article">
+                    <h3 class="tool-name">sx-market</h3>
+                    <p class="tool-desc">
+                        <span class="lang-en">Skill marketplace for discovery and installation.</span>
+                        <span class="lang-zh">技能市场，用于发现和安装。</span>
+                    </p>
+                    <div class="tool-actions">
+                        <span class="tool-action">search</span>
+                        <span class="tool-action">install</span>
+                        <span class="tool-action">uninstall</span>
+                        <span class="tool-action">sync</span>
+                    </div>
+                </div>
+
+                <div class="tool-card animate-on-scroll" tabindex="0" role="article">
+                    <h3 class="tool-name">sx-config</h3>
+                    <p class="tool-desc">
+                        <span class="lang-en">Configuration for global and project settings.</span>
+                        <span class="lang-zh">全局和项目配置管理。</span>
+                    </p>
+                    <div class="tool-actions">
+                        <span class="tool-action">get</span>
+                        <span class="tool-action">set</span>
+                        <span class="tool-action">init</span>
+                        <span class="tool-action">sources</span>
+                    </div>
+                </div>
+
+                <div class="tool-card animate-on-scroll" tabindex="0" role="article">
+                    <h3 class="tool-name">sx-help</h3>
+                    <p class="tool-desc">
+                        <span class="lang-en">Help and documentation system.</span>
+                        <span class="lang-zh">帮助和文档系统。</span>
+                    </p>
+                    <div class="tool-actions">
+                        <span class="tool-action">overview</span>
+                        <span class="tool-action">skill</span>
+                        <span class="tool-action">market</span>
+                        <span class="tool-action">config</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Workflow Section -->
+    <section id="workflow">
+        <div class="container">
+            <div class="section-header animate-on-scroll">
+                <p class="section-label">
+                    <span class="lang-en">Workflow</span>
+                    <span class="lang-zh">工作流</span>
+                </p>
+                <h2 class="section-title">
+                    <span class="lang-en">Seamless AI workflow</span>
+                    <span class="lang-zh">无缝 AI 工作流</span>
+                </h2>
+                <p class="section-desc">
+                    <span class="lang-en">See how Skillix handles tasks from analysis to execution.</span>
+                    <span class="lang-zh">了解 Skillix 如何处理从分析到执行的任务。</span>
+                </p>
+            </div>
+
+            <div class="workflow-demo animate-on-scroll">
+                <div class="workflow-header">
+                    <div class="workflow-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                    </div>
+                    <span class="workflow-title">
+                        <span class="lang-en">Smart Triage Workflow</span>
+                        <span class="lang-zh">智能分流工作流</span>
+                    </span>
+                </div>
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>
+                                <span class="lang-en">User Request</span>
+                                <span class="lang-zh">用户请求</span>
+                            </h4>
+                            <p>
+                                <span class="lang-en">"Help me convert this PDF to images"</span>
+                                <span class="lang-zh">"帮我把这个 PDF 转换成图片"</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>
+                                <span class="lang-en">AI Analyzes</span>
+                                <span class="lang-zh">AI 分析</span>
+                            </h4>
+                            <p>
+                                <span class="lang-en">Skillix analyzes and searches for matching skills</span>
+                                <span class="lang-zh">Skillix 分析并搜索匹配的技能</span>
+                            </p>
+                            <span class="step-code">sx-triage task="Convert PDF"</span>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>
+                                <span class="lang-en">Result</span>
+                                <span class="lang-zh">结果</span>
+                            </h4>
+                            <p>USE_EXISTING, skill=pdf-converter</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>
+                                <span class="lang-en">Execute</span>
+                                <span class="lang-zh">执行</span>
+                            </h4>
+                            <p>
+                                <span class="lang-en">AI loads skill and executes task</span>
+                                <span class="lang-zh">AI 加载技能并执行任务</span>
+                            </p>
+                            <span class="step-code">sx-skill action=read name=pdf-converter</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section>
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item animate-on-scroll">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">
+                        <span class="lang-en">MCP Tools</span>
+                        <span class="lang-zh">MCP 工具</span>
+                    </div>
+                </div>
+                <div class="stat-item animate-on-scroll">
+                    <div class="stat-value">6</div>
+                    <div class="stat-label">
+                        <span class="lang-en">Action Types</span>
+                        <span class="lang-zh">操作类型</span>
+                    </div>
+                </div>
+                <div class="stat-item animate-on-scroll">
+                    <div class="stat-value">∞</div>
+                    <div class="stat-label">
+                        <span class="lang-en">Possibilities</span>
+                        <span class="lang-zh">可能性</span>
+                    </div>
+                </div>
+                <div class="stat-item animate-on-scroll">
+                    <div class="stat-value">MIT</div>
+                    <div class="stat-label">
+                        <span class="lang-en">Open Source</span>
+                        <span class="lang-zh">开源</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="get-started">
+        <div class="container">
+            <div class="cta-box animate-on-scroll">
+                <h2 class="cta-title">
+                    <span class="lang-en">Ready to get started?</span>
+                    <span class="lang-zh">准备好开始了吗？</span>
+                </h2>
+                <p class="cta-desc">
+                    <span class="lang-en">Add Skillix to your MCP configuration and start mixing skills.</span>
+                    <span class="lang-zh">将 Skillix 添加到 MCP 配置，开始混合技能。</span>
+                </p>
+                
+                <div class="cta-code">
+                    <span class="cta-code-text">npx skillix-mcp</span>
+                    <button class="cta-copy" onclick="copyToClipboard('npx skillix-mcp')">
+                        <span class="lang-en">Copy</span>
+                        <span class="lang-zh">复制</span>
+                    </button>
+                </div>
+
+                <div class="hero-cta-group">
+                    <a href="https://github.com/shetengteng/skillix-mcp" target="_blank" class="btn-primary">
+                        <span class="lang-en">View Docs</span>
+                        <span class="lang-zh">查看文档</span>
+                    </a>
+                    <a href="https://github.com/shetengteng/skillix-mcp/issues" target="_blank" class="btn-secondary">
+                        <span class="lang-en">Report Issue</span>
+                        <span class="lang-zh">报告问题</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <span class="footer-logo">Skillix</span>
+            <ul class="footer-links">
+                <li><a href="https://github.com/shetengteng/skillix-mcp" target="_blank">GitHub</a></li>
+                <li><a href="https://github.com/shetengteng/skillix-mcp/blob/main/README.md" target="_blank">
+                    <span class="lang-en">Docs</span>
+                    <span class="lang-zh">文档</span>
+                </a></li>
+                <li><a href="https://github.com/shetengteng/skillix-mcp/issues" target="_blank">
+                    <span class="lang-en">Issues</span>
+                    <span class="lang-zh">问题</span>
+                </a></li>
+                <li><a href="https://github.com/shetengteng/skillix-mcp/blob/main/LICENSE" target="_blank">MIT</a></li>
+            </ul>
+            <span class="footer-copy">© 2026 Skillix</span>
+        </div>
+    </footer>
+
+    <script>
+        // Language switcher
+        function setLanguage(lang) {
+            document.body.setAttribute('data-lang', lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-lang-btn') === lang);
+            });
+            document.title = lang === 'zh' 
+                ? 'Skillix - 混合技能，智能赋能' 
+                : 'Skillix - Mix Skills, Empower AI';
+            localStorage.setItem('skillix-lang', lang);
+        }
+
+        function initLanguage() {
+            const savedLang = localStorage.getItem('skillix-lang');
+            if (savedLang) {
+                setLanguage(savedLang);
+            } else {
+                const browserLang = navigator.language.toLowerCase();
+                setLanguage(browserLang.startsWith('zh') ? 'zh' : 'en');
+            }
+        }
+
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                setLanguage(btn.getAttribute('data-lang-btn'));
+            });
+        });
+
+        initLanguage();
+
+        // Theme toggle
+        function setTheme(theme) {
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('skillix-theme', theme);
+        }
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('skillix-theme');
+            if (savedTheme) {
+                setTheme(savedTheme);
+            } else {
+                // Check system preference
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                setTheme(prefersDark ? 'dark' : 'light');
+            }
+        }
+
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            const currentTheme = document.body.getAttribute('data-theme');
+            setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+        });
+
+        // Listen for system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem('skillix-theme')) {
+                setTheme(e.matches ? 'dark' : 'light');
+            }
+        });
+
+        initTheme();
+
+        // Copy to clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = event.target.closest('.cta-copy');
+                const lang = document.body.getAttribute('data-lang');
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = lang === 'zh' ? '已复制!' : 'Copied!';
+                setTimeout(() => { btn.innerHTML = originalHTML; }, 2000);
+            });
+        }
+
+        // Scroll animation
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        // Create particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = 20;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particle.style.animationDuration = (6 + Math.random() * 4) + 's';
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
+
+        // Mouse tracking for tool cards
+        document.querySelectorAll('.tool-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+                const y = ((e.clientY - rect.top) / rect.height) * 100;
+                card.style.setProperty('--mouse-x', x + '%');
+                card.style.setProperty('--mouse-y', y + '%');
+            });
+        });
+
+        // Parallax effect for gradient orbs
+        document.addEventListener('mousemove', (e) => {
+            const moveX = (e.clientX - window.innerWidth / 2) * 0.01;
+            const moveY = (e.clientY - window.innerHeight / 2) * 0.01;
+            
+            document.querySelectorAll('.bg-gradient').forEach((orb, i) => {
+                const factor = i === 0 ? 1 : -1;
+                orb.style.transform = `translate(${moveX * factor}px, ${moveY * factor}px)`;
+            });
+        });
+
+        // Page loader
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('pageLoader').classList.add('loaded');
+            }, 500);
+        });
+
+        // Scroll progress indicator
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = (scrollTop / docHeight) * 100;
+            document.getElementById('scrollProgress').style.width = scrollPercent + '%';
+        });
+
+        // Hide scroll indicator after scrolling
+        let scrollIndicator = document.querySelector('.scroll-indicator');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 100) {
+                scrollIndicator.style.opacity = '0';
+            } else {
+                scrollIndicator.style.opacity = '1';
+            }
+        }, { passive: true });
+    </script>
+</body>
+</html>

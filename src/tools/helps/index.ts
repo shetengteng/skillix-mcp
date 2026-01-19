@@ -8,11 +8,11 @@ import { OVERVIEW_HELP } from './overview.js';
 import { SKILL_HELP } from './skill.js';
 import { CONFIG_HELP } from './config.js';
 import { MARKET_HELP } from './market.js';
-import { TRIAGE_HELP } from './triage.js';
+import { DISPATCH_HELP } from './dispatch.js';
 import { success, error } from '../../utils/response.js';
 
 // 导出帮助内容
-export { OVERVIEW_HELP, SKILL_HELP, CONFIG_HELP, MARKET_HELP, TRIAGE_HELP };
+export { OVERVIEW_HELP, SKILL_HELP, CONFIG_HELP, MARKET_HELP, DISPATCH_HELP };
 
 // 导出类型
 export type { SxHelpParams };
@@ -38,16 +38,16 @@ export function sxHelp(params: SxHelpParams): ToolResponse {
     case 'market':
       helpContent = MARKET_HELP;
       break;
-    case 'triage':
-      helpContent = TRIAGE_HELP;
+    case 'dispatch':
+      helpContent = DISPATCH_HELP;
       break;
     case 'all':
-      helpContent = [OVERVIEW_HELP, SKILL_HELP, CONFIG_HELP, MARKET_HELP, TRIAGE_HELP].join('\n\n---\n\n');
+      helpContent = [OVERVIEW_HELP, SKILL_HELP, CONFIG_HELP, MARKET_HELP, DISPATCH_HELP].join('\n\n---\n\n');
       break;
     default:
       return error({
         message: `未知主题: ${topic}`,
-        errors: ['支持的主题: overview, skill, config, market, triage, all'],
+        errors: ['支持的主题: overview, skill, config, market, dispatch, all'],
       });
   }
   
@@ -71,7 +71,7 @@ export const sxHelpDefinition = {
     properties: {
       topic: {
         type: 'string',
-        enum: ['overview', 'skill', 'config', 'market', 'triage', 'all'],
+        enum: ['overview', 'skill', 'config', 'market', 'dispatch', 'all'],
         description: '帮助主题（默认 overview）',
       },
     },

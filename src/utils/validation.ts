@@ -44,7 +44,7 @@ const RESERVED_WORDS = [
   'sx-config',
   'sx-help',
   'sx-market',
-  'sx-triage',
+  'sx-dispatch',
   'config',
   'help',
   'system',

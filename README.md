@@ -32,7 +32,7 @@ Copy the following JSON configuration and add it to your Cursor MCP settings:
 ## Features
 
 - 🎯 **Skill Management** - Create, read, update, delete local skills with version control
-- 🔍 **Smart Triage** - Intelligent task analysis and skill recommendation
+- 🔍 **Smart Dispatch** - Intelligent task analysis and skill recommendation
 - 🛒 **Skill Market** - Search, install, and uninstall skills from remote sources
 - ⚙️ **Configuration Management** - Global and project-level configuration support
 - 📦 **Local-First Strategy** - Project skills take precedence over global skills
@@ -108,9 +108,9 @@ Then configure:
 
 ## Available Tools
 
-### sx-triage
+### sx-dispatch
 
-Smart triage tool for task analysis and skill recommendation.
+Smart dispatch tool for task analysis and skill recommendation.
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
@@ -131,7 +131,7 @@ Smart triage tool for task analysis and skill recommendation.
 
 ```bash
 # Analyze a task
-sx-triage task="Convert PDF to images"
+sx-dispatch task="Convert PDF to images"
 ```
 
 ### sx-skill
@@ -242,7 +242,7 @@ Help information tool.
 | `skill` | sx-skill tool help |
 | `config` | sx-config tool help |
 | `market` | sx-market tool help |
-| `triage` | sx-triage tool help |
+| `dispatch` | sx-dispatch tool help |
 | `all` | All help topics |
 
 **Examples:**
@@ -328,14 +328,14 @@ project/
 
 ## Workflow Examples
 
-### Smart Triage Workflow
+### Smart Dispatch Workflow
 
 ```
 User: Help me convert PDF to images
   ↓
-AI → sx-triage: Analyze task
+AI → sx-dispatch: Analyze task
   ↓
-Triage: USE_EXISTING, skill=pdf-converter
+Dispatch: USE_EXISTING, skill=pdf-converter
   ↓
 AI → sx-skill read: Get skill content
   ↓
@@ -347,9 +347,9 @@ AI: Execute task following skill instructions
 ```
 User: I need to process Excel files
   ↓
-AI → sx-triage: Analyze task
+AI → sx-dispatch: Analyze task
   ↓
-Triage: INSTALL, skill=excel-handler
+Dispatch: INSTALL, skill=excel-handler
   ↓
 AI → sx-market install: Install skill
   ↓
@@ -387,12 +387,12 @@ skillix-mcp/
 │   │   ├── skill/         # Skill management
 │   │   ├── config/        # Configuration management
 │   │   ├── market/        # Market operations
-│   │   └── triage/        # Smart triage
+│   │   └── dispatch/        # Smart dispatch
 │   ├── tools/             # MCP tool implementations
 │   │   ├── skills/        # sx-skill tool
 │   │   ├── configs/       # sx-config tool
 │   │   ├── markets/       # sx-market tool
-│   │   ├── triages/       # sx-triage tool
+│   │   ├── dispatchs/       # sx-dispatch tool
 │   │   └── helps/         # sx-help tool
 │   └── utils/             # Utility functions
 ├── tests/                 # Test files

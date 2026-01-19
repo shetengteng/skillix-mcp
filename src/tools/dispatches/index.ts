@@ -1,26 +1,26 @@
 /**
- * sx-triage 工具
+ * sx-dispatch 工具
  * 智能分流工具入口
  */
 
-import type { ToolResponse, SxTriageParams } from '../types.js';
+import type { ToolResponse, SxDispatchParams } from '../types.js';
 import { handleAnalyze } from './analyze.js';
 
 // 导出类型
-export type { SxTriageParams };
+export type { SxDispatchParams };
 
 /**
- * sx-triage 工具主入口
+ * sx-dispatch 工具主入口
  */
-export function sxTriage(params: SxTriageParams): ToolResponse {
+export function sxDispatch(params: SxDispatchParams): ToolResponse {
   return handleAnalyze(params);
 }
 
 /**
  * 工具定义（用于 MCP 注册）
  */
-export const sxTriageDefinition = {
-  name: 'sx-triage',
+export const sxDispatchDefinition = {
+  name: 'sx-dispatch',
   description: '智能分流工具，分析任务并推荐最佳操作',
   inputSchema: {
     type: 'object',
@@ -45,5 +45,5 @@ export const sxTriageDefinition = {
     },
     required: ['task'],
   },
-  handler: (args: any): ToolResponse => sxTriage(args as SxTriageParams),
+  handler: (args: any): ToolResponse => sxDispatch(args as SxDispatchParams),
 };

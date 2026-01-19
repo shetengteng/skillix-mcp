@@ -1,5 +1,5 @@
 /**
- * Triage 服务
+ * Dispatch 服务
  * 智能分流服务入口
  * 
  * AI First 设计：
@@ -14,6 +14,6 @@ export type { AnalyzeParams } from './analyzer.js';
 // 导出服务对象
 import { analyze } from './analyzer.js';
 
-export const triageService = {
+export const dispatchService = {
   analyze,
 };

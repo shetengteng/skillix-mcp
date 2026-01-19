@@ -1,5 +1,5 @@
 /**
- * triage 服务测试
+ * dispatch 服务测试
  * 
  * AI First 设计：
  * - 测试技能信息收集功能
@@ -11,10 +11,10 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as path from 'node:path';
 import * as nodeFs from 'node:fs';
 import { createTempDir, cleanupTempDir, createTestSkill } from '../helpers/setup.js';
-import { analyze } from '../../src/services/triage/index.js';
+import { analyze } from '../../src/services/dispatch/index.js';
 import { TEST_SKILL_MD, SIMPLE_SKILL_MD } from '../fixtures/skills.js';
 
-describe('triage service', () => {
+describe('dispatch service', () => {
   let tempDir: string;
 
   beforeEach(() => {

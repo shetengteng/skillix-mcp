@@ -1,17 +1,17 @@
 /**
- * sx-triage 工具测试
+ * sx-dispatch 工具测试
  * 
- * 测试 triage 工具的输入验证和响应格式
+ * 测试 dispatch 工具的输入验证和响应格式
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as path from 'node:path';
 import * as nodeFs from 'node:fs';
 import { createTempDir, cleanupTempDir, createTestSkill } from '../helpers/setup.js';
-import { sxTriage } from '../../src/tools/triages/index.js';
+import { sxDispatch } from '../../src/tools/dispatches/index.js';
 import { TEST_SKILL_MD } from '../fixtures/skills.js';
 
-describe('sx-triage tool', () => {
+describe('sx-dispatch tool', () => {
   let tempDir: string;
 
   beforeEach(() => {
@@ -24,7 +24,7 @@ describe('sx-triage tool', () => {
 
   describe('input validation', () => {
     it('should return error when task is missing', () => {
-      const result = sxTriage({
+      const result = sxDispatch({
         task: '',
       });
 
@@ -34,7 +34,7 @@ describe('sx-triage tool', () => {
     });
 
     it('should return error when task is only whitespace', () => {
-      const result = sxTriage({
+      const result = sxDispatch({
         task: '   ',
       });
 
@@ -49,7 +49,7 @@ describe('sx-triage tool', () => {
       const projectSkillsDir = path.join(projectRoot, '.skillix', 'skills');
       nodeFs.mkdirSync(projectSkillsDir, { recursive: true });
 
-      const result = sxTriage({
+      const result = sxDispatch({
         task: '帮我处理一个任务',
         projectRoot,
       });
@@ -64,7 +64,7 @@ describe('sx-triage tool', () => {
       const projectSkillsDir = path.join(projectRoot, '.skillix', 'skills');
       nodeFs.mkdirSync(projectSkillsDir, { recursive: true });
 
-      const result = sxTriage({
+      const result = sxDispatch({
         task: '处理 PDF 文件',
         projectRoot,
       });
@@ -85,7 +85,7 @@ describe('sx-triage tool', () => {
       nodeFs.mkdirSync(projectSkillsDir, { recursive: true });
       createTestSkill(projectSkillsDir, 'test-skill', TEST_SKILL_MD);
 
-      const result = sxTriage({
+      const result = sxDispatch({
         task: '测试任务',
         projectRoot,
       });
@@ -102,7 +102,7 @@ describe('sx-triage tool', () => {
       const projectSkillsDir = path.join(projectRoot, '.skillix', 'skills');
       nodeFs.mkdirSync(projectSkillsDir, { recursive: true });
 
-      const result = sxTriage({
+      const result = sxDispatch({
         task: '任务描述',
         projectRoot,
       });
@@ -119,7 +119,7 @@ describe('sx-triage tool', () => {
       const projectSkillsDir = path.join(projectRoot, '.skillix', 'skills');
       nodeFs.mkdirSync(projectSkillsDir, { recursive: true });
 
-      const result = sxTriage({
+      const result = sxDispatch({
         task: '任务描述',
         projectRoot,
       });
@@ -139,7 +139,7 @@ describe('sx-triage tool', () => {
       nodeFs.mkdirSync(projectSkillsDir, { recursive: true });
 
       const taskText = '帮我转换 PDF 文件';
-      const result = sxTriage({
+      const result = sxDispatch({
         task: taskText,
         projectRoot,
       });
@@ -155,7 +155,7 @@ describe('sx-triage tool', () => {
       const projectSkillsDir = path.join(projectRoot, '.skillix', 'skills');
       nodeFs.mkdirSync(projectSkillsDir, { recursive: true });
 
-      const result = sxTriage({
+      const result = sxDispatch({
         task: '处理文件',
         context: '需要将 PDF 转换为图片格式',
         projectRoot,
@@ -173,7 +173,7 @@ describe('sx-triage tool', () => {
       nodeFs.mkdirSync(projectSkillsDir, { recursive: true });
 
       const hints = ['pdf', 'image', 'convert'];
-      const result = sxTriage({
+      const result = sxDispatch({
         task: '文件处理',
         hints,
         projectRoot,
@@ -202,7 +202,7 @@ version: 1.0.0
 `;
       createTestSkill(projectSkillsDir, 'pdf-converter', pdfSkillContent);
 
-      const result = sxTriage({
+      const result = sxDispatch({
         task: 'pdf converter 转换',
         projectRoot,
       });
@@ -231,7 +231,7 @@ version: 1.0.0
 `;
       createTestSkill(projectSkillsDir, 'exact-match-skill', skillContent);
 
-      const result = sxTriage({
+      const result = sxDispatch({
         task: 'exact match skill 精确匹配',
         projectRoot,
       });
@@ -261,7 +261,7 @@ version: 1.0.0
 `;
       createTestSkill(projectSkillsDir, 'unrelated-skill', skillContent);
 
-      const result = sxTriage({
+      const result = sxDispatch({
         task: '处理 XML 数据并生成报告',
         projectRoot,
       });
@@ -280,7 +280,7 @@ version: 1.0.0
       const projectSkillsDir = path.join(projectRoot, '.skillix', 'skills');
       nodeFs.mkdirSync(projectSkillsDir, { recursive: true });
 
-      const result = sxTriage({
+      const result = sxDispatch({
         task: '任务描述',
         projectRoot,
       });
@@ -304,7 +304,7 @@ version: 1.0.0
       const projectSkillsDir = path.join(projectRoot, '.skillix', 'skills');
       nodeFs.mkdirSync(projectSkillsDir, { recursive: true });
 
-      const result = sxTriage({
+      const result = sxDispatch({
         task: '任务描述',
         projectRoot,
       });
@@ -325,7 +325,7 @@ version: 1.0.0
       nodeFs.mkdirSync(projectSkillsDir, { recursive: true });
       createTestSkill(projectSkillsDir, 'test-skill', TEST_SKILL_MD);
 
-      const result = sxTriage({
+      const result = sxDispatch({
         task: '任务描述',
         projectRoot,
       });

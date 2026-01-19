@@ -57,7 +57,7 @@ export interface SxConfigParams {
  * sx-help 工具参数
  */
 export interface SxHelpParams {
-  topic?: 'overview' | 'skill' | 'config' | 'market' | 'triage' | 'all';
+  topic?: 'overview' | 'skill' | 'config' | 'market' | 'dispatch' | 'all';
 }
 
 /**
@@ -85,9 +85,9 @@ export interface SxMarketParams {
 }
 
 /**
- * sx-triage 工具参数
+ * sx-dispatch 工具参数
  */
-export interface SxTriageParams {
+export interface SxDispatchParams {
   /** 任务描述 */
   task: string;
   /** 上下文信息 */

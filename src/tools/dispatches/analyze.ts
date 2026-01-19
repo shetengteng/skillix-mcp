@@ -1,5 +1,5 @@
 /**
- * sx-triage analyze 操作
+ * sx-dispatch analyze 操作
  * 分析任务并推荐最佳操作
  * 
  * AI First 设计：
@@ -8,14 +8,14 @@
  * - 最终决策由 AI 根据返回信息自行判断
  */
 
-import type { ToolResponse, SxTriageParams } from '../types.js';
-import { analyze } from '../../services/triage/index.js';
+import type { ToolResponse, SxDispatchParams } from '../types.js';
+import { analyze } from '../../services/dispatch/index.js';
 import { success, error } from '../../utils/response.js';
 
 /**
  * 处理分析操作
  */
-export function handleAnalyze(params: SxTriageParams): ToolResponse {
+export function handleAnalyze(params: SxDispatchParams): ToolResponse {
   const { task, context, hints, projectRoot } = params;
 
   // 验证必需参数

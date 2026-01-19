@@ -130,7 +130,7 @@ SkillForge/
 │       └── script-template.py        # Python 脚本模板
 │
 └── scripts/                    # 自动化质量门
-    ├── triage_skill_request.py     # 智能输入分类和技能匹配
+    ├── dispatch_skill_request.py     # 智能输入分类和技能匹配
     ├── discover_skills.py          # 扫描技能源并构建索引
     ├── quick_validate.py           # 快速验证
     ├── validate-skill.py           # 完整结构验证
@@ -240,7 +240,7 @@ metadata:
 ---
 ```
 
-### 5.2 triage_skill_request.py
+### 5.2 dispatch_skill_request.py
 
 核心分流脚本，约 800 行 Python 代码：
 
@@ -263,7 +263,7 @@ class Action:
     CLARIFY = "CLARIFY"
 
 # 核心流程
-def triage_request(query: str) -> Result:
+def dispatch_request(query: str) -> Result:
     # 1. 分类输入
     category, signals = classify_input(query)
     # 2. 加载技能索引
@@ -271,7 +271,7 @@ def triage_request(query: str) -> Result:
     # 3. 查找匹配技能
     matches = find_matching_skills(query, skills, signals=signals)
     # 4. 做出决策
-    action, details = make_triage_decision(category, signals, matches, query)
+    action, details = make_dispatch_decision(category, signals, matches, query)
     return Result(...)
 ```
 
@@ -313,7 +313,7 @@ cp -r skillforge ~/.claude/skills/
 | `SkillForge: {goal}` | 完整自主执行 |
 | `SkillForge --plan-only {goal}` | 仅生成规格 |
 | `SkillForge --quick {goal}` | 降低深度 (不推荐) |
-| `SkillForge --triage {input}` | 仅运行 Phase 0 分流 |
+| `SkillForge --dispatch {input}` | 仅运行 Phase 0 分流 |
 | `SkillForge --improve {skill}` | 进入改进模式 |
 
 ---
@@ -341,7 +341,7 @@ cp -r skillforge ~/.claude/skills/
 | 优先级 | 文件 | 阅读目的 |
 |--------|------|----------|
 | 🔴 高 | `SKILL.md` | 理解完整流程和命令 |
-| 🔴 高 | `scripts/triage_skill_request.py` | 理解分流逻辑实现 |
+| 🔴 高 | `scripts/dispatch_skill_request.py` | 理解分流逻辑实现 |
 | 🟡 中 | `references/multi-lens-framework.md` | 理解分析方法论 |
 | 🟡 中 | `references/synthesis-protocol.md` | 理解多代理评审机制 |
 | 🟢 低 | `references/script-integration-framework.md` | 理解脚本编写规范 |

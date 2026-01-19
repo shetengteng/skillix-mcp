@@ -108,7 +108,7 @@ npm run build
 
 ## 可用工具
 
-### sx-triage
+### sx-dispatch
 
 智能分流工具，用于任务分析和技能推荐。
 
@@ -131,7 +131,7 @@ npm run build
 
 ```bash
 # 分析任务
-sx-triage task="将 PDF 转换为图片"
+sx-dispatch task="将 PDF 转换为图片"
 ```
 
 ### sx-skill
@@ -242,7 +242,7 @@ sx-config action=sources sourceAction=remove sourceName=my-source
 | `skill` | sx-skill 工具帮助 |
 | `config` | sx-config 工具帮助 |
 | `market` | sx-market 工具帮助 |
-| `triage` | sx-triage 工具帮助 |
+| `dispatch` | sx-dispatch 工具帮助 |
 | `all` | 所有帮助主题 |
 
 **使用示例：**
@@ -333,9 +333,9 @@ project/
 ```
 用户: 帮我把 PDF 转换成图片
   ↓
-AI → sx-triage: 分析任务
+AI → sx-dispatch: 分析任务
   ↓
-Triage: USE_EXISTING, skill=pdf-converter
+Dispatch: USE_EXISTING, skill=pdf-converter
   ↓
 AI → sx-skill read: 获取技能内容
   ↓
@@ -347,9 +347,9 @@ AI: 按照技能指令执行任务
 ```
 用户: 我需要处理 Excel 文件
   ↓
-AI → sx-triage: 分析任务
+AI → sx-dispatch: 分析任务
   ↓
-Triage: INSTALL, skill=excel-handler
+Dispatch: INSTALL, skill=excel-handler
   ↓
 AI → sx-market install: 安装技能
   ↓
@@ -387,12 +387,12 @@ skillix-mcp/
 │   │   ├── skill/         # 技能管理
 │   │   ├── config/        # 配置管理
 │   │   ├── market/        # 市场操作
-│   │   └── triage/        # 智能分流
+│   │   └── dispatch/        # 智能分流
 │   ├── tools/             # MCP 工具实现
 │   │   ├── skills/        # sx-skill 工具
 │   │   ├── configs/       # sx-config 工具
 │   │   ├── markets/       # sx-market 工具
-│   │   ├── triages/       # sx-triage 工具
+│   │   ├── dispatchs/       # sx-dispatch 工具
 │   │   └── helps/         # sx-help 工具
 │   └── utils/             # 工具函数
 ├── tests/                 # 测试文件

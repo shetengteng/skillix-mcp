@@ -2,7 +2,7 @@
  * 分流分析服务
  * 
  * AI First 设计理念：
- * - triage 工具负责收集技能信息
+ * - dispatch 工具负责收集技能信息
  * - 将任务和技能信息返回给 AI
  * - AI 自行判断最佳匹配和推荐操作
  * 
@@ -10,9 +10,9 @@
  */
 
 import type {
-  TriageResult,
+  DispatchResult,
   SkillMatch,
-  TriageConfig,
+  DispatchConfig,
   ListSkillsResponse,
 } from '../types.js';
 import { listAllSkills } from '../skill/index.js';
@@ -31,7 +31,7 @@ export interface AnalyzeParams {
   /** 项目根目录 */
   projectRoot?: string;
   /** 分流配置 */
-  config?: Partial<TriageConfig>;
+  config?: Partial<DispatchConfig>;
 }
 
 /**
@@ -148,7 +148,7 @@ function calculateSimpleScore(task: string, skill: SkillInfo): number {
  * 
  * 返回任务信息和可用技能列表，供 AI 分析决策
  */
-export function analyze(params: AnalyzeParams): TriageResult {
+export function analyze(params: AnalyzeParams): DispatchResult {
   const { task, projectRoot, config } = params;
 
   // 合并配置

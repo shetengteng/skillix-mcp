@@ -421,13 +421,13 @@ export interface StatusResultData {
 }
 
 // ============================================
-// Triage 相关类型
+// Dispatch 相关类型
 // ============================================
 
 /**
  * 分流操作类型
  */
-export type TriageActionType =
+export type DispatchActionType =
   | 'USE_EXISTING'      // 使用现有技能
   | 'IMPROVE_EXISTING'  // 改进现有技能
   | 'CREATE_NEW'        // 创建新技能
@@ -438,7 +438,7 @@ export type TriageActionType =
 /**
  * 分流配置
  */
-export interface TriageConfig {
+export interface DispatchConfig {
   /** 匹配阈值 (0-1) */
   matchThreshold: number;
   /** 置信度阈值 (0-1) */
@@ -454,7 +454,7 @@ export interface TriageConfig {
 /**
  * 默认分流配置
  */
-export const DEFAULT_TRIAGE_CONFIG: TriageConfig = {
+export const DEFAULT_DISPATCH_CONFIG: DispatchConfig = {
   matchThreshold: 0.5,
   confidenceThreshold: 0.7,
   enableMarketSearch: true,
@@ -487,9 +487,9 @@ export interface SkillMatch {
 /**
  * 分流结果
  */
-export interface TriageResult {
+export interface DispatchResult {
   /** 推荐操作 */
-  action: TriageActionType;
+  action: DispatchActionType;
   /** 推荐技能名称 */
   skill?: string;
   /** 技能来源 */
@@ -499,7 +499,7 @@ export interface TriageResult {
   /** 推荐理由 */
   reason: string;
   /** 备选方案 */
-  alternatives?: TriageAlternative[];
+  alternatives?: DispatchAlternative[];
   /** 匹配详情 */
   matchDetails?: SkillMatch[];
 }
@@ -507,9 +507,9 @@ export interface TriageResult {
 /**
  * 备选方案
  */
-export interface TriageAlternative {
+export interface DispatchAlternative {
   /** 操作类型 */
-  action: TriageActionType;
+  action: DispatchActionType;
   /** 技能名称 */
   skill?: string;
   /** 来源 */

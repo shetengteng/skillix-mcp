@@ -1,13 +1,13 @@
 /**
- * sx-help triage 主题
- * sx-triage 工具帮助信息
+ * sx-help dispatch 主题
+ * sx-dispatch 工具帮助信息
  */
 
 /**
- * sx-triage 帮助内容
+ * sx-dispatch 帮助内容
  */
-export const TRIAGE_HELP = `
-# sx-triage 工具帮助
+export const DISPATCH_HELP = `
+# sx-dispatch 工具帮助
 
 智能分流工具，分析任务并推荐最佳操作。
 
@@ -21,7 +21,7 @@ export const TRIAGE_HELP = `
 ## 使用方法
 
 \`\`\`
-sx-triage task="任务描述" [context="上下文"] [hints=["提示1","提示2"]] [projectRoot="/path/to/project"]
+sx-dispatch task="任务描述" [context="上下文"] [hints=["提示1","提示2"]] [projectRoot="/path/to/project"]
 \`\`\`
 
 ## 参数说明
@@ -49,19 +49,19 @@ sx-triage task="任务描述" [context="上下文"] [hints=["提示1","提示2"]
 ### 基本使用
 
 \`\`\`
-sx-triage task="帮我把 PDF 转成图片"
+sx-dispatch task="帮我把 PDF 转成图片"
 \`\`\`
 
 ### 带上下文
 
 \`\`\`
-sx-triage task="处理数据文件" context="需要将 CSV 转换为 JSON 格式"
+sx-dispatch task="处理数据文件" context="需要将 CSV 转换为 JSON 格式"
 \`\`\`
 
 ### 带提示词
 
 \`\`\`
-sx-triage task="生成文档" hints=["api", "markdown", "自动化"]
+sx-dispatch task="生成文档" hints=["api", "markdown", "自动化"]
 \`\`\`
 
 ## 响应示例

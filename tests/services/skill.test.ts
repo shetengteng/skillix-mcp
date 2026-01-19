@@ -137,7 +137,7 @@ describe('skill service', () => {
   });
 
   describe('updateSkill', () => {
-    it('should update existing skill', () => {
+    it('should update existing skill metadata', () => {
       const projectRoot = tempDir;
       const projectSkillsDir = path.join(projectRoot, '.skillix', 'skills');
       nodeFs.mkdirSync(projectSkillsDir, { recursive: true });
@@ -151,7 +151,7 @@ describe('skill service', () => {
       expect(updated?.description).toBe('Updated description');
     });
 
-    it('should update skill body', () => {
+    it('should update skill body only', () => {
       const projectRoot = tempDir;
       const projectSkillsDir = path.join(projectRoot, '.skillix', 'skills');
       nodeFs.mkdirSync(projectSkillsDir, { recursive: true });
@@ -172,6 +172,83 @@ describe('skill service', () => {
       }, projectRoot);
       
       expect(updated).toBeNull();
+    });
+
+    it('should preserve unchanged metadata fields when updating partially', () => {
+      const projectRoot = tempDir;
+      const projectSkillsDir = path.join(projectRoot, '.skillix', 'skills');
+      nodeFs.mkdirSync(projectSkillsDir, { recursive: true });
+      createTestSkill(projectSkillsDir, 'partial-update-skill', TEST_SKILL_MD);
+      
+      // 只更新 version，其他字段应保持不变
+      const updated = skillService.updateSkill('partial-update-skill', {
+        metadata: { name: 'partial-update-skill', description: 'A test skill for unit testing', version: '2.0.0' },
+      }, projectRoot);
+      
+      expect(updated).not.toBeNull();
+      expect(updated?.metadata.version).toBe('2.0.0');
+      // 原有的 author 和 tags 应该保留
+      expect(updated?.metadata.author).toBe('test');
+      expect(updated?.metadata.tags).toContain('test');
+    });
+
+    it('should update both metadata and body simultaneously', () => {
+      const projectRoot = tempDir;
+      const projectSkillsDir = path.join(projectRoot, '.skillix', 'skills');
+      nodeFs.mkdirSync(projectSkillsDir, { recursive: true });
+      createTestSkill(projectSkillsDir, 'full-update-skill', TEST_SKILL_MD);
+      
+      const updated = skillService.updateSkill('full-update-skill', {
+        metadata: { 
+          name: 'full-update-skill', 
+          description: 'Fully updated skill',
+          version: '3.0.0',
+        },
+        body: '# Completely New Content\n\nThis is brand new.',
+      }, projectRoot);
+      
+      expect(updated).not.toBeNull();
+      expect(updated?.description).toBe('Fully updated skill');
+      expect(updated?.metadata.version).toBe('3.0.0');
+      expect(updated?.content).toContain('# Completely New Content');
+    });
+
+    it('should preserve original body when only updating metadata', () => {
+      const projectRoot = tempDir;
+      const projectSkillsDir = path.join(projectRoot, '.skillix', 'skills');
+      nodeFs.mkdirSync(projectSkillsDir, { recursive: true });
+      createTestSkill(projectSkillsDir, 'metadata-only-skill', TEST_SKILL_MD);
+      
+      const updated = skillService.updateSkill('metadata-only-skill', {
+        metadata: { name: 'metadata-only-skill', description: 'New description only' },
+      }, projectRoot);
+      
+      expect(updated).not.toBeNull();
+      expect(updated?.description).toBe('New description only');
+      // 原有的 body 内容应该保留
+      expect(updated?.content).toContain('# Test Skill');
+      expect(updated?.content).toContain('This is a test skill for unit testing.');
+    });
+
+    it('should update tags correctly', () => {
+      const projectRoot = tempDir;
+      const projectSkillsDir = path.join(projectRoot, '.skillix', 'skills');
+      nodeFs.mkdirSync(projectSkillsDir, { recursive: true });
+      createTestSkill(projectSkillsDir, 'tags-update-skill', TEST_SKILL_MD);
+      
+      const updated = skillService.updateSkill('tags-update-skill', {
+        metadata: { 
+          name: 'tags-update-skill', 
+          description: 'A test skill for unit testing',
+          tags: ['new-tag-1', 'new-tag-2', 'new-tag-3'],
+        },
+      }, projectRoot);
+      
+      expect(updated).not.toBeNull();
+      expect(updated?.metadata.tags).toHaveLength(3);
+      expect(updated?.metadata.tags).toContain('new-tag-1');
+      expect(updated?.metadata.tags).toContain('new-tag-2');
+      expect(updated?.metadata.tags).toContain('new-tag-3');
     });
   });
 

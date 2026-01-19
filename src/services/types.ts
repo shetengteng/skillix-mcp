@@ -419,3 +419,104 @@ export interface StatusResultData {
   /** 统计摘要 */
   summary: StatusSummary;
 }
+
+// ============================================
+// Triage 相关类型
+// ============================================
+
+/**
+ * 分流操作类型
+ */
+export type TriageActionType =
+  | 'USE_EXISTING'      // 使用现有技能
+  | 'IMPROVE_EXISTING'  // 改进现有技能
+  | 'CREATE_NEW'        // 创建新技能
+  | 'INSTALL'           // 从市场安装
+  | 'COMPOSE'           // 组合多个技能
+  | 'NO_SKILL_NEEDED';  // 无需技能
+
+/**
+ * 分流配置
+ */
+export interface TriageConfig {
+  /** 匹配阈值 (0-1) */
+  matchThreshold: number;
+  /** 置信度阈值 (0-1) */
+  confidenceThreshold: number;
+  /** 启用市场搜索 */
+  enableMarketSearch: boolean;
+  /** 市场搜索超时(ms) */
+  marketSearchTimeout: number;
+  /** 首选技能源 */
+  preferredSources: string[];
+}
+
+/**
+ * 默认分流配置
+ */
+export const DEFAULT_TRIAGE_CONFIG: TriageConfig = {
+  matchThreshold: 0.5,
+  confidenceThreshold: 0.7,
+  enableMarketSearch: true,
+  marketSearchTimeout: 5000,
+  preferredSources: ['official'],
+};
+
+/**
+ * 技能匹配结果
+ */
+export interface SkillMatch {
+  /** 技能名称 */
+  name: string;
+  /** 技能描述 */
+  description: string;
+  /** 技能范围 */
+  scope: SkillScope;
+  /** 技能来源 */
+  source: string;
+  /** 匹配分数 (0-1) */
+  score: number;
+  /** 名称匹配分 */
+  nameScore: number;
+  /** 描述匹配分 */
+  descriptionScore: number;
+  /** 标签匹配分 */
+  tagScore: number;
+}
+
+/**
+ * 分流结果
+ */
+export interface TriageResult {
+  /** 推荐操作 */
+  action: TriageActionType;
+  /** 推荐技能名称 */
+  skill?: string;
+  /** 技能来源 */
+  source?: string;
+  /** 置信度 (0-1) */
+  confidence: number;
+  /** 推荐理由 */
+  reason: string;
+  /** 备选方案 */
+  alternatives?: TriageAlternative[];
+  /** 匹配详情 */
+  matchDetails?: SkillMatch[];
+}
+
+/**
+ * 备选方案
+ */
+export interface TriageAlternative {
+  /** 操作类型 */
+  action: TriageActionType;
+  /** 技能名称 */
+  skill?: string;
+  /** 来源 */
+  source?: string;
+  /** 置信度 */
+  confidence: number;
+  /** 理由 */
+  reason: string;
+}
+

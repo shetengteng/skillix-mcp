@@ -21,7 +21,9 @@ Skillix 是一个 AI 技能管理系统，帮助 AI 编程助手更好地完成�
 
 1. **sx-skill** - 本地技能管理（list/read/create/update/delete）
 2. **sx-config** - 配置管理（get/set/init/sources）
-3. **sx-help** - 帮助信息
+3. **sx-market** - 技能市场（search/install/uninstall/sync/status）
+4. **sx-triage** - 智能分流（分析任务，推荐最佳操作）
+5. **sx-help** - 帮助信息
 
 ## 快速开始
 

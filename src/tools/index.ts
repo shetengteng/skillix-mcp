@@ -6,12 +6,14 @@ import { sxSkillDefinition } from './skills/index.js';
 import { sxConfigDefinition } from './configs/index.js';
 import { sxHelpDefinition } from './helps/index.js';
 import { sxMarketDefinition } from './markets/index.js';
+import { sxTriageDefinition } from './triages/index.js';
 
 // 导出工具函数和类型
 export { sxSkill, sxSkillDefinition, type SxSkillParams } from './skills/index.js';
 export { sxConfig, sxConfigDefinition, type SxConfigParams } from './configs/index.js';
 export { sxHelp, sxHelpDefinition, type SxHelpParams } from './helps/index.js';
 export { sxMarket, sxMarketDefinition, type SxMarketParams } from './markets/index.js';
+export { sxTriage, sxTriageDefinition, type SxTriageParams } from './triages/index.js';
 
 /**
  * 工具配置列表
@@ -23,6 +25,7 @@ export const toolDefinitions = [
   sxConfigDefinition,
   sxHelpDefinition,
   sxMarketDefinition,
+  sxTriageDefinition,
 ];
 
 /**

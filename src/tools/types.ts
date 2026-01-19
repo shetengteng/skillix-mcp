@@ -83,3 +83,17 @@ export interface SxMarketParams {
   /** 项目根目录 */
   projectRoot?: string;
 }
+
+/**
+ * sx-triage 工具参数
+ */
+export interface SxTriageParams {
+  /** 任务描述 */
+  task: string;
+  /** 上下文信息 */
+  context?: string;
+  /** 提示词列表 */
+  hints?: string[];
+  /** 项目根目录 */
+  projectRoot?: string;
+}

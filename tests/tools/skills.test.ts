@@ -107,7 +107,7 @@ describe('sx-skill tool', () => {
   });
 
   describe('update action', () => {
-    it('should update existing project skill', () => {
+    it('should update existing project skill metadata', () => {
       const projectSkillsDir = path.join(tempDir, '.skillix', 'skills');
       createTestSkill(projectSkillsDir, 'update-skill', TEST_SKILL_MD);
       
@@ -122,12 +122,28 @@ describe('sx-skill tool', () => {
       });
       
       expect(result.success).toBe(true);
+      expect(result.message).toContain('成功更新技能');
     });
 
     it('should fail without name parameter', () => {
       const result = sxSkill({ action: 'update' });
       
       expect(result.success).toBe(false);
+      expect(result.message).toContain('缺少技能名称');
+    });
+
+    it('should fail without update content (no metadata or body)', () => {
+      const projectSkillsDir = path.join(tempDir, '.skillix', 'skills');
+      createTestSkill(projectSkillsDir, 'no-content-skill', TEST_SKILL_MD);
+      
+      const result = sxSkill({
+        action: 'update',
+        name: 'no-content-skill',
+        projectRoot: tempDir,
+      });
+      
+      expect(result.success).toBe(false);
+      expect(result.message).toContain('缺少更新内容');
     });
 
     it('should fail for non-existing skill', () => {
@@ -142,6 +158,77 @@ describe('sx-skill tool', () => {
       });
       
       expect(result.success).toBe(false);
+      expect(result.message).toContain('不存在');
+    });
+
+    it('should update skill body only', () => {
+      const projectSkillsDir = path.join(tempDir, '.skillix', 'skills');
+      createTestSkill(projectSkillsDir, 'body-update-skill', TEST_SKILL_MD);
+      
+      const result = sxSkill({
+        action: 'update',
+        name: 'body-update-skill',
+        body: '# New Body Content\n\nThis is the updated body.',
+        projectRoot: tempDir,
+      });
+      
+      expect(result.success).toBe(true);
+    });
+
+    it('should update both metadata and body', () => {
+      const projectSkillsDir = path.join(tempDir, '.skillix', 'skills');
+      createTestSkill(projectSkillsDir, 'full-update-skill', TEST_SKILL_MD);
+      
+      const result = sxSkill({
+        action: 'update',
+        name: 'full-update-skill',
+        metadata: {
+          name: 'full-update-skill',
+          description: 'Fully updated',
+          version: '2.0.0',
+        },
+        body: '# Updated Content\n\nNew body here.',
+        projectRoot: tempDir,
+      });
+      
+      expect(result.success).toBe(true);
+      expect(result.data).toBeDefined();
+      const data = result.data as { metadata: { version: string } };
+      expect(data.metadata.version).toBe('2.0.0');
+    });
+
+    it('should return updated skill info in response data', () => {
+      const projectSkillsDir = path.join(tempDir, '.skillix', 'skills');
+      createTestSkill(projectSkillsDir, 'info-update-skill', TEST_SKILL_MD);
+      
+      const result = sxSkill({
+        action: 'update',
+        name: 'info-update-skill',
+        metadata: {
+          name: 'info-update-skill',
+          description: 'Updated for info check',
+          tags: ['updated', 'test'],
+        },
+        projectRoot: tempDir,
+      });
+      
+      expect(result.success).toBe(true);
+      expect(result.data).toBeDefined();
+      
+      const data = result.data as { 
+        name: string; 
+        scope: string; 
+        path: string; 
+        metadata: { description: string; tags: string[]; name: string } 
+      };
+      // name 来自 skill 对象，是从 metadata.name 获取的（更新后的值）
+      expect(data.name).toBe('info-update-skill');
+      expect(data.scope).toBe('project');
+      expect(data.path).toContain('info-update-skill');
+      expect(data.metadata.description).toBe('Updated for info check');
+      expect(data.metadata.tags).toContain('updated');
+      // metadata.name 是更新后的值
+      expect(data.metadata.name).toBe('info-update-skill');
     });
   });
 

@@ -189,3 +189,233 @@ export interface ListSkillsResponse {
   global_skills: ListedSkill[];
   project_skills: ListedSkill[];
 }
+
+// ============================================
+// Market 相关类型
+// ============================================
+
+/**
+ * 技能源状态
+ */
+export type SourceStatus = 
+  | 'synced'         // 已同步
+  | 'syncing'        // 同步中
+  | 'outdated'       // 需要更新
+  | 'error'          // 同步错误
+  | 'not_synced';    // 未同步
+
+/**
+ * 聚合清单
+ */
+export interface Manifest {
+  version: string;
+  updatedAt: string;
+  sources: ManifestSource[];
+}
+
+/**
+ * 清单中的源信息
+ */
+export interface ManifestSource {
+  /** 源唯一标识（基于 URL 路径） */
+  id: string;
+  /** 用户定义的源名称（别名） */
+  name: string;
+  /** Git 仓库 URL */
+  url: string;
+  /** 分支名称 */
+  branch: string;
+  /** 最后同步的 commit hash */
+  commit?: string;
+  /** 最后同步时间 */
+  syncedAt?: string;
+  /** 技能数量 */
+  skillCount?: number;
+  /** 同步状态 */
+  status: SourceStatus;
+  /** 对应的索引文件路径 */
+  indexFile?: string;
+  /** 错误信息 */
+  error?: string;
+}
+
+/**
+ * 源索引
+ */
+export interface SourceIndex {
+  version: string;
+  generatedAt: string;
+  source: {
+    id: string;
+    name: string;
+    url: string;
+    branch: string;
+    commit: string;
+  };
+  skills: SkillIndexItem[];
+}
+
+/**
+ * 技能索引项
+ */
+export interface SkillIndexItem {
+  name: string;
+  description: string;
+  version: string;
+  author: string;
+  tags: string[];
+  path: string;
+  hasScripts: boolean;
+  hasReferences: boolean;
+  hasAssets: boolean;
+}
+
+/**
+ * 技能源同步结果
+ */
+export interface SourceSyncResult {
+  id: string;
+  name: string;
+  url: string;
+  status: SourceStatus;
+  skillCount?: number;
+  lastSync?: string;
+  commit?: string;
+  error?: string;
+  newSkills?: number;
+}
+
+/**
+ * 搜索结果项
+ */
+export interface SearchResultItem {
+  name: string;
+  description: string;
+  version: string;
+  tags: string[];
+  sourceId: string;
+  sourceName: string;
+  author: string;
+  score?: number;
+}
+
+/**
+ * 安装记录
+ */
+export interface InstalledSkill {
+  name: string;
+  sourceId: string;
+  sourceName: string;
+  installedAt: string;
+  updatedAt: string;
+  path: string;
+  commit?: string;
+}
+
+/**
+ * 安装记录文件
+ */
+export interface InstalledRecord {
+  version: string;
+  updatedAt: string;
+  skills: InstalledSkill[];
+}
+
+/**
+ * URL 解析结果
+ */
+export interface ParsedGitUrl {
+  host: string;
+  owner: string;
+  repo: string;
+  /** 扁平化目录名 */
+  dirName: string;
+  /** 源 ID */
+  sourceId: string;
+}
+
+// ============================================
+// Market 工具响应类型
+// ============================================
+
+/**
+ * 同步成功的源信息
+ */
+export interface SyncedSourceInfo {
+  /** 源名称 */
+  name: string;
+  /** 技能数量 */
+  skillCount?: number;
+  /** 新增技能数量 */
+  newSkills?: number;
+}
+
+/**
+ * 同步失败的源信息
+ */
+export interface FailedSourceInfo {
+  /** 源名称 */
+  name: string;
+  /** 错误信息 */
+  error?: string;
+}
+
+/**
+ * 同步结果数据
+ */
+export interface SyncResultData {
+  /** 同步成功的源列表 */
+  synced: SyncedSourceInfo[];
+  /** 同步失败的源列表 */
+  failed: FailedSourceInfo[];
+}
+
+/**
+ * 源状态详情（用于 status 响应）
+ */
+export interface SourceStatusInfo {
+  /** 源名称 */
+  name: string;
+  /** 源 ID */
+  id: string;
+  /** Git URL */
+  url?: string;
+  /** 同步状态 */
+  status: SourceStatus;
+  /** 最后同步时间 */
+  lastSync?: string;
+  /** commit hash */
+  commit?: string;
+  /** 技能数量 */
+  skillCount?: number;
+  /** 缓存大小 */
+  cacheSize?: string;
+  /** 错误信息 */
+  error?: string;
+}
+
+/**
+ * 状态统计摘要
+ */
+export interface StatusSummary {
+  /** 总数 */
+  total: number;
+  /** 已同步数 */
+  synced: number;
+  /** 错误数 */
+  error: number;
+  /** 未同步数 */
+  notSynced: number;
+}
+
+/**
+ * 状态查询结果数据
+ */
+export interface StatusResultData {
+  /** 源状态列表 */
+  sources: SourceStatusInfo[];
+  /** 总缓存大小 */
+  totalCacheSize: string;
+  /** 统计摘要 */
+  summary: StatusSummary;
+}

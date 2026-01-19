@@ -59,3 +59,27 @@ export interface SxConfigParams {
 export interface SxHelpParams {
   topic?: 'overview' | 'skill' | 'config' | 'market' | 'triage' | 'all';
 }
+
+/**
+ * sx-market 工具参数
+ */
+export interface SxMarketParams {
+  /** 操作类型 */
+  action: 'search' | 'install' | 'uninstall' | 'sync' | 'status';
+  /** 搜索关键词（search 时需要） */
+  query?: string;
+  /** 技能名称（install/uninstall 时需要） */
+  name?: string;
+  /** 技能源名称 */
+  source?: string;
+  /** 安装/卸载范围 */
+  scope?: 'global' | 'project';
+  /** 按标签筛选（search 时可选） */
+  tags?: string[];
+  /** 强制覆盖（install/sync 时可选） */
+  force?: boolean;
+  /** 结果数量限制（search 时可选） */
+  limit?: number;
+  /** 项目根目录 */
+  projectRoot?: string;
+}

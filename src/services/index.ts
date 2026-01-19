@@ -4,3 +4,4 @@
 
 export * as configService from './config/index.js';
 export * as skillService from './skill/index.js';
+export * as marketService from './market/index.js';

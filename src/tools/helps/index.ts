@@ -7,9 +7,11 @@ import type { ToolResponse, SxHelpParams } from '../types.js';
 import { OVERVIEW_HELP } from './overview.js';
 import { SKILL_HELP } from './skill.js';
 import { CONFIG_HELP } from './config.js';
+import { MARKET_HELP } from './market.js';
+import { success, error } from '../../utils/response.js';
 
 // 导出帮助内容
-export { OVERVIEW_HELP, SKILL_HELP, CONFIG_HELP };
+export { OVERVIEW_HELP, SKILL_HELP, CONFIG_HELP, MARKET_HELP };
 
 // 导出类型
 export type { SxHelpParams };
@@ -32,25 +34,26 @@ export function sxHelp(params: SxHelpParams): ToolResponse {
     case 'config':
       helpContent = CONFIG_HELP;
       break;
+    case 'market':
+      helpContent = MARKET_HELP;
+      break;
     case 'all':
-      helpContent = [OVERVIEW_HELP, SKILL_HELP, CONFIG_HELP].join('\n\n---\n\n');
+      helpContent = [OVERVIEW_HELP, SKILL_HELP, CONFIG_HELP, MARKET_HELP].join('\n\n---\n\n');
       break;
     default:
-      return {
-        success: false,
+      return error({
         message: `未知主题: ${topic}`,
-        errors: ['支持的主题: overview, skill, config, all'],
-      };
+        errors: ['支持的主题: overview, skill, config, market, all'],
+      });
   }
   
-  return {
-    success: true,
+  return success({
     message: `帮助信息: ${topic}`,
     data: {
       topic,
       content: helpContent.trim(),
     },
-  };
+  });
 }
 
 /**

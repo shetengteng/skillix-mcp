@@ -6,10 +6,13 @@ Skillix 是一个基于 MCP (Model Context Protocol) 的技能管理系统，为
 
 ## 功能特性
 
-- 🎯 **技能管理** - 创建、读取、更新、删除本地技能
+- 🎯 **技能管理** - 创建、读取、更新、删除本地技能，支持版本控制
+- 🔍 **智能分流** - 智能任务分析和技能推荐
+- 🛒 **技能市场** - 从远程源搜索、安装和卸载技能
 - ⚙️ **配置管理** - 支持全局和项目级配置
 - 📦 **本地优先策略** - 项目技能优先于全局技能
 - 🔧 **MCP 集成** - 与 AI 编码助手无缝集成
+- 🔄 **版本回退** - 内置备份和版本历史支持
 
 ## 安装
 
@@ -22,7 +25,7 @@ Skillix 是一个基于 MCP (Model Context Protocol) 的技能管理系统，为
 
 ```bash
 # 克隆仓库
-git clone https://github.com/your-username/skillix-mcp.git
+git clone https://github.com/shetengteng/skillix-mcp.git
 cd skillix-mcp
 
 # 安装依赖
@@ -49,7 +52,46 @@ npm run build
 }
 ```
 
+或使用 npx（发布后）：
+
+```json
+{
+  "mcpServers": {
+    "skillix": {
+      "command": "npx",
+      "args": ["skillix-mcp"]
+    }
+  }
+}
+```
+
 ## 可用工具
+
+### sx-triage
+
+智能分流工具，用于任务分析和技能推荐。
+
+| 参数 | 类型 | 必需 | 说明 |
+|------|------|------|------|
+| task | string | ✅ | 任务描述 |
+| context | string | ❌ | 上下文信息 |
+| hints | string[] | ❌ | 提示关键词 |
+| projectRoot | string | ❌ | 项目根目录 |
+
+**操作类型：**
+- `USE_EXISTING` - 使用现有技能
+- `IMPROVE_EXISTING` - 改进现有技能
+- `CREATE_NEW` - 创建新技能
+- `INSTALL` - 从市场安装
+- `COMPOSE` - 组合多个技能
+- `NO_SKILL_NEEDED` - 无需技能
+
+**使用示例：**
+
+```bash
+# 分析任务
+sx-triage task="将 PDF 转换为图片"
+```
 
 ### sx-skill
 
@@ -60,7 +102,7 @@ npm run build
 | `list` | 列出所有全局和项目技能 |
 | `read` | 读取技能详情，包括元数据和内容 |
 | `create` | 创建新技能及目录结构 |
-| `update` | 更新现有技能的元数据或内容 |
+| `update` | 更新现有技能的元数据或内容（自动备份） |
 | `delete` | 删除技能及其所有文件 |
 
 **使用示例：**
@@ -75,11 +117,48 @@ sx-skill action=read name=my-skill
 # 创建新技能
 sx-skill action=create name=my-skill metadata={"name":"my-skill","description":"我的第一个技能"} body="# 我的技能\n\n技能内容..."
 
-# 更新技能
+# 更新技能（支持部分更新）
+sx-skill action=update name=my-skill metadata={"version":"1.1.0"}
+
+# 更新技能内容
 sx-skill action=update name=my-skill body="# 更新后的内容"
 
 # 删除技能
 sx-skill action=delete name=my-skill
+```
+
+### sx-market
+
+技能市场工具，用于搜索、安装和管理远程技能。
+
+| 操作 | 说明 |
+|------|------|
+| `search` | 在市场中搜索技能 |
+| `install` | 从市场安装技能 |
+| `uninstall` | 卸载已安装的技能 |
+| `sync` | 同步技能源缓存 |
+| `status` | 查看源状态 |
+
+**使用示例：**
+
+```bash
+# 搜索技能
+sx-market action=search query=pdf
+
+# 安装技能
+sx-market action=install name=pdf-converter scope=global
+
+# 强制覆盖安装
+sx-market action=install name=pdf-converter force=true
+
+# 卸载技能
+sx-market action=uninstall name=pdf-converter
+
+# 同步所有源
+sx-market action=sync
+
+# 查看源状态
+sx-market action=status
 ```
 
 ### sx-config
@@ -104,6 +183,12 @@ sx-config action=init projectRoot=/path/to/project
 
 # 添加技能源
 sx-config action=sources sourceAction=add source={"name":"my-source","url":"https://github.com/user/skills"}
+
+# 列出技能源
+sx-config action=sources sourceAction=list
+
+# 删除技能源
+sx-config action=sources sourceAction=remove sourceName=my-source
 ```
 
 ### sx-help
@@ -115,6 +200,8 @@ sx-config action=sources sourceAction=add source={"name":"my-source","url":"http
 | `overview` | Skillix 概述 |
 | `skill` | sx-skill 工具帮助 |
 | `config` | sx-config 工具帮助 |
+| `market` | sx-market 工具帮助 |
+| `triage` | sx-triage 工具帮助 |
 | `all` | 所有帮助主题 |
 
 **使用示例：**
@@ -153,7 +240,10 @@ my-skill/
 ├── scripts/          # 可选：可执行脚本
 ├── references/       # 可选：参考文档
 ├── assets/           # 可选：资源文件
-└── logs/             # 可选：执行日志
+├── logs/             # 可选：执行日志
+│   ├── execution.log # 执行历史
+│   └── evolution.log # 进化历史
+└── .backup/          # 自动生成：版本备份
 ```
 
 ### 命名规则
@@ -171,8 +261,11 @@ my-skill/
 ~/.skillix/
 ├── config.json       # 全局配置
 ├── skills/           # 全局技能目录
+├── installed.json    # 安装记录
 ├── logs/             # 系统日志
 ├── cache/            # 缓存目录
+│   ├── repos/        # Git 仓库缓存
+│   └── indexes/      # 源索引
 └── data/             # 数据目录
 ```
 
@@ -192,6 +285,38 @@ project/
 2. **配置优先级**：项目配置 → 全局配置 → 默认配置
 3. **同名技能**：项目级技能覆盖全局技能
 
+## 工作流示例
+
+### 智能分流工作流
+
+```
+用户: 帮我把 PDF 转换成图片
+  ↓
+AI → sx-triage: 分析任务
+  ↓
+Triage: USE_EXISTING, skill=pdf-converter
+  ↓
+AI → sx-skill read: 获取技能内容
+  ↓
+AI: 按照技能指令执行任务
+```
+
+### 从市场安装
+
+```
+用户: 我需要处理 Excel 文件
+  ↓
+AI → sx-triage: 分析任务
+  ↓
+Triage: INSTALL, skill=excel-handler
+  ↓
+AI → sx-market install: 安装技能
+  ↓
+AI → sx-skill read: 获取技能内容
+  ↓
+AI: 执行任务
+```
+
 ## 开发
 
 ```bash
@@ -204,8 +329,33 @@ npm run build
 # 运行测试
 npm test
 
+# 运行测试并生成覆盖率报告
+npm run test:coverage
+
 # 启动服务器
 npm start
+```
+
+## 架构
+
+```
+skillix-mcp/
+├── src/
+│   ├── index.ts           # MCP Server 入口
+│   ├── services/          # 业务逻辑层
+│   │   ├── skill/         # 技能管理
+│   │   ├── config/        # 配置管理
+│   │   ├── market/        # 市场操作
+│   │   └── triage/        # 智能分流
+│   ├── tools/             # MCP 工具实现
+│   │   ├── skills/        # sx-skill 工具
+│   │   ├── configs/       # sx-config 工具
+│   │   ├── markets/       # sx-market 工具
+│   │   ├── triages/       # sx-triage 工具
+│   │   └── helps/         # sx-help 工具
+│   └── utils/             # 工具函数
+├── tests/                 # 测试文件
+└── docs/                  # 设计文档
 ```
 
 ## 许可证
@@ -215,3 +365,7 @@ MIT
 ## 贡献
 
 欢迎贡献！请随时提交 Pull Request。
+
+## 作者
+
+shetengteng

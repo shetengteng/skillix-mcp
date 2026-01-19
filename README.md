@@ -6,10 +6,13 @@ Skillix is an MCP (Model Context Protocol) based skill management system that pr
 
 ## Features
 
-- 🎯 **Skill Management** - Create, read, update, delete local skills
+- 🎯 **Skill Management** - Create, read, update, delete local skills with version control
+- 🔍 **Smart Triage** - Intelligent task analysis and skill recommendation
+- 🛒 **Skill Market** - Search, install, and uninstall skills from remote sources
 - ⚙️ **Configuration Management** - Global and project-level configuration support
 - 📦 **Local-First Strategy** - Project skills take precedence over global skills
 - 🔧 **MCP Integration** - Seamlessly integrates with AI coding assistants
+- 🔄 **Version Rollback** - Built-in backup and version history support
 
 ## Installation
 
@@ -22,7 +25,7 @@ Skillix is an MCP (Model Context Protocol) based skill management system that pr
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/skillix-mcp.git
+git clone https://github.com/shetengteng/skillix-mcp.git
 cd skillix-mcp
 
 # Install dependencies
@@ -49,7 +52,46 @@ Add Skillix to your MCP configuration file:
 }
 ```
 
+Or using npx (after publishing):
+
+```json
+{
+  "mcpServers": {
+    "skillix": {
+      "command": "npx",
+      "args": ["skillix-mcp"]
+    }
+  }
+}
+```
+
 ## Available Tools
+
+### sx-triage
+
+Smart triage tool for task analysis and skill recommendation.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| task | string | ✅ | Task description |
+| context | string | ❌ | Context information |
+| hints | string[] | ❌ | Hint keywords |
+| projectRoot | string | ❌ | Project root directory |
+
+**Action Types:**
+- `USE_EXISTING` - Use an existing skill
+- `IMPROVE_EXISTING` - Improve an existing skill
+- `CREATE_NEW` - Create a new skill
+- `INSTALL` - Install from market
+- `COMPOSE` - Combine multiple skills
+- `NO_SKILL_NEEDED` - No skill required
+
+**Example:**
+
+```bash
+# Analyze a task
+sx-triage task="Convert PDF to images"
+```
 
 ### sx-skill
 
@@ -60,7 +102,7 @@ Local skill management tool.
 | `list` | List all global and project skills |
 | `read` | Read skill details including metadata and content |
 | `create` | Create a new skill with directory structure |
-| `update` | Update existing skill metadata or content |
+| `update` | Update existing skill metadata or content (with auto backup) |
 | `delete` | Delete a skill and all its files |
 
 **Examples:**
@@ -75,11 +117,48 @@ sx-skill action=read name=my-skill
 # Create a new skill
 sx-skill action=create name=my-skill metadata={"name":"my-skill","description":"My first skill"} body="# My Skill\n\nSkill content here..."
 
-# Update a skill
+# Update a skill (supports partial update)
+sx-skill action=update name=my-skill metadata={"version":"1.1.0"}
+
+# Update skill content
 sx-skill action=update name=my-skill body="# Updated Content"
 
 # Delete a skill
 sx-skill action=delete name=my-skill
+```
+
+### sx-market
+
+Skill market tool for searching, installing, and managing remote skills.
+
+| Action | Description |
+|--------|-------------|
+| `search` | Search skills in the market |
+| `install` | Install a skill from market |
+| `uninstall` | Uninstall an installed skill |
+| `sync` | Sync skill source cache |
+| `status` | View source status |
+
+**Examples:**
+
+```bash
+# Search for skills
+sx-market action=search query=pdf
+
+# Install a skill
+sx-market action=install name=pdf-converter scope=global
+
+# Install with force overwrite
+sx-market action=install name=pdf-converter force=true
+
+# Uninstall a skill
+sx-market action=uninstall name=pdf-converter
+
+# Sync all sources
+sx-market action=sync
+
+# View source status
+sx-market action=status
 ```
 
 ### sx-config
@@ -104,6 +183,12 @@ sx-config action=init projectRoot=/path/to/project
 
 # Add a skill source
 sx-config action=sources sourceAction=add source={"name":"my-source","url":"https://github.com/user/skills"}
+
+# List skill sources
+sx-config action=sources sourceAction=list
+
+# Remove a skill source
+sx-config action=sources sourceAction=remove sourceName=my-source
 ```
 
 ### sx-help
@@ -115,6 +200,8 @@ Help information tool.
 | `overview` | General overview of Skillix |
 | `skill` | sx-skill tool help |
 | `config` | sx-config tool help |
+| `market` | sx-market tool help |
+| `triage` | sx-triage tool help |
 | `all` | All help topics |
 
 **Examples:**
@@ -153,7 +240,10 @@ my-skill/
 ├── scripts/          # Optional: Executable scripts
 ├── references/       # Optional: Reference documents
 ├── assets/           # Optional: Resource files
-└── logs/             # Optional: Execution logs
+├── logs/             # Optional: Execution logs
+│   ├── execution.log # Execution history
+│   └── evolution.log # Evolution history
+└── .backup/          # Auto-generated: Version backups
 ```
 
 ### Naming Rules
@@ -171,8 +261,11 @@ my-skill/
 ~/.skillix/
 ├── config.json       # Global configuration
 ├── skills/           # Global skills directory
+├── installed.json    # Installation records
 ├── logs/             # System logs
 ├── cache/            # Cache directory
+│   ├── repos/        # Git repository cache
+│   └── indexes/      # Source indexes
 └── data/             # Data directory
 ```
 
@@ -192,6 +285,38 @@ project/
 2. **Configuration Priority**: Project config → Global config → Default config
 3. **Same-Name Skills**: Project-level skills override global skills
 
+## Workflow Examples
+
+### Smart Triage Workflow
+
+```
+User: Help me convert PDF to images
+  ↓
+AI → sx-triage: Analyze task
+  ↓
+Triage: USE_EXISTING, skill=pdf-converter
+  ↓
+AI → sx-skill read: Get skill content
+  ↓
+AI: Execute task following skill instructions
+```
+
+### Install from Market
+
+```
+User: I need to process Excel files
+  ↓
+AI → sx-triage: Analyze task
+  ↓
+Triage: INSTALL, skill=excel-handler
+  ↓
+AI → sx-market install: Install skill
+  ↓
+AI → sx-skill read: Get skill content
+  ↓
+AI: Execute task
+```
+
 ## Development
 
 ```bash
@@ -204,8 +329,33 @@ npm run build
 # Run tests
 npm test
 
+# Run tests with coverage
+npm run test:coverage
+
 # Start server
 npm start
+```
+
+## Architecture
+
+```
+skillix-mcp/
+├── src/
+│   ├── index.ts           # MCP Server entry
+│   ├── services/          # Business logic layer
+│   │   ├── skill/         # Skill management
+│   │   ├── config/        # Configuration management
+│   │   ├── market/        # Market operations
+│   │   └── triage/        # Smart triage
+│   ├── tools/             # MCP tool implementations
+│   │   ├── skills/        # sx-skill tool
+│   │   ├── configs/       # sx-config tool
+│   │   ├── markets/       # sx-market tool
+│   │   ├── triages/       # sx-triage tool
+│   │   └── helps/         # sx-help tool
+│   └── utils/             # Utility functions
+├── tests/                 # Test files
+└── docs/                  # Design documents
 ```
 
 ## License
@@ -215,3 +365,7 @@ MIT
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+## Author
+
+shetengteng

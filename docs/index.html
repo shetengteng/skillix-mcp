@@ -1663,14 +1663,22 @@
                         <div class="step-number">1</div>
                         <div class="step-content">
                             <h4>
-                                <span class="lang-en">Configure MCP Server</span>
-                                <span class="lang-zh">配置 MCP Server</span>
+                                <span class="lang-en">Install MCP Server</span>
+                                <span class="lang-zh">安装 MCP Server</span>
                             </h4>
                             <p>
-                                <span class="lang-en">Add Skillix to your Cursor MCP configuration file</span>
-                                <span class="lang-zh">将 Skillix 添加到 Cursor MCP 配置文件</span>
+                                <span class="lang-en">Click the button below to auto-install, or manually add to ~/.cursor/mcp.json</span>
+                                <span class="lang-zh">点击下方按钮一键安装，或手动添加到 ~/.cursor/mcp.json</span>
                             </p>
-                            <span class="step-code">~/.cursor/mcp.json</span>
+                            <a href="cursor://anysphere.cursor-deeplink/mcp/install?name=skillix&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyJza2lsbGl4LW1jcCJdfQ==" class="btn-primary" style="display: inline-flex; margin-top: var(--space-3); font-size: 0.8rem; padding: var(--space-2) var(--space-4);">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="7 10 12 15 17 10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                <span class="lang-en">One-Click Install in Cursor</span>
+                                <span class="lang-zh">一键安装到 Cursor</span>
+                            </a>
                         </div>
                     </div>
                     <div class="workflow-step">
@@ -1681,10 +1689,13 @@
                                 <span class="lang-zh">初始化项目</span>
                             </h4>
                             <p>
-                                <span class="lang-en">Run init command to setup .skillix/ directory and install Cursor Rule</span>
-                                <span class="lang-zh">运行 init 命令设置 .skillix/ 目录并安装 Cursor Rule</span>
+                                <span class="lang-en">Ask Cursor AI to run init command, it will setup .skillix/ and install Cursor Rule</span>
+                                <span class="lang-zh">让 Cursor AI 执行 init 命令，会自动设置 .skillix/ 并安装 Cursor Rule</span>
                             </p>
-                            <span class="step-code">sx-config action=init projectRoot="/your/project"</span>
+                            <span class="step-code">
+                                <span class="lang-en">"Please initialize Skillix for this project"</span>
+                                <span class="lang-zh">"请为这个项目初始化 Skillix"</span>
+                            </span>
                         </div>
                     </div>
                     <div class="workflow-step">

@@ -41,7 +41,15 @@ Copy the following JSON configuration and add it to your Cursor MCP settings:
 
 ## Quick Start
 
-### Step 1: Configure MCP Server
+### Step 1: Install MCP Server
+
+**Option A: One-Click Install (Recommended)**
+
+Click the button below to automatically add Skillix to your Cursor:
+
+[![Install in Cursor](https://img.shields.io/badge/Install%20in-Cursor-blue?style=for-the-badge&logo=cursor)](cursor://anysphere.cursor-deeplink/mcp/install?name=skillix&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyJza2lsbGl4LW1jcCJdfQ==)
+
+**Option B: Manual Install**
 
 Add Skillix to your Cursor MCP configuration (`~/.cursor/mcp.json`):
 
@@ -58,7 +66,11 @@ Add Skillix to your Cursor MCP configuration (`~/.cursor/mcp.json`):
 
 ### Step 2: Initialize Project
 
-Run the init command in your project to set up Skillix and install the Cursor Rule:
+Ask Cursor AI to initialize Skillix for your project:
+
+> "Please initialize Skillix for this project"
+
+Or run the command directly:
 
 ```bash
 sx-config action=init projectRoot="/path/to/your/project"

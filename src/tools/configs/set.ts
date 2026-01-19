@@ -70,7 +70,8 @@ export function handleSet(params: SxConfigParams): ToolResponse {
         config = configService.initProjectConfig(projectRoot);
       }
       
-      config[key] = value;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (config as any)[key] = value;
       configService.saveProjectConfig(projectRoot, config);
       
       return {
@@ -101,7 +102,8 @@ export function handleSet(params: SxConfigParams): ToolResponse {
     
     // 默认设置全局配置
     const config = configService.getGlobalConfig();
-    config[key] = value;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (config as any)[key] = value;
     configService.saveGlobalConfig(config);
     
     return {

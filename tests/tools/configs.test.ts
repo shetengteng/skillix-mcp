@@ -67,7 +67,7 @@ describe('sx-config tool', () => {
         action: 'set',
         scope: 'global',
         key: 'autoSuggest',
-        value: 'false',
+        value: false,  // 使用布尔值而非字符串
       });
       
       expect(result.success).toBe(true);

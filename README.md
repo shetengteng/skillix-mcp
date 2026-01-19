@@ -39,6 +39,39 @@ Copy the following JSON configuration and add it to your Cursor MCP settings:
 - 🔧 **MCP Integration** - Seamlessly integrates with AI coding assistants
 - 🔄 **Version Rollback** - Built-in backup and version history support
 
+## Quick Start
+
+### Step 1: Configure MCP Server
+
+Add Skillix to your Cursor MCP configuration (`~/.cursor/mcp.json`):
+
+```json
+{
+  "mcpServers": {
+    "skillix": {
+      "command": "npx",
+      "args": ["skillix-mcp"]
+    }
+  }
+}
+```
+
+### Step 2: Initialize Project
+
+Run the init command in your project to set up Skillix and install the Cursor Rule:
+
+```bash
+sx-config action=init projectRoot="/path/to/your/project"
+```
+
+This will create:
+- `.skillix/` directory (project configuration and skills storage)
+- `.cursor/rules/skillix.mdc` (Cursor Rule for automatic dispatch)
+
+### Step 3: Start Using
+
+The installed Cursor Rule will automatically guide AI to use `sx-dispatch` for task analysis. Just start a conversation with your task!
+
 ## Installation
 
 ### Prerequisites
@@ -210,7 +243,7 @@ Configuration management tool.
 |--------|-------------|
 | `get` | Get global or project configuration |
 | `set` | Set configuration value |
-| `init` | Initialize project configuration |
+| `init` | Initialize project configuration and install Cursor Rule |
 | `sources` | Manage skill sources (list/add/remove) |
 
 **Examples:**
@@ -219,7 +252,7 @@ Configuration management tool.
 # Get configuration
 sx-config action=get scope=global
 
-# Initialize project
+# Initialize project (creates .skillix/ and .cursor/rules/skillix.mdc)
 sx-config action=init projectRoot=/path/to/project
 
 # Add a skill source
@@ -231,6 +264,8 @@ sx-config action=sources sourceAction=list
 # Remove a skill source
 sx-config action=sources sourceAction=remove sourceName=my-source
 ```
+
+**Note:** The `init` action now automatically installs a Cursor Rule (`.cursor/rules/skillix.mdc`) that guides AI to use `sx-dispatch` for task analysis at the start of each session.
 
 ### sx-help
 
@@ -314,10 +349,13 @@ my-skill/
 
 ```
 project/
-└── .skillix/
-    ├── config.json   # Project configuration
-    ├── skills/       # Project-level skills
-    └── logs/         # Project logs
+├── .skillix/
+│   ├── config.json   # Project configuration
+│   ├── skills/       # Project-level skills
+│   └── logs/         # Project logs
+└── .cursor/
+    └── rules/
+        └── skillix.mdc  # Cursor Rule (auto-installed by sx-config init)
 ```
 
 ## Local-First Strategy

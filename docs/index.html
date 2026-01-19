@@ -1334,6 +1334,10 @@
                 <span class="lang-en">Tools</span>
                 <span class="lang-zh">工具</span>
             </a></li>
+            <li><a href="#quickstart">
+                <span class="lang-en">Quick Start</span>
+                <span class="lang-zh">快速开始</span>
+            </a></li>
             <li><a href="#workflow">
                 <span class="lang-en">Workflow</span>
                 <span class="lang-zh">工作流</span>
@@ -1620,6 +1624,82 @@
                         <span class="tool-action">skill</span>
                         <span class="tool-action">market</span>
                         <span class="tool-action">config</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Start Section -->
+    <section id="quickstart">
+        <div class="container">
+            <div class="section-header animate-on-scroll">
+                <p class="section-label">
+                    <span class="lang-en">Quick Start</span>
+                    <span class="lang-zh">快速开始</span>
+                </p>
+                <h2 class="section-title">
+                    <span class="lang-en">Get started in 3 steps</span>
+                    <span class="lang-zh">三步开始使用</span>
+                </h2>
+                <p class="section-desc">
+                    <span class="lang-en">Simple setup process to enable Skillix in your project.</span>
+                    <span class="lang-zh">简单的设置流程，在项目中启用 Skillix。</span>
+                </p>
+            </div>
+
+            <div class="workflow-demo animate-on-scroll">
+                <div class="workflow-header">
+                    <div class="workflow-icon">
+                        <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    </div>
+                    <span class="workflow-title">
+                        <span class="lang-en">Setup Guide</span>
+                        <span class="lang-zh">设置指南</span>
+                    </span>
+                </div>
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>
+                                <span class="lang-en">Configure MCP Server</span>
+                                <span class="lang-zh">配置 MCP Server</span>
+                            </h4>
+                            <p>
+                                <span class="lang-en">Add Skillix to your Cursor MCP configuration file</span>
+                                <span class="lang-zh">将 Skillix 添加到 Cursor MCP 配置文件</span>
+                            </p>
+                            <span class="step-code">~/.cursor/mcp.json</span>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>
+                                <span class="lang-en">Initialize Project</span>
+                                <span class="lang-zh">初始化项目</span>
+                            </h4>
+                            <p>
+                                <span class="lang-en">Run init command to setup .skillix/ directory and install Cursor Rule</span>
+                                <span class="lang-zh">运行 init 命令设置 .skillix/ 目录并安装 Cursor Rule</span>
+                            </p>
+                            <span class="step-code">sx-config action=init projectRoot="/your/project"</span>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>
+                                <span class="lang-en">Start Using</span>
+                                <span class="lang-zh">开始使用</span>
+                            </h4>
+                            <p>
+                                <span class="lang-en">The installed Cursor Rule will automatically trigger sx-dispatch for task analysis</span>
+                                <span class="lang-zh">安装的 Cursor Rule 会自动触发 sx-dispatch 进行任务分析</span>
+                            </p>
+                            <span class="step-code">.cursor/rules/skillix.mdc ✓</span>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -399,6 +399,73 @@ skillix-mcp/
 └── docs/                  # 设计文档
 ```
 
+## 故障排除
+
+### npx skillix-mcp: command not found
+
+如果运行 `npx skillix-mcp` 时遇到此错误：
+
+```
+sh: skillix-mcp: command not found
+```
+
+或者看到大量 `TAR_ENTRY_ERROR` 警告：
+
+```
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory...
+```
+
+**原因：** npx 缓存损坏。
+
+**解决方案：**
+
+```bash
+# 清理 npm 缓存
+npm cache clean --force
+
+# 删除损坏的 npx 缓存（如果上述方法无效）
+rm -rf ~/.npm/_npx/*
+
+# 重新尝试
+npx skillix-mcp
+```
+
+### MCP Server 无法连接
+
+如果 Cursor 无法连接到 Skillix MCP Server：
+
+1. **检查配置文件位置：**
+   - macOS/Linux: `~/.cursor/mcp.json`
+   - Windows: `%USERPROFILE%\.cursor\mcp.json`
+
+2. **验证 JSON 语法：**
+   ```json
+   {
+     "mcpServers": {
+       "skillix": {
+         "command": "npx",
+         "args": ["skillix-mcp"]
+       }
+     }
+   }
+   ```
+
+3. 修改配置后**重启 Cursor**。
+
+4. **检查 Node.js 版本：**
+   ```bash
+   node --version  # 应该 >= 18.0.0
+   ```
+
+### 权限错误
+
+如果遇到权限错误：
+
+```bash
+# 在 macOS/Linux 上，确保 npm 全局目录可写
+sudo chown -R $(whoami) ~/.npm
+```
+
 ## 许可证
 
 MIT

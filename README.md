@@ -449,6 +449,73 @@ skillix-mcp/
 └── docs/                  # Design documents
 ```
 
+## Troubleshooting
+
+### npx skillix-mcp: command not found
+
+If you encounter this error when running `npx skillix-mcp`:
+
+```
+sh: skillix-mcp: command not found
+```
+
+Or see multiple `TAR_ENTRY_ERROR` warnings like:
+
+```
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory...
+```
+
+**Cause:** The npx cache is corrupted.
+
+**Solution:**
+
+```bash
+# Clean npm cache
+npm cache clean --force
+
+# Remove corrupted npx cache (optional, if the above doesn't work)
+rm -rf ~/.npm/_npx/*
+
+# Try again
+npx skillix-mcp
+```
+
+### MCP Server not connecting
+
+If Cursor cannot connect to the Skillix MCP Server:
+
+1. **Check configuration file location:**
+   - macOS/Linux: `~/.cursor/mcp.json`
+   - Windows: `%USERPROFILE%\.cursor\mcp.json`
+
+2. **Verify JSON syntax:**
+   ```json
+   {
+     "mcpServers": {
+       "skillix": {
+         "command": "npx",
+         "args": ["skillix-mcp"]
+       }
+     }
+   }
+   ```
+
+3. **Restart Cursor** after modifying the configuration.
+
+4. **Check Node.js version:**
+   ```bash
+   node --version  # Should be >= 18.0.0
+   ```
+
+### Permission denied errors
+
+If you encounter permission errors:
+
+```bash
+# On macOS/Linux, ensure npm global directory is writable
+sudo chown -R $(whoami) ~/.npm
+```
+
 ## License
 
 MIT

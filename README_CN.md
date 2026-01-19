@@ -4,6 +4,31 @@
 
 Skillix 是一个基于 MCP (Model Context Protocol) 的技能管理系统，为 AI 编码代理（如 Cursor）提供技能的创建、管理、加载和进化能力。
 
+## 🚀 Cursor 快速安装
+
+### 一键安装
+
+点击下方按钮，自动将 Skillix 添加到你的 Cursor MCP 配置：
+
+[![在 Cursor 中安装](https://img.shields.io/badge/安装到-Cursor-blue?style=for-the-badge&logo=cursor)](cursor://anysphere.cursor-deeplink/mcp/install?name=skillix&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyJza2lsbGl4LW1jcCJdfQ==)
+
+### 手动安装
+
+复制以下 JSON 配置，添加到你的 Cursor MCP 设置中：
+
+```json
+{
+  "mcpServers": {
+    "skillix": {
+      "command": "npx",
+      "args": ["skillix-mcp"]
+    }
+  }
+}
+```
+
+**配置文件位置：** `~/.cursor/mcp.json`
+
 ## 功能特性
 
 - 🎯 **技能管理** - 创建、读取、更新、删除本地技能，支持版本控制
@@ -21,6 +46,39 @@ Skillix 是一个基于 MCP (Model Context Protocol) 的技能管理系统，为
 - Node.js >= 18.0.0
 - npm 或 yarn
 
+### 使用 npx（推荐）
+
+无需安装！只需将配置添加到你的 MCP 设置中：
+
+```json
+{
+  "mcpServers": {
+    "skillix": {
+      "command": "npx",
+      "args": ["skillix-mcp"]
+    }
+  }
+}
+```
+
+### 从 npm 安装
+
+```bash
+npm install -g skillix-mcp
+```
+
+然后配置：
+
+```json
+{
+  "mcpServers": {
+    "skillix": {
+      "command": "skillix-mcp"
+    }
+  }
+}
+```
+
 ### 从源码安装
 
 ```bash
@@ -35,11 +93,7 @@ npm install
 npm run build
 ```
 
-## 配置
-
-将 Skillix 添加到你的 MCP 配置文件：
-
-**Cursor** (`~/.cursor/mcp.json`):
+然后配置：
 
 ```json
 {
@@ -47,19 +101,6 @@ npm run build
     "skillix": {
       "command": "node",
       "args": ["/path/to/skillix-mcp/dist/index.js"]
-    }
-  }
-}
-```
-
-或使用 npx（发布后）：
-
-```json
-{
-  "mcpServers": {
-    "skillix": {
-      "command": "npx",
-      "args": ["skillix-mcp"]
     }
   }
 }

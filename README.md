@@ -4,6 +4,31 @@
 
 Skillix is an MCP (Model Context Protocol) based skill management system that provides AI coding agents (like Cursor) with the ability to create, manage, load, and evolve skills.
 
+## 🚀 Quick Install for Cursor
+
+### One-Click Install
+
+Click the button below to automatically add Skillix to your Cursor MCP configuration:
+
+[![Install in Cursor](https://img.shields.io/badge/Install%20in-Cursor-blue?style=for-the-badge&logo=cursor)](cursor://anysphere.cursor-deeplink/mcp/install?name=skillix&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyJza2lsbGl4LW1jcCJdfQ==)
+
+### Manual Install
+
+Copy the following JSON configuration and add it to your Cursor MCP settings:
+
+```json
+{
+  "mcpServers": {
+    "skillix": {
+      "command": "npx",
+      "args": ["skillix-mcp"]
+    }
+  }
+}
+```
+
+**Configuration file location:** `~/.cursor/mcp.json`
+
 ## Features
 
 - 🎯 **Skill Management** - Create, read, update, delete local skills with version control
@@ -21,6 +46,39 @@ Skillix is an MCP (Model Context Protocol) based skill management system that pr
 - Node.js >= 18.0.0
 - npm or yarn
 
+### Using npx (Recommended)
+
+No installation required! Just add the configuration to your MCP settings:
+
+```json
+{
+  "mcpServers": {
+    "skillix": {
+      "command": "npx",
+      "args": ["skillix-mcp"]
+    }
+  }
+}
+```
+
+### Install from npm
+
+```bash
+npm install -g skillix-mcp
+```
+
+Then configure:
+
+```json
+{
+  "mcpServers": {
+    "skillix": {
+      "command": "skillix-mcp"
+    }
+  }
+}
+```
+
 ### Install from Source
 
 ```bash
@@ -35,11 +93,7 @@ npm install
 npm run build
 ```
 
-## Configuration
-
-Add Skillix to your MCP configuration file:
-
-**Cursor** (`~/.cursor/mcp.json`):
+Then configure:
 
 ```json
 {
@@ -47,19 +101,6 @@ Add Skillix to your MCP configuration file:
     "skillix": {
       "command": "node",
       "args": ["/path/to/skillix-mcp/dist/index.js"]
-    }
-  }
-}
-```
-
-Or using npx (after publishing):
-
-```json
-{
-  "mcpServers": {
-    "skillix": {
-      "command": "npx",
-      "args": ["skillix-mcp"]
     }
   }
 }

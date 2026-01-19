@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * Skillix MCP Server 入口
  * 

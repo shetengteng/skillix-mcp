@@ -1,11 +1,18 @@
 {
   "name": "skillix-mcp",
   "version": "0.1.0",
-  "description": "Skillix MCP Server - AI Skill Management System",
+  "description": "Skillix MCP Server - AI Skill Management System for Cursor and other AI coding agents",
+  "type": "module",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bin": {
     "skillix-mcp": "./dist/index.js"
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsx watch src/index.ts",
@@ -13,17 +20,29 @@
     "lint": "eslint src --ext .ts",
     "test": "vitest",
     "test:run": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "mcp",
+    "model-context-protocol",
     "skill",
     "ai",
     "cursor",
-    "claude"
+    "claude",
+    "ai-agent",
+    "skill-management"
   ],
   "author": "shetengteng",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shetengteng/skillix-mcp.git"
+  },
+  "homepage": "https://github.com/shetengteng/skillix-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/shetengteng/skillix-mcp/issues"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.25.2",
     "yaml": "^2.3.4",

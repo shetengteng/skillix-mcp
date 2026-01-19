@@ -7,10 +7,23 @@ import * as path from 'node:path';
 import * as os from 'node:os';
 
 /**
+ * 获取测试根目录
+ * 使用 .skillix-test 作为测试目录
+ */
+function getTestRootDir(): string {
+  return path.join(os.homedir(), '.skillix-test');
+}
+
+/**
  * 创建临时目录
  */
 export function createTempDir(): string {
-  return fs.mkdtempSync(path.join(os.tmpdir(), 'skillix-test-'));
+  const testRoot = getTestRootDir();
+  // 确保测试根目录存在
+  if (!fs.existsSync(testRoot)) {
+    fs.mkdirSync(testRoot, { recursive: true });
+  }
+  return fs.mkdtempSync(path.join(testRoot, 'test-'));
 }
 
 /**

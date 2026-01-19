@@ -22,7 +22,8 @@ export { readSkillContent } from './read.js';
 export { createSkill } from './create.js';
 
 // 更新功能
-export { updateSkill } from './update.js';
+export { updateSkill, updateSkillWithResult } from './update.js';
+export type { UpdateOptions, UpdateResult } from './update.js';
 
 // 删除功能
 export { deleteSkill } from './delete.js';
@@ -32,3 +33,20 @@ export { skillExists } from './exists.js';
 
 // 搜索功能
 export { searchSkills } from './search.js';
+
+// 版本管理功能
+export { 
+  createVersionBackup, 
+  logEvolution, 
+  listVersions, 
+  restoreFromBackup,
+  getVersionBackup,
+  cleanupOldBackups,
+  getBackupDir,
+  getEvolutionLogPath,
+} from './version.js';
+export type { VersionMeta, EvolutionLogEntry } from './version.js';
+
+// 回退功能
+export { rollbackSkill, rollbackToPrevious, getVersionHistory } from './rollback.js';
+export type { RollbackOptions, RollbackResult } from './rollback.js';

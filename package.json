@@ -1,6 +1,6 @@
 {
   "name": "skillix-mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Skillix MCP Server - AI Skill Management System for Cursor and other AI coding agents",
   "type": "module",
   "main": "dist/index.js",

@@ -77,13 +77,24 @@ export function handleAnalyze(params: SxDispatchParams): ToolResponse {
           reason: result.reason,
         },
         
-        // 可用技能列表（供 AI 分析选择）
+        // 可用技能列表（供 AI 分析选择，包含详细匹配信息）
         availableSkills: result.matchDetails?.map(m => ({
           name: m.name,
           description: m.description,
           scope: m.scope,
           source: m.source,
+          // 匹配分数
           relevanceScore: m.score,
+          // 详细分数（帮助 AI 理解匹配原因）
+          scoreDetails: {
+            nameScore: m.nameScore,
+            descriptionScore: m.descriptionScore,
+            tagScore: m.tagScore,
+            domainScore: m.domainScore,
+          },
+          // 匹配的关键词和领域
+          matchedKeywords: m.matchedKeywords || [],
+          matchedDomains: m.matchedDomains || [],
         })) || [],
         
         // 下一步操作建议

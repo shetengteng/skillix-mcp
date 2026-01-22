@@ -2,125 +2,214 @@
  * sx-config 工具测试
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import * as path from 'node:path';
-import * as nodeFs from 'node:fs';
-import { createTempDir, cleanupTempDir } from '../helpers/setup.js';
-import { sxConfig } from '../../src/tools/configs/index.js';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import * as path from 'path';
+import {
+  setupTestEnv,
+  cleanupTestEnv,
+  TEST_BASE_DIR,
+  TEST_PROJECT_DIR,
+  TEST_GLOBAL_CONFIG_PATH,
+  TEST_PROJECT_CONFIG_PATH,
+} from '../helpers/setup.js';
 
-describe('sx-config tool', () => {
-  let tempDir: string;
-  let originalHome: string | undefined;
+// Mock paths module
+vi.mock('../../src/utils/paths.js', async () => {
+  const actual = await vi.importActual('../../src/utils/paths.js');
+  return {
+    ...actual,
+    getGlobalDir: () => TEST_BASE_DIR,
+    getGlobalConfigPath: () => TEST_GLOBAL_CONFIG_PATH,
+    getProjectDir: (projectRoot: string) => path.join(projectRoot, '.skillix'),
+    getProjectConfigPath: (projectRoot: string) => path.join(projectRoot, '.skillix', 'config.json'),
+    getProjectSkillsDir: (projectRoot: string) => path.join(projectRoot, '.skillix', 'skills'),
+  };
+});
 
+import { handleGet } from '../../src/tools/configs/get.js';
+import { handleSet } from '../../src/tools/configs/set.js';
+import { handleInit } from '../../src/tools/configs/init.js';
+import { handleSources } from '../../src/tools/configs/sources.js';
+
+describe('sx-config tools', () => {
   beforeEach(() => {
-    tempDir = createTempDir();
-    originalHome = process.env.HOME;
-    process.env.HOME = tempDir;
-    
-    // 创建全局配置目录
-    const globalConfigDir = path.join(tempDir, '.skillix');
-    nodeFs.mkdirSync(globalConfigDir, { recursive: true });
+    setupTestEnv();
   });
 
   afterEach(() => {
-    cleanupTempDir(tempDir);
-    process.env.HOME = originalHome;
+    cleanupTestEnv();
+    vi.clearAllMocks();
   });
 
-  describe('get action', () => {
-    it('should get global config', () => {
-      const result = sxConfig({ action: 'get', scope: 'global' });
+  describe('handleGet', () => {
+    it('should get all global config', async () => {
+      const response = await handleGet({ scope: 'global' });
       
-      expect(result.success).toBe(true);
-      expect(result.data).toBeDefined();
+      expect(response.success).toBe(true);
+      expect(response.data).toBeDefined();
     });
 
-    it('should get project config', () => {
-      const projectRoot = path.join(tempDir, 'project');
-      const projectConfigDir = path.join(projectRoot, '.skillix');
-      nodeFs.mkdirSync(projectConfigDir, { recursive: true });
-      nodeFs.writeFileSync(
-        path.join(projectConfigDir, 'config.json'),
-        JSON.stringify({ sources: [], format: 'xml' })
-      );
-      
-      const result = sxConfig({
-        action: 'get',
-        scope: 'project',
-        projectRoot,
+    it('should get specific config key', async () => {
+      const response = await handleGet({
+        scope: 'global',
+        key: 'format',
       });
       
-      expect(result.success).toBe(true);
+      expect(response.success).toBe(true);
     });
 
-    it('should get effective config', () => {
-      const result = sxConfig({ action: 'get', scope: 'effective' });
+    it('should return error for invalid key', async () => {
+      const response = await handleGet({
+        scope: 'global',
+        key: 'invalidKey',
+      });
       
-      expect(result.success).toBe(true);
-      expect(result.data).toBeDefined();
+      expect(response.success).toBe(false);
     });
   });
 
-  describe('set action', () => {
-    it('should set global config value', () => {
-      const result = sxConfig({
-        action: 'set',
+  describe('handleSet', () => {
+    it('should set global config value', async () => {
+      const response = await handleSet({
+        scope: 'global',
+        key: 'format',
+        value: 'json',
+      });
+      
+      expect(response.success).toBe(true);
+      
+      // Verify the change
+      const getResponse = await handleGet({ scope: 'global', key: 'format' });
+      expect((getResponse.data as any).format).toBe('json');
+    });
+
+    it('should set boolean config value', async () => {
+      const response = await handleSet({
         scope: 'global',
         key: 'autoSuggest',
-        value: false,  // 使用布尔值而非字符串
+        value: false,
       });
       
-      expect(result.success).toBe(true);
+      expect(response.success).toBe(true);
     });
 
-    it('should fail without key parameter', () => {
-      const result = sxConfig({
-        action: 'set',
+    it('should reject invalid config value', async () => {
+      const response = await handleSet({
         scope: 'global',
-        value: 'test',
+        key: 'format',
+        value: 'invalid',
       });
       
-      expect(result.success).toBe(false);
+      expect(response.success).toBe(false);
+    });
+
+    it('should require key and value', async () => {
+      const response = await handleSet({ scope: 'global' });
+      
+      expect(response.success).toBe(false);
     });
   });
 
-  describe('init action', () => {
-    it('should initialize project config', () => {
-      const projectRoot = path.join(tempDir, 'project');
-      nodeFs.mkdirSync(projectRoot, { recursive: true });
-      
-      const result = sxConfig({
-        action: 'init',
-        projectRoot,
+  describe('handleInit', () => {
+    it('should initialize project config', async () => {
+      const response = await handleInit({
+        projectRoot: TEST_PROJECT_DIR,
       });
       
-      expect(result.success).toBe(true);
-      
-      const configPath = path.join(projectRoot, '.skillix', 'config.json');
-      expect(nodeFs.existsSync(configPath)).toBe(true);
+      expect(response.success).toBe(true);
+      expect(response.message).toContain('初始化');
     });
 
-    it('should fail without projectRoot', () => {
-      const result = sxConfig({ action: 'init' });
+    it('should handle already initialized project', async () => {
+      // Initialize once
+      await handleInit({ projectRoot: TEST_PROJECT_DIR });
       
-      expect(result.success).toBe(false);
-    });
-  });
-
-  describe('sources action', () => {
-    it('should list sources', () => {
-      const result = sxConfig({ action: 'sources' });
+      // Initialize again
+      const response = await handleInit({ projectRoot: TEST_PROJECT_DIR });
       
-      expect(result.success).toBe(true);
-      expect(result.data).toBeDefined();
+      // Should still succeed (idempotent)
+      expect(response.success).toBe(true);
     });
   });
 
-  describe('unknown action', () => {
-    it('should fail for unknown action', () => {
-      const result = sxConfig({ action: 'unknown' as any });
-      
-      expect(result.success).toBe(false);
+  describe('handleSources', () => {
+    describe('list', () => {
+      it('should list all sources', async () => {
+        const response = await handleSources({
+          sourceAction: 'list',
+        });
+        
+        expect(response.success).toBe(true);
+        expect(response.data).toBeDefined();
+        expect(Array.isArray((response.data as any).sources)).toBe(true);
+      });
+    });
+
+    describe('add', () => {
+      it('should add a new source', async () => {
+        const response = await handleSources({
+          sourceAction: 'add',
+          source: {
+            name: 'test-source',
+            url: 'https://github.com/test/skills',
+            branch: 'main',
+          },
+        });
+        
+        expect(response.success).toBe(true);
+        
+        // Verify added
+        const listResponse = await handleSources({ sourceAction: 'list' });
+        const sources = (listResponse.data as any).sources;
+        const found = sources.find((s: any) => s.name === 'test-source');
+        expect(found).toBeDefined();
+      });
+
+      it('should require source parameter', async () => {
+        const response = await handleSources({
+          sourceAction: 'add',
+        });
+        
+        expect(response.success).toBe(false);
+      });
+    });
+
+    describe('remove', () => {
+      it('should remove existing source', async () => {
+        // First add a source
+        await handleSources({
+          sourceAction: 'add',
+          source: {
+            name: 'to-remove',
+            url: 'https://github.com/test/to-remove',
+          },
+        });
+        
+        // Then remove it
+        const response = await handleSources({
+          sourceAction: 'remove',
+          sourceName: 'to-remove',
+        });
+        
+        expect(response.success).toBe(true);
+      });
+
+      it('should return error for non-existing source', async () => {
+        const response = await handleSources({
+          sourceAction: 'remove',
+          sourceName: 'non-existing-source',
+        });
+        
+        expect(response.success).toBe(false);
+      });
+
+      it('should require sourceName parameter', async () => {
+        const response = await handleSources({
+          sourceAction: 'remove',
+        });
+        
+        expect(response.success).toBe(false);
+      });
     });
   });
 });

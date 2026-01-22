@@ -1,41 +1,67 @@
 /**
- * dispatch 服务测试
+ * 分流服务测试
  * 
- * AI First 设计：
- * - 测试技能信息收集功能
- * - 测试简单匹配分数计算
- * - 测试分流结果生成
+ * 测试覆盖：
+ * - 分析函数基础功能
+ * - 空技能场景处理
+ * - 技能匹配逻辑
+ * - 匹配分数计算
+ * - 推荐操作判断
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import * as path from 'node:path';
-import * as nodeFs from 'node:fs';
-import { createTempDir, cleanupTempDir, createTestSkill } from '../helpers/setup.js';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import * as path from 'path';
+import {
+  setupTestEnv,
+  cleanupTestEnv,
+  TEST_BASE_DIR,
+  TEST_PROJECT_DIR,
+  TEST_GLOBAL_SKILLS_DIR,
+  TEST_PROJECT_SKILLS_DIR,
+  TEST_GLOBAL_CONFIG_PATH,
+  createTestSkillDir,
+} from '../helpers/setup.js';
+import { SKILL_MD_CONTENT } from '../fixtures/skills.js';
+
+// Mock 路径模块
+vi.mock('../../src/utils/paths.js', async () => {
+  const actual = await vi.importActual('../../src/utils/paths.js');
+  return {
+    ...actual,
+    getGlobalDir: () => TEST_BASE_DIR,
+    getGlobalConfigPath: () => TEST_GLOBAL_CONFIG_PATH,
+    getGlobalSkillsDir: () => TEST_GLOBAL_SKILLS_DIR,
+    getProjectDir: (projectRoot: string) => path.join(projectRoot, '.skillix'),
+    getProjectConfigPath: (projectRoot: string) => path.join(projectRoot, '.skillix', 'config.json'),
+    getProjectSkillsDir: (projectRoot: string) => path.join(projectRoot, '.skillix', 'skills'),
+  };
+});
+
+// Mock 市场服务（避免网络请求）
+vi.mock('../../src/services/market/index.js', () => ({
+  searchSkills: vi.fn(() => ({ results: [], total: 0 })),
+  loadManifest: vi.fn(() => null),
+  syncAllSources: vi.fn(),
+}));
+
 import { analyze } from '../../src/services/dispatch/index.js';
-import { TEST_SKILL_MD, SIMPLE_SKILL_MD } from '../fixtures/skills.js';
 
-describe('dispatch service', () => {
-  let tempDir: string;
-
+describe('分流服务', () => {
   beforeEach(() => {
-    tempDir = createTempDir();
+    setupTestEnv();
   });
 
   afterEach(() => {
-    cleanupTempDir(tempDir);
+    cleanupTestEnv();
+    vi.clearAllMocks();
   });
 
-  describe('analyze', () => {
-    it('should return CREATE_NEW when no skills exist', () => {
-      const projectRoot = tempDir;
-      // 创建空的技能目录
-      const projectSkillsDir = path.join(projectRoot, '.skillix', 'skills');
-      nodeFs.mkdirSync(projectSkillsDir, { recursive: true });
-
+  describe('analyze - 分析函数', () => {
+    it('当没有技能时应该返回 CREATE_NEW', () => {
       const result = analyze({
         task: '处理一个新任务',
-        projectRoot,
-        config: { enableMarketSearch: false }, // 禁用市场搜索以简化测试
+        projectRoot: TEST_PROJECT_DIR,
+        config: { enableMarketSearch: false },
       });
 
       expect(result).toBeDefined();
@@ -44,11 +70,7 @@ describe('dispatch service', () => {
       expect(result.reason).toBeDefined();
     });
 
-    it('should find matching skill when exists', () => {
-      const projectRoot = tempDir;
-      const projectSkillsDir = path.join(projectRoot, '.skillix', 'skills');
-      nodeFs.mkdirSync(projectSkillsDir, { recursive: true });
-
+    it('当存在匹配技能时应该找到它', () => {
       // 创建一个 PDF 相关的技能
       const pdfSkillContent = `---
 name: pdf-converter
@@ -63,11 +85,11 @@ tags:
 
 将 PDF 文件转换为其他格式。
 `;
-      createTestSkill(projectSkillsDir, 'pdf-converter', pdfSkillContent);
+      createTestSkillDir(TEST_PROJECT_SKILLS_DIR, 'pdf-converter', pdfSkillContent);
 
       const result = analyze({
         task: '帮我把 PDF 转成图片',
-        projectRoot,
+        projectRoot: TEST_PROJECT_DIR,
         config: { enableMarketSearch: false },
       });
 
@@ -80,11 +102,7 @@ tags:
       expect(pdfMatch).toBeDefined();
     });
 
-    it('should return USE_EXISTING for high match score', () => {
-      const projectRoot = tempDir;
-      const projectSkillsDir = path.join(projectRoot, '.skillix', 'skills');
-      nodeFs.mkdirSync(projectSkillsDir, { recursive: true });
-
+    it('高匹配分数时应该返回 USE_EXISTING', () => {
       // 创建一个高度匹配的技能
       const skillContent = `---
 name: image-processor
@@ -99,11 +117,11 @@ tags:
 
 处理各种图片格式。
 `;
-      createTestSkill(projectSkillsDir, 'image-processor', skillContent);
+      createTestSkillDir(TEST_PROJECT_SKILLS_DIR, 'image-processor', skillContent);
 
       const result = analyze({
         task: 'image processor 图片处理',
-        projectRoot,
+        projectRoot: TEST_PROJECT_DIR,
         config: { enableMarketSearch: false },
       });
 
@@ -114,17 +132,19 @@ tags:
       }
     });
 
-    it('should include match details in result', () => {
-      const projectRoot = tempDir;
-      const projectSkillsDir = path.join(projectRoot, '.skillix', 'skills');
-      nodeFs.mkdirSync(projectSkillsDir, { recursive: true });
+    it('应该在结果中包含匹配详情', () => {
+      createTestSkillDir(TEST_GLOBAL_SKILLS_DIR, 'test-skill-1', SKILL_MD_CONTENT);
+      createTestSkillDir(TEST_GLOBAL_SKILLS_DIR, 'test-skill-2', `---
+name: test-skill-2
+description: 另一个测试技能
+---
 
-      createTestSkill(projectSkillsDir, 'test-skill-1', TEST_SKILL_MD);
-      createTestSkill(projectSkillsDir, 'test-skill-2', SIMPLE_SKILL_MD);
+# 测试技能 2
+`);
 
       const result = analyze({
         task: '测试任务',
-        projectRoot,
+        projectRoot: TEST_PROJECT_DIR,
         config: { enableMarketSearch: false },
       });
 
@@ -142,13 +162,11 @@ tags:
       }
     });
 
-    it('should handle empty task gracefully', () => {
-      const projectRoot = tempDir;
-
+    it('应该优雅处理空任务', () => {
       // 空任务应该仍然返回结果
       const result = analyze({
         task: '',
-        projectRoot,
+        projectRoot: TEST_PROJECT_DIR,
         config: { enableMarketSearch: false },
       });
 
@@ -156,15 +174,11 @@ tags:
       expect(result.action).toBeDefined();
     });
 
-    it('should respect enableMarketSearch config', () => {
-      const projectRoot = tempDir;
-      const projectSkillsDir = path.join(projectRoot, '.skillix', 'skills');
-      nodeFs.mkdirSync(projectSkillsDir, { recursive: true });
-
+    it('应该尊重 enableMarketSearch 配置', () => {
       // 禁用市场搜索
       const result = analyze({
         task: '一个任务',
-        projectRoot,
+        projectRoot: TEST_PROJECT_DIR,
         config: { enableMarketSearch: false },
       });
 
@@ -172,16 +186,12 @@ tags:
       // 结果应该只基于本地技能
     });
 
-    it('should return confidence between 0 and 1', () => {
-      const projectRoot = tempDir;
-      const projectSkillsDir = path.join(projectRoot, '.skillix', 'skills');
-      nodeFs.mkdirSync(projectSkillsDir, { recursive: true });
-
-      createTestSkill(projectSkillsDir, 'any-skill', TEST_SKILL_MD);
+    it('置信度应该在 0 到 1 之间', () => {
+      createTestSkillDir(TEST_GLOBAL_SKILLS_DIR, 'any-skill', SKILL_MD_CONTENT);
 
       const result = analyze({
         task: '任意任务',
-        projectRoot,
+        projectRoot: TEST_PROJECT_DIR,
         config: { enableMarketSearch: false },
       });
 
@@ -189,12 +199,10 @@ tags:
       expect(result.confidence).toBeLessThanOrEqual(1);
     });
 
-    it('should return valid action type', () => {
-      const projectRoot = tempDir;
-
+    it('应该返回有效的操作类型', () => {
       const result = analyze({
         task: '任务描述',
-        projectRoot,
+        projectRoot: TEST_PROJECT_DIR,
         config: { enableMarketSearch: false },
       });
 
@@ -208,6 +216,49 @@ tags:
       ];
 
       expect(validActions).toContain(result.action);
+    });
+  });
+
+  describe('匹配分数计算', () => {
+    it('名称完全匹配应该有高分', () => {
+      createTestSkillDir(TEST_GLOBAL_SKILLS_DIR, 'code-review', `---
+name: code-review
+description: 代码审查工具
+---
+
+# 代码审查
+`);
+
+      const result = analyze({
+        task: 'code review',
+        projectRoot: TEST_PROJECT_DIR,
+        config: { enableMarketSearch: false },
+      });
+
+      expect(result.matchDetails).toBeDefined();
+      if (result.matchDetails && result.matchDetails.length > 0) {
+        expect(result.matchDetails[0].score).toBeGreaterThan(0.3);
+      }
+    });
+
+    it('描述关键词匹配应该增加分数', () => {
+      createTestSkillDir(TEST_GLOBAL_SKILLS_DIR, 'data-analyzer', `---
+name: data-analyzer
+description: 数据分析工具，支持 CSV、JSON 数据处理和可视化
+---
+
+# 数据分析器
+`);
+
+      const result = analyze({
+        task: '分析 CSV 数据',
+        projectRoot: TEST_PROJECT_DIR,
+        config: { enableMarketSearch: false },
+      });
+
+      expect(result.matchDetails).toBeDefined();
+      const match = result.matchDetails?.find(m => m.name === 'data-analyzer');
+      expect(match).toBeDefined();
     });
   });
 });

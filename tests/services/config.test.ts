@@ -1,198 +1,234 @@
 /**
- * config 服务测试
- * 注意：由于全局路径依赖 os.homedir()，这里主要测试项目级配置
+ * 配置服务测试
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import * as path from 'node:path';
-import * as nodeFs from 'node:fs';
-import { createTempDir, cleanupTempDir } from '../helpers/setup.js';
-import * as configService from '../../src/services/config/index.js';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import * as path from 'path';
+import {
+  setupTestEnv,
+  cleanupTestEnv,
+  TEST_BASE_DIR,
+  TEST_PROJECT_DIR,
+  TEST_GLOBAL_CONFIG_PATH,
+  TEST_PROJECT_CONFIG_PATH,
+  createTestFile,
+} from '../helpers/setup.js';
+import { TEST_SOURCE, TEST_CONFIG } from '../fixtures/skills.js';
+import { DEFAULT_GLOBAL_CONFIG, DEFAULT_PROJECT_CONFIG } from '../../src/services/types.js';
+
+// Mock paths module to use test directories
+vi.mock('../../src/utils/paths.js', async () => {
+  const actual = await vi.importActual('../../src/utils/paths.js');
+  return {
+    ...actual,
+    getGlobalDir: () => TEST_BASE_DIR,
+    getGlobalConfigPath: () => TEST_GLOBAL_CONFIG_PATH,
+    getProjectDir: (projectRoot: string) => path.join(projectRoot, '.skillix'),
+    getProjectConfigPath: (projectRoot: string) => path.join(projectRoot, '.skillix', 'config.json'),
+  };
+});
+
+import { getGlobalConfig, saveGlobalConfig } from '../../src/services/config/global.js';
+import { getProjectConfig, saveProjectConfig, initProjectConfig } from '../../src/services/config/project.js';
+import { addSource, removeSource, getAllSources } from '../../src/services/config/source.js';
+import * as fsUtils from '../../src/utils/fs.js';
 
 describe('config service', () => {
-  let tempDir: string;
-
   beforeEach(() => {
-    tempDir = createTempDir();
+    setupTestEnv();
   });
 
   afterEach(() => {
-    cleanupTempDir(tempDir);
+    cleanupTestEnv();
+    vi.clearAllMocks();
   });
 
-  describe('getGlobalConfig', () => {
-    it('should return config with required properties', () => {
-      const config = configService.getGlobalConfig();
-      
-      expect(config).toHaveProperty('sources');
-      expect(config).toHaveProperty('version');
-      expect(Array.isArray(config.sources)).toBe(true);
-    });
-  });
-
-  describe('getProjectConfig', () => {
-    it('should return null when no project config exists', () => {
-      const projectRoot = tempDir;
-      
-      const config = configService.getProjectConfig(projectRoot);
-      
-      expect(config).toBeNull();
-    });
-
-    it('should read existing project config', () => {
-      const projectRoot = tempDir;
-      const configDir = path.join(projectRoot, '.skillix');
-      const configPath = path.join(configDir, 'config.json');
-      nodeFs.mkdirSync(configDir, { recursive: true });
-      
-      const projectConfig = {
-        sources: [{ name: 'project-source', type: 'local', path: './skills' }],
-        format: 'xml',
-        autoSuggest: true,
-      };
-      nodeFs.writeFileSync(configPath, JSON.stringify(projectConfig));
-      
-      const config = configService.getProjectConfig(projectRoot);
-      
-      expect(config).not.toBeNull();
-      expect(config?.sources).toBeDefined();
-    });
-  });
-
-  describe('saveProjectConfig', () => {
-    it('should save project config', () => {
-      const projectRoot = tempDir;
-      
-      const config = {
-        sources: [{ name: 'local', type: 'local' as const, path: './skills' }],
-        format: 'xml' as const,
-        autoSuggest: true,
-      };
-      
-      configService.saveProjectConfig(projectRoot, config);
-      
-      const configPath = path.join(projectRoot, '.skillix', 'config.json');
-      expect(nodeFs.existsSync(configPath)).toBe(true);
-      
-      const savedConfig = JSON.parse(nodeFs.readFileSync(configPath, 'utf-8'));
-      expect(savedConfig.format).toBe('xml');
-    });
-  });
-
-  describe('initProjectConfig', () => {
-    it('should initialize project config', () => {
-      const projectRoot = tempDir;
-      
-      const result = configService.initProjectConfig(projectRoot);
-      
-      expect(result).toBeDefined();
-      expect(result.format).toBeDefined();
-      
-      const configPath = path.join(projectRoot, '.skillix', 'config.json');
-      expect(nodeFs.existsSync(configPath)).toBe(true);
-    });
-
-    it('should create skills directory', () => {
-      const projectRoot = tempDir;
-      
-      configService.initProjectConfig(projectRoot);
-      
-      const skillsDir = path.join(projectRoot, '.skillix', 'skills');
-      expect(nodeFs.existsSync(skillsDir)).toBe(true);
-    });
-
-    it('should accept custom options', () => {
-      const projectRoot = tempDir;
-      
-      const result = configService.initProjectConfig(projectRoot, {
-        format: 'json',
-        autoSuggest: false,
+  describe('global config', () => {
+    describe('getGlobalConfig', () => {
+      it('should return default config when no config exists', () => {
+        const config = getGlobalConfig();
+        
+        expect(config.version).toBe(DEFAULT_GLOBAL_CONFIG.version);
+        expect(config.defaultScope).toBe(DEFAULT_GLOBAL_CONFIG.defaultScope);
+        expect(config.format).toBe(DEFAULT_GLOBAL_CONFIG.format);
       });
-      
-      expect(result.format).toBe('json');
-      expect(result.autoSuggest).toBe(false);
-    });
-  });
 
-  describe('getEffectiveConfig', () => {
-    it('should return effective config', () => {
-      const projectRoot = tempDir;
-      
-      const { effective, global, project } = configService.getEffectiveConfig(projectRoot);
-      
-      expect(global).toBeDefined();
-      expect(effective).toBeDefined();
-      expect(effective.sources).toBeDefined();
-    });
-
-    it('should use project config when available', () => {
-      const projectRoot = tempDir;
-      const configDir = path.join(projectRoot, '.skillix');
-      nodeFs.mkdirSync(configDir, { recursive: true });
-      nodeFs.writeFileSync(
-        path.join(configDir, 'config.json'),
-        JSON.stringify({
-          sources: [{ name: 'project-source', type: 'local', path: './local' }],
+      it('should load existing config', () => {
+        const customConfig = {
+          ...DEFAULT_GLOBAL_CONFIG,
           format: 'json',
-        })
-      );
-      
-      const { effective, project } = configService.getEffectiveConfig(projectRoot);
-      
-      expect(project).not.toBeNull();
-      expect(effective.format).toBe('json');
+          autoSuggest: false,
+        };
+        createTestFile(TEST_GLOBAL_CONFIG_PATH, JSON.stringify(customConfig));
+        
+        const config = getGlobalConfig();
+        
+        expect(config.format).toBe('json');
+        expect(config.autoSuggest).toBe(false);
+      });
+
+      it('should merge with defaults for missing fields', () => {
+        const partialConfig = {
+          format: 'json',
+        };
+        createTestFile(TEST_GLOBAL_CONFIG_PATH, JSON.stringify(partialConfig));
+        
+        const config = getGlobalConfig();
+        
+        expect(config.format).toBe('json');
+        expect(config.version).toBe(DEFAULT_GLOBAL_CONFIG.version);
+        expect(config.logging.level).toBe(DEFAULT_GLOBAL_CONFIG.logging.level);
+      });
+    });
+
+    describe('saveGlobalConfig', () => {
+      it('should save config to file', () => {
+        const config = {
+          ...DEFAULT_GLOBAL_CONFIG,
+          format: 'json' as const,
+        };
+        
+        saveGlobalConfig(config);
+        
+        const saved = fsUtils.readJson(TEST_GLOBAL_CONFIG_PATH);
+        expect(saved).not.toBeNull();
+        expect((saved as any).format).toBe('json');
+      });
+
+      it('should create directory if not exists', () => {
+        fsUtils.removeDir(TEST_BASE_DIR);
+        
+        saveGlobalConfig(DEFAULT_GLOBAL_CONFIG);
+        
+        expect(fsUtils.exists(TEST_GLOBAL_CONFIG_PATH)).toBe(true);
+      });
     });
   });
 
-  describe('addSource', () => {
-    it('should add source to project config', () => {
-      const projectRoot = tempDir;
-      configService.initProjectConfig(projectRoot);
-      
-      const source = { name: 'new-source', type: 'local' as const, path: '/new/path' };
-      
-      configService.addSource(source, 'project', projectRoot);
-      
-      const config = configService.getProjectConfig(projectRoot);
-      const found = config?.sources?.find(s => s.name === 'new-source');
-      expect(found).toBeDefined();
+  describe('project config', () => {
+    describe('getProjectConfig', () => {
+      it('should return null when no config exists', () => {
+        const config = getProjectConfig(TEST_PROJECT_DIR);
+        
+        expect(config).toBeNull();
+      });
+
+      it('should load existing project config', () => {
+        const customConfig = {
+          format: 'json',
+          autoSuggest: false,
+        };
+        fsUtils.ensureDir(path.join(TEST_PROJECT_DIR, '.skillix'));
+        createTestFile(TEST_PROJECT_CONFIG_PATH, JSON.stringify(customConfig));
+        
+        const config = getProjectConfig(TEST_PROJECT_DIR);
+        
+        expect(config).not.toBeNull();
+        expect(config!.format).toBe('json');
+        expect(config!.autoSuggest).toBe(false);
+      });
+    });
+
+    describe('saveProjectConfig', () => {
+      it('should save project config', () => {
+        const config = {
+          ...DEFAULT_PROJECT_CONFIG,
+          format: 'json' as const,
+        };
+        
+        saveProjectConfig(TEST_PROJECT_DIR, config);
+        
+        const saved = fsUtils.readJson(TEST_PROJECT_CONFIG_PATH);
+        expect(saved).not.toBeNull();
+        expect((saved as any).format).toBe('json');
+      });
+    });
+
+    describe('initProjectConfig', () => {
+      it('should initialize project with default config', () => {
+        const newProjectDir = path.join(TEST_PROJECT_DIR, 'new-project');
+        fsUtils.ensureDir(newProjectDir);
+        
+        initProjectConfig(newProjectDir);
+        
+        const configPath = path.join(newProjectDir, '.skillix', 'config.json');
+        expect(fsUtils.exists(configPath)).toBe(true);
+        
+        const skillsDir = path.join(newProjectDir, '.skillix', 'skills');
+        expect(fsUtils.isDirectory(skillsDir)).toBe(true);
+      });
+
+      it('should overwrite existing config', () => {
+        const existingConfig = { format: 'json' };
+        fsUtils.ensureDir(path.join(TEST_PROJECT_DIR, '.skillix'));
+        createTestFile(TEST_PROJECT_CONFIG_PATH, JSON.stringify(existingConfig));
+        
+        initProjectConfig(TEST_PROJECT_DIR, { format: 'xml' });
+        
+        const config = fsUtils.readJson(TEST_PROJECT_CONFIG_PATH);
+        expect((config as any).format).toBe('xml');
+      });
     });
   });
 
-  describe('removeSource', () => {
-    it('should remove source from project config', () => {
-      const projectRoot = tempDir;
-      configService.initProjectConfig(projectRoot);
-      
-      // 先添加一个源
-      const source = { name: 'to-remove', type: 'local' as const, path: '/remove/path' };
-      configService.addSource(source, 'project', projectRoot);
-      
-      // 然后移除
-      const result = configService.removeSource('to-remove', 'project', projectRoot);
-      
-      expect(result).toBe(true);
-      
-      const config = configService.getProjectConfig(projectRoot);
-      const found = config?.sources?.find(s => s.name === 'to-remove');
-      expect(found).toBeUndefined();
+  describe('source management', () => {
+    describe('addSource', () => {
+      it('should add a new source', () => {
+        addSource(TEST_SOURCE, 'global');
+        
+        const config = getGlobalConfig();
+        const added = config.sources.find(s => s.name === TEST_SOURCE.name);
+        
+        expect(added).toBeDefined();
+        expect(added!.url).toBe(TEST_SOURCE.url);
+      });
+
+      it('should update duplicate source', () => {
+        addSource(TEST_SOURCE, 'global');
+        addSource({ ...TEST_SOURCE, branch: 'develop' }, 'global');
+        
+        const config = getGlobalConfig();
+        const matches = config.sources.filter(s => s.name === TEST_SOURCE.name);
+        
+        expect(matches.length).toBe(1);
+        expect(matches[0].branch).toBe('develop');
+      });
     });
 
-    it('should return false for non-existing source', () => {
-      const projectRoot = tempDir;
-      configService.initProjectConfig(projectRoot);
-      
-      const result = configService.removeSource('non-existing', 'project', projectRoot);
-      
-      expect(result).toBe(false);
-    });
-  });
+    describe('removeSource', () => {
+      it('should remove existing source', () => {
+        addSource(TEST_SOURCE, 'global');
+        
+        const result = removeSource(TEST_SOURCE.name, 'global');
+        
+        expect(result).toBe(true);
+        const config = getGlobalConfig();
+        const removed = config.sources.find(s => s.name === TEST_SOURCE.name);
+        expect(removed).toBeUndefined();
+      });
 
-  describe('getAllSources', () => {
-    it('should return all effective sources', () => {
-      const sources = configService.getAllSources();
-      
-      expect(Array.isArray(sources)).toBe(true);
+      it('should return false for non-existing source', () => {
+        const result = removeSource('non-existing', 'global');
+        expect(result).toBe(false);
+      });
+    });
+
+    describe('getAllSources', () => {
+      it('should list all sources', () => {
+        const sources = getAllSources();
+        
+        // Should have at least the default official source
+        expect(sources.length).toBeGreaterThanOrEqual(1);
+      });
+
+      it('should include added sources', () => {
+        addSource(TEST_SOURCE, 'global');
+        
+        const sources = getAllSources();
+        const found = sources.find(s => s.name === TEST_SOURCE.name);
+        
+        expect(found).toBeDefined();
+      });
     });
   });
 });

@@ -6,91 +6,83 @@
 
 /**
  * Skillix MDC 规则内容
+ * 
+ * 混合方案设计：
+ * - 层级 1：Cursor Rule 引导 AI 何时调用 sx-dispatch
+ * - 层级 2：sx-dispatch 智能分流
+ * - 层级 3：Skill Description 匹配
  */
 export const SKILLIX_RULE_CONTENT = `---
-description: Skillix 智能分流规则 - 每次会话自动调用 sx-dispatch 进行任务分析
+description: Skillix 智能分流规则 - 任务分析与技能管理
 globs:
 alwaysApply: true
 ---
 
 # Skillix 使用规范
 
-## 概述
+## 核心原则
 
-Skillix 是一个基于 MCP 的技能管理系统，为 AI 编码代理提供技能的创建、管理、加载和进化能力。
+**在处理任务之前**，先判断是否需要使用 Skill。
 
-## 会话启动流程
+## 需要调用 sx-dispatch 的情况
 
-**重要**：每次新会话开始时，如果用户提出了一个任务需求，应该遵循以下流程：
+以下情况应调用 \`sx-dispatch task="任务描述"\`：
 
-### 1. 首先调用 sx-dispatch 分析任务
+1. **文件处理任务** - 用户提到特定文件类型（PDF、Excel、图片、Word 等）
+2. **工具/框架相关** - 涉及特定工具或框架的操作（Git、Docker、数据库等）
+3. **重复性工作** - 用户描述的任务可能有现成解决方案
+4. **转换/处理动词** - 用户使用"帮我"、"处理"、"转换"、"生成"、"分析"等动词
+5. **批量操作** - 涉及批量处理、自动化流程
+6. **用户明确提到技能** - 用户说"使用技能"、"有没有技能"等
 
-\`\`\`
-sx-dispatch task="用户的任务描述"
-\`\`\`
+## 不需要调用的情况
 
-### 2. 根据返回结果决定下一步操作
+以下情况可直接处理，无需调用 sx-dispatch：
 
-| 操作类型 | 说明 | 下一步 |
-|----------|------|--------|
-| USE_EXISTING | 使用现有技能 | 调用 \`sx-skill action=read name="技能名"\` 读取技能内容 |
-| IMPROVE_EXISTING | 改进现有技能 | 先读取技能，执行任务后调用 \`sx-skill action=update\` 更新 |
-| CREATE_NEW | 创建新技能 | 引导用户创建新技能，使用 \`sx-skill action=create\` |
-| INSTALL | 从市场安装 | 调用 \`sx-market action=install name="技能名"\` 安装 |
-| COMPOSE | 组合多个技能 | 读取多个相关技能并组合使用 |
-| NO_SKILL_NEEDED | 无需技能 | 直接执行任务，无需使用技能系统 |
+1. **简单问答** - 纯粹的问答对话、解释概念
+2. **基础代码编写** - 简单的代码编写（除非涉及特定框架/工具）
+3. **用户明确说明** - 用户说"直接处理"、"不用技能"
+4. **Skillix 自身操作** - 用户在操作 Skillix 本身（如创建技能、配置等）
 
-### 3. 执行任务
-
-根据技能内容执行用户的任务。
-
-### 4. 反馈与进化（可选）
-
-任务完成后，如果有改进建议，可以更新技能：
+## 决策流程
 
 \`\`\`
-sx-skill action=update name="技能名" body="更新后的内容"
+用户输入
+    ↓
+是否为任务请求？（非问答）
+    ↓ 是
+是否涉及文件/工具/重复性工作？
+    ↓ 是
+调用 sx-dispatch task="用户输入"
+    ↓
+根据返回的 action 执行
 \`\`\`
+
+## 操作类型
+
+| action | 说明 | 下一步操作 |
+|--------|------|-----------|
+| USE_EXISTING | 使用现有技能 | \`sx-skill action=read name="技能名"\` |
+| IMPROVE_EXISTING | 改进现有技能 | 先读取再更新技能 |
+| CREATE_NEW | 创建新技能 | 引导用户后 \`sx-skill action=create\` |
+| INSTALL | 从市场安装 | \`sx-market action=install name="技能名"\` |
+| COMPOSE | 组合多个技能 | 按顺序执行多个技能 |
+| NO_SKILL_NEEDED | 无需技能 | 直接执行任务 |
 
 ## 可用工具
 
-| 工具 | 说明 |
-|------|------|
-| sx-dispatch | 智能分流，分析任务并推荐操作 |
-| sx-skill | 技能管理（list, read, create, update, delete） |
-| sx-market | 技能市场（search, install, uninstall, sync） |
-| sx-config | 配置管理（get, set, init, sources） |
-| sx-help | 帮助信息 |
-
-## 示例工作流
-
-### 场景：用户请求 "帮我把 PDF 转成图片"
-
-1. **分析任务**
-   \`\`\`
-   sx-dispatch task="帮我把 PDF 转成图片"
-   \`\`\`
-
-2. **假设返回**：USE_EXISTING, skill=pdf-converter
-
-3. **读取技能**
-   \`\`\`
-   sx-skill action=read name="pdf-converter"
-   \`\`\`
-
-4. **按照技能指引执行任务**
-
-5. **任务完成后反馈**（如有改进）
-   \`\`\`
-   sx-skill action=update name="pdf-converter" body="更新后的内容"
-   \`\`\`
+- **sx-dispatch** - 智能分流，分析任务并匹配技能
+- **sx-skill** - 技能管理（list/read/create/update/delete）
+- **sx-market** - 技能市场（search/install/sync/status）
+- **sx-config** - 配置管理（get/set/init/sources）
+- **sx-help** - 获取帮助
 
 ## 注意事项
 
 - 优先使用本地技能（项目级 > 全局级）
-- 如果 sx-dispatch 返回低置信度，可以询问用户确认
-- 创建新技能时，遵循 hyphen-case 命名规范
-- 技能更新会自动创建备份，支持版本回退
+- 置信度 < 0.5 时询问用户确认
+- 技能命名使用 hyphen-case 格式
+- 调用 \`sx-help\` 获取详细使用说明
 `;
 
 /**

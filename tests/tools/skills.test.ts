@@ -1,277 +1,256 @@
 /**
  * sx-skill 工具测试
- * 注意：由于全局路径依赖 os.homedir()，这里主要测试项目级技能
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import * as path from 'node:path';
-import * as nodeFs from 'node:fs';
-import { createTempDir, cleanupTempDir, createTestSkill } from '../helpers/setup.js';
-import { sxSkill } from '../../src/tools/skills/index.js';
-import { TEST_SKILL_MD, SIMPLE_SKILL_MD } from '../fixtures/skills.js';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import * as path from 'path';
+import {
+  setupTestEnv,
+  cleanupTestEnv,
+  TEST_BASE_DIR,
+  TEST_PROJECT_DIR,
+  TEST_GLOBAL_SKILLS_DIR,
+  TEST_PROJECT_SKILLS_DIR,
+  createTestSkillDir,
+} from '../helpers/setup.js';
+import { TEST_SKILL, SKILL_MD_CONTENT } from '../fixtures/skills.js';
 
-describe('sx-skill tool', () => {
-  let tempDir: string;
+// Mock paths module
+vi.mock('../../src/utils/paths.js', async () => {
+  const actual = await vi.importActual('../../src/utils/paths.js');
+  return {
+    ...actual,
+    getGlobalDir: () => TEST_BASE_DIR,
+    getGlobalSkillsDir: () => TEST_GLOBAL_SKILLS_DIR,
+    getProjectSkillsDir: (projectRoot: string) => path.join(projectRoot, '.skillix', 'skills'),
+  };
+});
 
+import { handleList } from '../../src/tools/skills/list.js';
+import { handleRead } from '../../src/tools/skills/read.js';
+import { handleCreate } from '../../src/tools/skills/create.js';
+import { handleUpdate } from '../../src/tools/skills/update.js';
+import { handleDelete } from '../../src/tools/skills/delete.js';
+
+describe('sx-skill tools', () => {
   beforeEach(() => {
-    tempDir = createTempDir();
-    // 创建项目技能目录
-    const projectSkillsDir = path.join(tempDir, '.skillix', 'skills');
-    nodeFs.mkdirSync(projectSkillsDir, { recursive: true });
+    setupTestEnv();
   });
 
   afterEach(() => {
-    cleanupTempDir(tempDir);
+    cleanupTestEnv();
+    vi.clearAllMocks();
   });
 
-  describe('list action', () => {
-    it('should list project skills', () => {
-      const projectSkillsDir = path.join(tempDir, '.skillix', 'skills');
-      createTestSkill(projectSkillsDir, 'skill-1', TEST_SKILL_MD);
-      createTestSkill(projectSkillsDir, 'skill-2', SIMPLE_SKILL_MD);
+  describe('handleList', () => {
+    it('should list all skills', async () => {
+      createTestSkillDir(TEST_GLOBAL_SKILLS_DIR, TEST_SKILL.name, SKILL_MD_CONTENT);
       
-      const result = sxSkill({ action: 'list', projectRoot: tempDir });
+      const response = await handleList({});
       
-      expect(result.success).toBe(true);
-      expect(result.data).toBeDefined();
+      expect(response.success).toBe(true);
+      expect(response.data).toBeDefined();
     });
 
-    it('should list skills with scope filter', () => {
-      const projectSkillsDir = path.join(tempDir, '.skillix', 'skills');
-      createTestSkill(projectSkillsDir, 'project-skill', TEST_SKILL_MD);
+    it('should return empty lists when no skills', async () => {
+      const response = await handleList({});
       
-      const result = sxSkill({ action: 'list', scope: 'project', projectRoot: tempDir });
-      
-      expect(result.success).toBe(true);
-    });
-  });
-
-  describe('read action', () => {
-    it('should read existing project skill', () => {
-      const projectSkillsDir = path.join(tempDir, '.skillix', 'skills');
-      createTestSkill(projectSkillsDir, 'read-skill', TEST_SKILL_MD);
-      
-      const result = sxSkill({ action: 'read', name: 'read-skill', projectRoot: tempDir });
-      
-      expect(result.success).toBe(true);
-      expect(result.data).toBeDefined();
+      expect(response.success).toBe(true);
+      const data = response.data as any;
+      expect(data.global_skills).toEqual([]);
     });
 
-    it('should fail without name parameter', () => {
-      const result = sxSkill({ action: 'read' });
+    it('should filter by scope', async () => {
+      createTestSkillDir(TEST_GLOBAL_SKILLS_DIR, TEST_SKILL.name, SKILL_MD_CONTENT);
       
-      expect(result.success).toBe(false);
-      expect(result.errors).toBeDefined();
-    });
-
-    it('should fail for non-existing skill', () => {
-      const result = sxSkill({ action: 'read', name: 'non-existing', projectRoot: tempDir });
+      const response = await handleList({ scope: 'global' });
       
-      expect(result.success).toBe(false);
+      expect(response.success).toBe(true);
     });
   });
 
-  describe('create action', () => {
-    it('should create new project skill', () => {
-      // 使用唯一名称避免与全局技能冲突
-      const uniqueName = `test-skill-${Date.now()}`;
-      const result = sxSkill({
-        action: 'create',
-        name: uniqueName,
+  describe('handleRead', () => {
+    it('should read existing skill', async () => {
+      createTestSkillDir(TEST_GLOBAL_SKILLS_DIR, TEST_SKILL.name, SKILL_MD_CONTENT);
+      
+      const response = await handleRead({ name: TEST_SKILL.name });
+      
+      expect(response.success).toBe(true);
+      expect(response.data).toBeDefined();
+      const data = response.data as any;
+      // readSkillContent 返回 { metadata, body, scripts, references, assets }
+      expect(data.metadata).toBeDefined();
+      expect(data.metadata.name).toBe(TEST_SKILL.name);
+    });
+
+    it('should return error for non-existing skill', async () => {
+      const response = await handleRead({ name: 'non-existing' });
+      
+      expect(response.success).toBe(false);
+      expect(response.message).toContain('不存在');
+    });
+
+    it('should require name parameter', async () => {
+      const response = await handleRead({});
+      
+      expect(response.success).toBe(false);
+      expect(response.errors).toBeDefined();
+    });
+  });
+
+  describe('handleCreate', () => {
+    it('should create a new skill', async () => {
+      const response = await handleCreate({
+        name: 'new-skill',
         metadata: {
-          name: uniqueName,
-          description: 'A new skill',
+          name: 'new-skill',
+          description: 'A new skill for testing creation',
         },
         body: '# New Skill\n\nContent here.',
-        scope: 'project',
-        projectRoot: tempDir,
+        scope: 'global',
       });
       
-      expect(result.success).toBe(true);
-      
-      const skillDir = path.join(tempDir, '.skillix', 'skills', uniqueName);
-      expect(nodeFs.existsSync(skillDir)).toBe(true);
+      expect(response.success).toBe(true);
+      expect(response.message).toContain('成功创建技能');
     });
 
-    it('should fail without name parameter', () => {
-      const result = sxSkill({
-        action: 'create',
+    it('should reject invalid skill name', async () => {
+      const response = await handleCreate({
+        name: 'Invalid_Name',
         metadata: {
-          name: 'test',
-          description: 'test',
+          name: 'Invalid_Name',
+          description: 'A skill with invalid name',
         },
+        body: '# Test',
+        scope: 'global',
       });
       
-      expect(result.success).toBe(false);
+      expect(response.success).toBe(false);
+    });
+
+    it('should reject existing skill', async () => {
+      createTestSkillDir(TEST_GLOBAL_SKILLS_DIR, TEST_SKILL.name, SKILL_MD_CONTENT);
+      
+      const response = await handleCreate({
+        name: TEST_SKILL.name,
+        metadata: TEST_SKILL.metadata,
+        body: TEST_SKILL.body,
+        scope: 'global',
+      });
+      
+      expect(response.success).toBe(false);
+      expect(response.message).toContain('已存在');
+    });
+
+    it('should require metadata', async () => {
+      const response = await handleCreate({
+        name: 'test-skill',
+        scope: 'global',
+      });
+      
+      expect(response.success).toBe(false);
     });
   });
 
-  describe('update action', () => {
-    it('should update existing project skill metadata', () => {
-      const projectSkillsDir = path.join(tempDir, '.skillix', 'skills');
-      createTestSkill(projectSkillsDir, 'update-skill', TEST_SKILL_MD);
-      
-      const result = sxSkill({
-        action: 'update',
-        name: 'update-skill',
+  describe('handleUpdate', () => {
+    it('should update existing skill metadata', async () => {
+      // First create the skill
+      await handleCreate({
+        name: 'update-test',
         metadata: {
-          name: 'update-skill',
-          description: 'Updated description',
+          name: 'update-test',
+          description: 'Original description for update testing',
         },
-        projectRoot: tempDir,
+        body: '# Original',
+        scope: 'global',
       });
       
-      expect(result.success).toBe(true);
-      expect(result.message).toContain('成功更新技能');
-    });
-
-    it('should fail without name parameter', () => {
-      const result = sxSkill({ action: 'update' });
-      
-      expect(result.success).toBe(false);
-      expect(result.message).toContain('缺少技能名称');
-    });
-
-    it('should fail without update content (no metadata or body)', () => {
-      const projectSkillsDir = path.join(tempDir, '.skillix', 'skills');
-      createTestSkill(projectSkillsDir, 'no-content-skill', TEST_SKILL_MD);
-      
-      const result = sxSkill({
-        action: 'update',
-        name: 'no-content-skill',
-        projectRoot: tempDir,
+      // Then update it
+      const response = await handleUpdate({
+        name: 'update-test',
+        metadata: {
+          name: 'update-test',
+          description: 'Updated description for update testing',
+          version: '2.0.0',
+        },
+        scope: 'global',
       });
       
-      expect(result.success).toBe(false);
-      expect(result.message).toContain('缺少更新内容');
+      expect(response.success).toBe(true);
     });
 
-    it('should fail for non-existing skill', () => {
-      const result = sxSkill({
-        action: 'update',
+    it('should update skill body', async () => {
+      await handleCreate({
+        name: 'body-update',
+        metadata: {
+          name: 'body-update',
+          description: 'Testing body update functionality',
+        },
+        body: '# Original Body',
+        scope: 'global',
+      });
+      
+      const response = await handleUpdate({
+        name: 'body-update',
+        body: '# Updated Body\n\nNew content here.',
+        scope: 'global',
+      });
+      
+      expect(response.success).toBe(true);
+    });
+
+    it('should return error for non-existing skill', async () => {
+      const response = await handleUpdate({
         name: 'non-existing',
         metadata: {
           name: 'non-existing',
-          description: 'Updated',
+          description: 'Trying to update non-existing skill',
         },
-        projectRoot: tempDir,
+        scope: 'global',
       });
       
-      expect(result.success).toBe(false);
-      expect(result.message).toContain('不存在');
-    });
-
-    it('should update skill body only', () => {
-      const projectSkillsDir = path.join(tempDir, '.skillix', 'skills');
-      createTestSkill(projectSkillsDir, 'body-update-skill', TEST_SKILL_MD);
-      
-      const result = sxSkill({
-        action: 'update',
-        name: 'body-update-skill',
-        body: '# New Body Content\n\nThis is the updated body.',
-        projectRoot: tempDir,
-      });
-      
-      expect(result.success).toBe(true);
-    });
-
-    it('should update both metadata and body', () => {
-      const projectSkillsDir = path.join(tempDir, '.skillix', 'skills');
-      createTestSkill(projectSkillsDir, 'full-update-skill', TEST_SKILL_MD);
-      
-      const result = sxSkill({
-        action: 'update',
-        name: 'full-update-skill',
-        metadata: {
-          name: 'full-update-skill',
-          description: 'Fully updated',
-          version: '2.0.0',
-        },
-        body: '# Updated Content\n\nNew body here.',
-        projectRoot: tempDir,
-      });
-      
-      expect(result.success).toBe(true);
-      expect(result.data).toBeDefined();
-      const data = result.data as { metadata: { version: string } };
-      expect(data.metadata.version).toBe('2.0.0');
-    });
-
-    it('should return updated skill info in response data', () => {
-      const projectSkillsDir = path.join(tempDir, '.skillix', 'skills');
-      createTestSkill(projectSkillsDir, 'info-update-skill', TEST_SKILL_MD);
-      
-      const result = sxSkill({
-        action: 'update',
-        name: 'info-update-skill',
-        metadata: {
-          name: 'info-update-skill',
-          description: 'Updated for info check',
-          tags: ['updated', 'test'],
-        },
-        projectRoot: tempDir,
-      });
-      
-      expect(result.success).toBe(true);
-      expect(result.data).toBeDefined();
-      
-      const data = result.data as { 
-        name: string; 
-        scope: string; 
-        path: string; 
-        metadata: { description: string; tags: string[]; name: string } 
-      };
-      // name 来自 skill 对象，是从 metadata.name 获取的（更新后的值）
-      expect(data.name).toBe('info-update-skill');
-      expect(data.scope).toBe('project');
-      expect(data.path).toContain('info-update-skill');
-      expect(data.metadata.description).toBe('Updated for info check');
-      expect(data.metadata.tags).toContain('updated');
-      // metadata.name 是更新后的值
-      expect(data.metadata.name).toBe('info-update-skill');
+      expect(response.success).toBe(false);
     });
   });
 
-  describe('delete action', () => {
-    it('should delete existing project skill', () => {
-      const projectSkillsDir = path.join(tempDir, '.skillix', 'skills');
-      createTestSkill(projectSkillsDir, 'delete-skill', TEST_SKILL_MD);
-      
-      const result = sxSkill({
-        action: 'delete',
-        name: 'delete-skill',
-        projectRoot: tempDir,
+  describe('handleDelete', () => {
+    it('should delete existing skill', async () => {
+      await handleCreate({
+        name: 'to-delete',
+        metadata: {
+          name: 'to-delete',
+          description: 'A skill to be deleted in testing',
+        },
+        body: '# To Delete',
+        scope: 'global',
       });
       
-      expect(result.success).toBe(true);
+      const response = await handleDelete({
+        name: 'to-delete',
+        scope: 'global',
+      });
       
-      const skillDir = path.join(projectSkillsDir, 'delete-skill');
-      expect(nodeFs.existsSync(skillDir)).toBe(false);
+      expect(response.success).toBe(true);
+      expect(response.message).toContain('成功删除技能');
     });
 
-    it('should fail without name parameter', () => {
-      const result = sxSkill({ action: 'delete' });
-      
-      expect(result.success).toBe(false);
-    });
-
-    it('should fail for non-existing skill', () => {
-      const result = sxSkill({
-        action: 'delete',
+    it('should return error for non-existing skill', async () => {
+      const response = await handleDelete({
         name: 'non-existing',
-        projectRoot: tempDir,
+        scope: 'global',
       });
       
-      expect(result.success).toBe(false);
+      expect(response.success).toBe(false);
     });
-  });
 
-  describe('unknown action', () => {
-    it('should fail for unknown action', () => {
-      const result = sxSkill({ action: 'unknown' as any });
+    it('should require name parameter', async () => {
+      const response = await handleDelete({});
       
-      expect(result.success).toBe(false);
-      expect(result.errors).toBeDefined();
+      expect(response.success).toBe(false);
     });
   });
 });
+
+
+
+

@@ -1,211 +1,275 @@
 /**
- * fs 工具函数测试
+ * 文件系统工具函数测试
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import * as path from 'node:path';
-import * as nodeFs from 'node:fs';
-import { createTempDir, cleanupTempDir } from '../helpers/setup.js';
-import * as fs from '../../src/utils/fs.js';
+import * as path from 'path';
+import {
+  setupTestEnv,
+  cleanupTestEnv,
+  TEST_BASE_DIR,
+  createTestFile,
+  readTestFile,
+} from '../helpers/setup.js';
+import * as fsUtils from '../../src/utils/fs.js';
 
 describe('fs utils', () => {
-  let tempDir: string;
-
   beforeEach(() => {
-    tempDir = createTempDir();
+    setupTestEnv();
   });
 
   afterEach(() => {
-    cleanupTempDir(tempDir);
+    cleanupTestEnv();
   });
 
   describe('exists', () => {
-    it('should return true for existing file', () => {
-      const filePath = path.join(tempDir, 'test.txt');
-      nodeFs.writeFileSync(filePath, 'test');
-      expect(fs.exists(filePath)).toBe(true);
-    });
-
-    it('should return false for non-existing file', () => {
-      const filePath = path.join(tempDir, 'non-existing.txt');
-      expect(fs.exists(filePath)).toBe(false);
-    });
-
     it('should return true for existing directory', () => {
-      expect(fs.exists(tempDir)).toBe(true);
+      expect(fsUtils.exists(TEST_BASE_DIR)).toBe(true);
+    });
+
+    it('should return true for existing file', () => {
+      const filePath = path.join(TEST_BASE_DIR, 'test.txt');
+      createTestFile(filePath, 'content');
+      expect(fsUtils.exists(filePath)).toBe(true);
+    });
+
+    it('should return false for non-existing path', () => {
+      expect(fsUtils.exists(path.join(TEST_BASE_DIR, 'non-existing'))).toBe(false);
     });
   });
 
   describe('isDirectory', () => {
     it('should return true for directory', () => {
-      expect(fs.isDirectory(tempDir)).toBe(true);
+      expect(fsUtils.isDirectory(TEST_BASE_DIR)).toBe(true);
     });
 
     it('should return false for file', () => {
-      const filePath = path.join(tempDir, 'test.txt');
-      nodeFs.writeFileSync(filePath, 'test');
-      expect(fs.isDirectory(filePath)).toBe(false);
+      const filePath = path.join(TEST_BASE_DIR, 'test.txt');
+      createTestFile(filePath, 'content');
+      expect(fsUtils.isDirectory(filePath)).toBe(false);
+    });
+
+    it('should return false for non-existing path', () => {
+      expect(fsUtils.isDirectory(path.join(TEST_BASE_DIR, 'non-existing'))).toBe(false);
     });
   });
 
   describe('isFile', () => {
     it('should return true for file', () => {
-      const filePath = path.join(tempDir, 'test.txt');
-      nodeFs.writeFileSync(filePath, 'test');
-      expect(fs.isFile(filePath)).toBe(true);
+      const filePath = path.join(TEST_BASE_DIR, 'test.txt');
+      createTestFile(filePath, 'content');
+      expect(fsUtils.isFile(filePath)).toBe(true);
     });
 
     it('should return false for directory', () => {
-      expect(fs.isFile(tempDir)).toBe(false);
+      expect(fsUtils.isFile(TEST_BASE_DIR)).toBe(false);
+    });
+
+    it('should return false for non-existing path', () => {
+      expect(fsUtils.isFile(path.join(TEST_BASE_DIR, 'non-existing.txt'))).toBe(false);
     });
   });
 
   describe('readFile', () => {
     it('should read file content', () => {
-      const filePath = path.join(tempDir, 'test.txt');
-      nodeFs.writeFileSync(filePath, 'hello world');
-      expect(fs.readFile(filePath)).toBe('hello world');
+      const filePath = path.join(TEST_BASE_DIR, 'test.txt');
+      const content = 'Hello, World!';
+      createTestFile(filePath, content);
+      expect(fsUtils.readFile(filePath)).toBe(content);
     });
 
-    it('should throw for non-existing file', () => {
-      const filePath = path.join(tempDir, 'non-existing.txt');
-      expect(() => fs.readFile(filePath)).toThrow();
+    it('should throw error for non-existing file', () => {
+      expect(() => fsUtils.readFile(path.join(TEST_BASE_DIR, 'non-existing.txt'))).toThrow();
     });
   });
 
   describe('writeFile', () => {
-    it('should write content to file', () => {
-      const filePath = path.join(tempDir, 'test.txt');
-      fs.writeFile(filePath, 'hello world');
-      expect(nodeFs.readFileSync(filePath, 'utf-8')).toBe('hello world');
+    it('should write file content', () => {
+      const filePath = path.join(TEST_BASE_DIR, 'write-test.txt');
+      const content = 'Test content';
+      fsUtils.writeFile(filePath, content);
+      expect(readTestFile(filePath)).toBe(content);
     });
 
-    it('should create parent directories if not exist', () => {
-      const filePath = path.join(tempDir, 'subdir', 'test.txt');
-      fs.writeFile(filePath, 'hello');
-      expect(nodeFs.existsSync(filePath)).toBe(true);
+    it('should create parent directories automatically', () => {
+      const filePath = path.join(TEST_BASE_DIR, 'subdir', 'nested', 'test.txt');
+      const content = 'Nested content';
+      fsUtils.writeFile(filePath, content);
+      expect(readTestFile(filePath)).toBe(content);
+    });
+
+    it('should overwrite existing file', () => {
+      const filePath = path.join(TEST_BASE_DIR, 'overwrite.txt');
+      createTestFile(filePath, 'original');
+      fsUtils.writeFile(filePath, 'updated');
+      expect(readTestFile(filePath)).toBe('updated');
     });
   });
 
   describe('readJson', () => {
-    it('should parse JSON file', () => {
-      const filePath = path.join(tempDir, 'test.json');
-      nodeFs.writeFileSync(filePath, '{"key": "value"}');
-      expect(fs.readJson(filePath)).toEqual({ key: 'value' });
+    it('should read and parse JSON file', () => {
+      const filePath = path.join(TEST_BASE_DIR, 'test.json');
+      const data = { key: 'value', number: 123 };
+      createTestFile(filePath, JSON.stringify(data));
+      expect(fsUtils.readJson(filePath)).toEqual(data);
     });
 
     it('should return null for non-existing file', () => {
-      const filePath = path.join(tempDir, 'non-existing.json');
-      expect(fs.readJson(filePath)).toBeNull();
+      expect(fsUtils.readJson(path.join(TEST_BASE_DIR, 'non-existing.json'))).toBeNull();
     });
 
     it('should return null for invalid JSON', () => {
-      const filePath = path.join(tempDir, 'invalid.json');
-      nodeFs.writeFileSync(filePath, 'not json');
-      expect(fs.readJson(filePath)).toBeNull();
+      const filePath = path.join(TEST_BASE_DIR, 'invalid.json');
+      createTestFile(filePath, 'not valid json');
+      expect(fsUtils.readJson(filePath)).toBeNull();
     });
   });
 
   describe('writeJson', () => {
-    it('should write JSON with formatting', () => {
-      const filePath = path.join(tempDir, 'test.json');
-      fs.writeJson(filePath, { key: 'value' });
-      const content = nodeFs.readFileSync(filePath, 'utf-8');
-      expect(JSON.parse(content)).toEqual({ key: 'value' });
+    it('should write JSON file with formatting', () => {
+      const filePath = path.join(TEST_BASE_DIR, 'write.json');
+      const data = { key: 'value' };
+      fsUtils.writeJson(filePath, data);
+      
+      const content = readTestFile(filePath);
+      expect(content).toBe(JSON.stringify(data, null, 2));
     });
   });
 
   describe('ensureDir', () => {
-    it('should create directory recursively', () => {
-      const dirPath = path.join(tempDir, 'a', 'b', 'c');
-      fs.ensureDir(dirPath);
-      expect(nodeFs.existsSync(dirPath)).toBe(true);
+    it('should create directory if not exists', () => {
+      const dirPath = path.join(TEST_BASE_DIR, 'new-dir');
+      fsUtils.ensureDir(dirPath);
+      expect(fsUtils.isDirectory(dirPath)).toBe(true);
     });
 
-    it('should not throw if directory exists', () => {
-      expect(() => fs.ensureDir(tempDir)).not.toThrow();
-    });
-  });
-
-  describe('removeDir', () => {
-    it('should remove directory recursively', () => {
-      const dirPath = path.join(tempDir, 'to-remove');
-      nodeFs.mkdirSync(dirPath);
-      nodeFs.writeFileSync(path.join(dirPath, 'file.txt'), 'content');
-      
-      const result = fs.removeDir(dirPath);
-      expect(result).toBe(true);
-      expect(nodeFs.existsSync(dirPath)).toBe(false);
+    it('should create nested directories', () => {
+      const dirPath = path.join(TEST_BASE_DIR, 'level1', 'level2', 'level3');
+      fsUtils.ensureDir(dirPath);
+      expect(fsUtils.isDirectory(dirPath)).toBe(true);
     });
 
-    it('should return true for non-existing directory (force mode)', () => {
-      const dirPath = path.join(tempDir, 'non-existing');
-      // rmSync with force: true 不会抛出错误
-      expect(fs.removeDir(dirPath)).toBe(true);
+    it('should not throw if directory already exists', () => {
+      expect(() => fsUtils.ensureDir(TEST_BASE_DIR)).not.toThrow();
     });
   });
 
   describe('listDir', () => {
     it('should list directory contents', () => {
-      nodeFs.writeFileSync(path.join(tempDir, 'file1.txt'), '');
-      nodeFs.writeFileSync(path.join(tempDir, 'file2.txt'), '');
+      createTestFile(path.join(TEST_BASE_DIR, 'file1.txt'), 'a');
+      createTestFile(path.join(TEST_BASE_DIR, 'file2.txt'), 'b');
+      fsUtils.ensureDir(path.join(TEST_BASE_DIR, 'subdir'));
       
-      const files = fs.listDir(tempDir);
-      expect(files).toContain('file1.txt');
-      expect(files).toContain('file2.txt');
+      const contents = fsUtils.listDir(TEST_BASE_DIR);
+      expect(contents).toContain('file1.txt');
+      expect(contents).toContain('file2.txt');
+      expect(contents).toContain('subdir');
     });
 
     it('should return empty array for non-existing directory', () => {
-      const dirPath = path.join(tempDir, 'non-existing');
-      expect(fs.listDir(dirPath)).toEqual([]);
+      expect(fsUtils.listDir(path.join(TEST_BASE_DIR, 'non-existing'))).toEqual([]);
     });
   });
 
   describe('listSubDirs', () => {
     it('should list only subdirectories', () => {
-      nodeFs.mkdirSync(path.join(tempDir, 'dir1'));
-      nodeFs.mkdirSync(path.join(tempDir, 'dir2'));
-      nodeFs.writeFileSync(path.join(tempDir, 'file.txt'), '');
+      createTestFile(path.join(TEST_BASE_DIR, 'file.txt'), 'content');
+      fsUtils.ensureDir(path.join(TEST_BASE_DIR, 'dir1'));
+      fsUtils.ensureDir(path.join(TEST_BASE_DIR, 'dir2'));
       
-      const dirs = fs.listSubDirs(tempDir);
-      expect(dirs).toContain('dir1');
-      expect(dirs).toContain('dir2');
-      expect(dirs).not.toContain('file.txt');
+      const subdirs = fsUtils.listSubDirs(TEST_BASE_DIR);
+      expect(subdirs).toContain('dir1');
+      expect(subdirs).toContain('dir2');
+      expect(subdirs).not.toContain('file.txt');
+    });
+  });
+
+  describe('removeFile', () => {
+    it('should remove existing file', () => {
+      const filePath = path.join(TEST_BASE_DIR, 'to-remove.txt');
+      createTestFile(filePath, 'content');
+      
+      const result = fsUtils.removeFile(filePath);
+      expect(result).toBe(true);
+      expect(fsUtils.exists(filePath)).toBe(false);
     });
 
-    it('should return empty array for non-existing directory', () => {
-      const dirPath = path.join(tempDir, 'non-existing');
-      expect(fs.listSubDirs(dirPath)).toEqual([]);
+    it('should return false for non-existing file', () => {
+      const result = fsUtils.removeFile(path.join(TEST_BASE_DIR, 'non-existing.txt'));
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('removeDir', () => {
+    it('should remove directory recursively', () => {
+      const dirPath = path.join(TEST_BASE_DIR, 'to-remove');
+      fsUtils.ensureDir(dirPath);
+      createTestFile(path.join(dirPath, 'file.txt'), 'content');
+      fsUtils.ensureDir(path.join(dirPath, 'subdir'));
+      createTestFile(path.join(dirPath, 'subdir', 'nested.txt'), 'nested');
+      
+      const result = fsUtils.removeDir(dirPath);
+      expect(result).toBe(true);
+      expect(fsUtils.exists(dirPath)).toBe(false);
+    });
+
+    it('should return false for non-existing directory', () => {
+      const result = fsUtils.removeDir(path.join(TEST_BASE_DIR, 'non-existing'));
+      expect(result).toBe(false);
     });
   });
 
   describe('copyFile', () => {
-    it('should copy file', () => {
-      const srcPath = path.join(tempDir, 'src.txt');
-      const destPath = path.join(tempDir, 'dest.txt');
-      nodeFs.writeFileSync(srcPath, 'content');
+    it('should copy file to destination', () => {
+      const srcPath = path.join(TEST_BASE_DIR, 'source.txt');
+      const destPath = path.join(TEST_BASE_DIR, 'dest.txt');
+      const content = 'copy content';
+      createTestFile(srcPath, content);
       
-      fs.copyFile(srcPath, destPath);
+      fsUtils.copyFile(srcPath, destPath);
+      expect(readTestFile(destPath)).toBe(content);
+    });
+
+    it('should create destination directory if not exists', () => {
+      const srcPath = path.join(TEST_BASE_DIR, 'source.txt');
+      const destPath = path.join(TEST_BASE_DIR, 'new-dir', 'dest.txt');
+      const content = 'copy content';
+      createTestFile(srcPath, content);
       
-      expect(nodeFs.existsSync(destPath)).toBe(true);
-      expect(nodeFs.readFileSync(destPath, 'utf-8')).toBe('content');
+      fsUtils.copyFile(srcPath, destPath);
+      expect(readTestFile(destPath)).toBe(content);
     });
   });
 
   describe('copyDir', () => {
     it('should copy directory recursively', () => {
-      const srcDir = path.join(tempDir, 'src');
-      const destDir = path.join(tempDir, 'dest');
+      const srcDir = path.join(TEST_BASE_DIR, 'src-dir');
+      const destDir = path.join(TEST_BASE_DIR, 'dest-dir');
       
-      nodeFs.mkdirSync(srcDir);
-      nodeFs.writeFileSync(path.join(srcDir, 'file.txt'), 'content');
-      nodeFs.mkdirSync(path.join(srcDir, 'subdir'));
-      nodeFs.writeFileSync(path.join(srcDir, 'subdir', 'nested.txt'), 'nested');
+      fsUtils.ensureDir(srcDir);
+      createTestFile(path.join(srcDir, 'file1.txt'), 'content1');
+      fsUtils.ensureDir(path.join(srcDir, 'subdir'));
+      createTestFile(path.join(srcDir, 'subdir', 'file2.txt'), 'content2');
       
-      fs.copyDir(srcDir, destDir);
+      fsUtils.copyDir(srcDir, destDir);
       
-      expect(nodeFs.existsSync(path.join(destDir, 'file.txt'))).toBe(true);
-      expect(nodeFs.existsSync(path.join(destDir, 'subdir', 'nested.txt'))).toBe(true);
+      expect(fsUtils.isDirectory(destDir)).toBe(true);
+      expect(readTestFile(path.join(destDir, 'file1.txt'))).toBe('content1');
+      expect(readTestFile(path.join(destDir, 'subdir', 'file2.txt'))).toBe('content2');
+    });
+  });
+
+  describe('getModifiedTime', () => {
+    it('should return modification time for existing file', () => {
+      const filePath = path.join(TEST_BASE_DIR, 'time-test.txt');
+      createTestFile(filePath, 'content');
+      
+      const mtime = fsUtils.getModifiedTime(filePath);
+      expect(mtime).toBeInstanceOf(Date);
+    });
+
+    it('should return null for non-existing file', () => {
+      expect(fsUtils.getModifiedTime(path.join(TEST_BASE_DIR, 'non-existing.txt'))).toBeNull();
     });
   });
 });

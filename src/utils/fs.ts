@@ -117,6 +117,9 @@ export function removeFile(filePath: string): boolean {
  * 删除目录（递归）
  */
 export function removeDir(dirPath: string): boolean {
+  if (!exists(dirPath)) {
+    return false;
+  }
   try {
     fs.rmSync(dirPath, { recursive: true, force: true });
     return true;

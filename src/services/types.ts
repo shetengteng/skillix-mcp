@@ -482,6 +482,12 @@ export interface SkillMatch {
   descriptionScore: number;
   /** 标签匹配分 */
   tagScore: number;
+  /** 领域同义词匹配分 */
+  domainScore?: number;
+  /** 匹配的关键词 */
+  matchedKeywords?: string[];
+  /** 匹配的领域 */
+  matchedDomains?: string[];
 }
 
 /**
@@ -518,5 +524,59 @@ export interface DispatchAlternative {
   confidence: number;
   /** 理由 */
   reason: string;
+}
+
+/**
+ * 分流分析参数
+ */
+export interface AnalyzeParams {
+  /** 任务描述 */
+  task: string;
+  /** 上下文信息 */
+  context?: string;
+  /** 提示词列表 */
+  hints?: string[];
+  /** 项目根目录 */
+  projectRoot?: string;
+  /** 分流配置 */
+  config?: Partial<DispatchConfig>;
+}
+
+/**
+ * 技能信息（简化版，用于分流分析）
+ */
+export interface SkillInfo {
+  name: string;
+  description: string;
+  source: string;
+  scope: 'global' | 'project' | 'market';
+  tags?: string[];
+}
+
+/**
+ * 匹配分数详情
+ */
+export interface MatchScoreDetails {
+  /** 总分 */
+  total: number;
+  /** 名称匹配分 */
+  nameScore: number;
+  /** 描述关键词匹配分 */
+  descriptionScore: number;
+  /** 标签匹配分 */
+  tagScore: number;
+  /** 领域同义词匹配分 */
+  domainScore: number;
+  /** 匹配的关键词 */
+  matchedKeywords: string[];
+  /** 匹配的领域 */
+  matchedDomains: string[];
+}
+
+/**
+ * 带详细分数的技能信息
+ */
+export interface ScoredSkill extends SkillInfo {
+  scoreDetails: MatchScoreDetails;
 }
 

@@ -156,4 +156,70 @@ tags: [tag1, tag2]
 
 ...
 \`\`\`
+
+---
+
+## Description 编写规范 ⭐
+
+良好的 description 是技能被正确匹配的关键。遵循以下规范可提高技能的可发现性。
+
+### 规范结构
+
+\`\`\`yaml
+description: |
+  [功能说明] - 一句话说明技能的核心功能
+  触发场景：[场景列表] - 明确列出使用场景
+  关键词：[关键词列表] - 包含可能的用户表达方式
+\`\`\`
+
+### 好的 Description 示例
+
+\`\`\`yaml
+# ✅ 好的 description
+description: |
+  PDF 文件处理工具。
+  触发场景：当用户需要处理 PDF 文件时使用，包括：
+  - 转换 PDF 为其他格式（图片、文本、Markdown）
+  - 合并或拆分 PDF 文件
+  - 提取 PDF 中的文本或表格
+  - 填写 PDF 表单
+  关键词：PDF、文档、转换、提取、合并、拆分
+\`\`\`
+
+### 不好的 Description 示例
+
+\`\`\`yaml
+# ❌ 不好的 description
+description: PDF 转换工具
+
+# 问题：
+# - 没有说明触发场景
+# - 关键词太少
+# - AI 难以匹配
+\`\`\`
+
+### 编写要点
+
+| 要素 | 说明 | 示例 |
+|------|------|------|
+| 功能说明 | 第一句简洁说明核心功能 | "PDF 文件处理工具" |
+| 触发场景 | 明确列出 3-5 个使用场景 | "转换格式、合并文件、提取内容" |
+| 关键词 | 包含中英文关键词 | "PDF、document、转换、convert" |
+| 动词 | 使用常见动词 | "处理、转换、生成、分析" |
+
+### 领域关键词参考
+
+系统内置了领域同义词映射，编写 description 时可参考：
+
+| 领域 | 关键词示例 |
+|------|-----------|
+| 文档 | pdf, excel, word, markdown, 文档, document |
+| 图像 | image, picture, 图片, png, jpg, screenshot |
+| 代码 | code, refactor, test, debug, 代码, 重构 |
+| 版本控制 | git, commit, branch, merge, pr, 提交, 分支 |
+| 容器 | docker, container, kubernetes, k8s, 容器 |
+| 数据库 | database, sql, mysql, postgres, mongodb |
+| API | api, rest, http, request, 接口, 请求 |
+| 转换 | convert, transform, 转换, format, 格式化 |
+| 生成 | generate, create, build, 生成, 创建 |
 `;

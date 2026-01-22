@@ -5,52 +5,65 @@
 import { describe, it, expect } from 'vitest';
 import { sxHelp } from '../../src/tools/helps/index.js';
 
-describe('sx-help tool', () => {
-  describe('overview topic', () => {
-    it('should return overview help', () => {
-      const result = sxHelp({ topic: 'overview' });
+describe('sx-help tools', () => {
+  describe('sxHelp', () => {
+    it('should return overview help by default', () => {
+      const response = sxHelp({});
       
-      expect(result.success).toBe(true);
-      expect(result.message).toBeDefined();
-      // 检查返回的帮助内容
-      expect(result.data || result.message).toBeDefined();
+      expect(response.success).toBe(true);
+      expect(response.data).toBeDefined();
+      const data = response.data as { topic: string; content: string };
+      expect(data.content).toContain('Skillix');
     });
-  });
 
-  describe('skill topic', () => {
+    it('should return overview help when topic is overview', () => {
+      const response = sxHelp({ topic: 'overview' });
+      
+      expect(response.success).toBe(true);
+      const data = response.data as { topic: string; content: string };
+      expect(data.content).toContain('Skillix');
+    });
+
     it('should return skill help', () => {
-      const result = sxHelp({ topic: 'skill' });
+      const response = sxHelp({ topic: 'skill' });
       
-      expect(result.success).toBe(true);
-      expect(result.message).toBeDefined();
+      expect(response.success).toBe(true);
+      const data = response.data as { topic: string; content: string };
+      expect(data.content).toContain('sx-skill');
     });
-  });
 
-  describe('config topic', () => {
     it('should return config help', () => {
-      const result = sxHelp({ topic: 'config' });
+      const response = sxHelp({ topic: 'config' });
       
-      expect(result.success).toBe(true);
-      expect(result.message).toBeDefined();
+      expect(response.success).toBe(true);
+      const data = response.data as { topic: string; content: string };
+      expect(data.content).toContain('sx-config');
     });
-  });
 
-  describe('default topic', () => {
-    it('should return overview for undefined topic', () => {
-      const result = sxHelp({});
+    it('should return market help', () => {
+      const response = sxHelp({ topic: 'market' });
       
-      expect(result.success).toBe(true);
-      expect(result.message).toBeDefined();
+      expect(response.success).toBe(true);
+      const data = response.data as { topic: string; content: string };
+      expect(data.content).toContain('sx-market');
     });
-  });
 
-  describe('unknown topic', () => {
-    it('should handle unknown topic gracefully', () => {
-      const result = sxHelp({ topic: 'unknown' as any });
+    it('should return dispatch help', () => {
+      const response = sxHelp({ topic: 'dispatch' });
       
-      // 应该返回默认帮助或错误
-      expect(result).toBeDefined();
-      expect(result.success).toBeDefined();
+      expect(response.success).toBe(true);
+      const data = response.data as { topic: string; content: string };
+      expect(data.content).toContain('sx-dispatch');
+    });
+
+    it('should return all help when topic is all', () => {
+      const response = sxHelp({ topic: 'all' });
+      
+      expect(response.success).toBe(true);
+      const data = response.data as { topic: string; content: string };
+      expect(data.content).toContain('sx-skill');
+      expect(data.content).toContain('sx-config');
+      expect(data.content).toContain('sx-market');
     });
   });
 });

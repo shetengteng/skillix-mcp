@@ -43,7 +43,7 @@ export interface SxSkillParams {
  * sx-config 工具参数
  */
 export interface SxConfigParams {
-  action: 'get' | 'set' | 'init' | 'sources';
+  action: 'get' | 'set' | 'init' | 'sources' | 'refresh';
   scope?: 'global' | 'project';
   projectRoot?: string;
   key?: string;

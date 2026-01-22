@@ -1,6 +1,6 @@
 /**
  * sx-config 工具
- * 配置管理：get, set, init, sources
+ * 配置管理：get, set, init, sources, refresh
  */
 
 import type { ToolResponse, SxConfigParams } from '../types.js';
@@ -8,9 +8,10 @@ import { handleGet } from './get.js';
 import { handleSet } from './set.js';
 import { handleInit } from './init.js';
 import { handleSources } from './sources.js';
+import { handleRefresh } from './refresh.js';
 
 // 导出子命令处理函数
-export { handleGet, handleSet, handleInit, handleSources };
+export { handleGet, handleSet, handleInit, handleSources, handleRefresh };
 
 // 导出类型
 export type { SxConfigParams };
@@ -30,11 +31,13 @@ export function sxConfig(params: SxConfigParams): ToolResponse {
       return handleInit(params);
     case 'sources':
       return handleSources(params);
+    case 'refresh':
+      return handleRefresh(params);
     default:
       return {
         success: false,
         message: `未知操作: ${action}`,
-        errors: ['支持的操作: get, set, init, sources'],
+        errors: ['支持的操作: get, set, init, sources, refresh'],
       };
   }
 }
@@ -44,13 +47,16 @@ export function sxConfig(params: SxConfigParams): ToolResponse {
  */
 export const sxConfigDefinition = {
   name: 'sx-config',
-  description: '配置管理工具，支持获取、设置配置和管理技能源',
+  description: `配置管理工具，支持获取、设置配置和管理技能源
+
+【refresh 操作】
+刷新项目的 Cursor Rule 文件（.cursor/rules/skillix.mdc），用于更新到最新版本`,
   inputSchema: {
     type: 'object',
     properties: {
       action: {
         type: 'string',
-        enum: ['get', 'set', 'init', 'sources'],
+        enum: ['get', 'set', 'init', 'sources', 'refresh'],
         description: '操作类型',
       },
       scope: {

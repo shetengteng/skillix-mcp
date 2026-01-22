@@ -279,6 +279,36 @@ sx-config action=sources sourceAction=remove sourceName=my-source
 
 **Note:** The `init` action now automatically installs a Cursor Rule (`.cursor/rules/skillix.mdc`) that guides AI to use `sx-dispatch` for task analysis at the start of each session.
 
+### sx-feedback
+
+Skill feedback management tool for recording and analyzing skill usage.
+
+| Action | Description |
+|--------|-------------|
+| `record` | Record skill execution feedback |
+| `list` | List feedback records |
+| `analyze` | Analyze feedback and suggest updates |
+| `clear` | Clear feedback records |
+
+**Examples:**
+
+```bash
+# Record success feedback
+sx-feedback action=record skillName=my-skill result=success task="Completed task"
+
+# Record failure feedback
+sx-feedback action=record skillName=my-skill result=failure notes="Error message"
+
+# List feedback for a skill
+sx-feedback action=list skillName=my-skill days=7
+
+# Analyze skill feedback
+sx-feedback action=analyze skillName=my-skill
+
+# Clear feedback
+sx-feedback action=clear skillName=my-skill
+```
+
 ### sx-help
 
 Help information tool.
@@ -290,6 +320,7 @@ Help information tool.
 | `config` | sx-config tool help |
 | `market` | sx-market tool help |
 | `dispatch` | sx-dispatch tool help |
+| `feedback` | sx-feedback tool help |
 | `all` | All help topics |
 
 **Examples:**

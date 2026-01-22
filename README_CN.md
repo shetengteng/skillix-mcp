@@ -232,6 +232,36 @@ sx-config action=sources sourceAction=list
 sx-config action=sources sourceAction=remove sourceName=my-source
 ```
 
+### sx-feedback
+
+技能反馈管理工具，用于记录和分析技能使用反馈。
+
+| 操作 | 说明 |
+|------|------|
+| `record` | 记录技能执行反馈 |
+| `list` | 列出反馈记录 |
+| `analyze` | 分析反馈并建议更新 |
+| `clear` | 清除反馈记录 |
+
+**使用示例：**
+
+```bash
+# 记录成功反馈
+sx-feedback action=record skillName=my-skill result=success task="完成任务"
+
+# 记录失败反馈
+sx-feedback action=record skillName=my-skill result=failure notes="错误信息"
+
+# 列出技能反馈
+sx-feedback action=list skillName=my-skill days=7
+
+# 分析技能反馈
+sx-feedback action=analyze skillName=my-skill
+
+# 清除反馈
+sx-feedback action=clear skillName=my-skill
+```
+
 ### sx-help
 
 帮助信息工具。
@@ -243,6 +273,7 @@ sx-config action=sources sourceAction=remove sourceName=my-source
 | `config` | sx-config 工具帮助 |
 | `market` | sx-market 工具帮助 |
 | `dispatch` | sx-dispatch 工具帮助 |
+| `feedback` | sx-feedback 工具帮助 |
 | `all` | 所有帮助主题 |
 
 **使用示例：**

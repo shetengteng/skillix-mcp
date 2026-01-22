@@ -1,6 +1,7 @@
 refer/
 userinput.py
 prompts.txt
+publish.sh
 dist/
 node_modules/
 .idea/

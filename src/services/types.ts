@@ -491,6 +491,35 @@ export interface SkillMatch {
 }
 
 /**
+ * 更新建议原因类型
+ */
+export type UpdateSuggestionReason =
+  | 'partial_match'      // 部分匹配
+  | 'missing_feature'    // 功能缺失
+  | 'outdated'           // 技能过时
+  | 'low_description_match'  // 描述匹配度低
+  | 'low_tag_match';     // 标签匹配度低
+
+/**
+ * 更新建议
+ * 当 action 为 IMPROVE_EXISTING 时提供具体的更新建议
+ */
+export interface UpdateSuggestion {
+  /** 建议更新的原因 */
+  reason: UpdateSuggestionReason;
+  /** 置信度 (0-1) */
+  confidence: number;
+  /** 具体的更新建议列表 */
+  suggestedChanges: string[];
+  /** 缺失的功能（从任务描述中提取） */
+  missingFeatures?: string[];
+  /** 匹配的关键词（技能已有的） */
+  matchedKeywords?: string[];
+  /** 未匹配的关键词（任务中有但技能没有的） */
+  unmatchedKeywords?: string[];
+}
+
+/**
  * 分流结果
  */
 export interface DispatchResult {
@@ -508,6 +537,8 @@ export interface DispatchResult {
   alternatives?: DispatchAlternative[];
   /** 匹配详情 */
   matchDetails?: SkillMatch[];
+  /** 更新建议（当 action 为 IMPROVE_EXISTING 时提供） */
+  updateSuggestion?: UpdateSuggestion;
 }
 
 /**
@@ -578,5 +609,68 @@ export interface MatchScoreDetails {
  */
 export interface ScoredSkill extends SkillInfo {
   scoreDetails: MatchScoreDetails;
+}
+
+// ============================================
+// Feedback 相关类型
+// ============================================
+
+/**
+ * 反馈结果类型
+ */
+export type FeedbackResult = 'success' | 'failure' | 'partial';
+
+/**
+ * 技能反馈记录
+ */
+export interface SkillFeedback {
+  /** 反馈 ID */
+  id: string;
+  /** 技能名称 */
+  skillName: string;
+  /** 执行结果 */
+  result: FeedbackResult;
+  /** 任务描述 */
+  task?: string;
+  /** 备注信息 */
+  notes?: string;
+  /** 记录时间 */
+  timestamp: string;
+}
+
+/**
+ * 技能反馈文件
+ */
+export interface SkillFeedbackFile {
+  /** 版本号 */
+  version: string;
+  /** 更新时间 */
+  updatedAt: string;
+  /** 反馈记录列表 */
+  feedbacks: SkillFeedback[];
+}
+
+/**
+ * 反馈分析结果
+ */
+export interface FeedbackAnalysis {
+  /** 技能名称 */
+  skillName: string;
+  /** 总反馈数 */
+  totalCount: number;
+  /** 成功次数 */
+  successCount: number;
+  /** 失败次数 */
+  failureCount: number;
+  /** 部分成功次数 */
+  partialCount: number;
+  /** 成功率 */
+  successRate: number;
+  /** 是否建议更新 */
+  shouldUpdate: boolean;
+  /** 建议更新的原因 */
+  updateReason?: string;
+  /** 最近的反馈 */
+  recentFeedbacks: SkillFeedback[];
 }
 

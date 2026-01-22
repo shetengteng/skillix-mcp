@@ -100,4 +100,51 @@ sx-dispatch task="生成文档" hints=["api", "markdown", "自动化"]
 | >= 0.7 | 高 | 建议执行 |
 | >= 0.5 | 中等 | 询问确认 |
 | < 0.5 | 低 | 提供选项 |
+
+## IMPROVE_EXISTING 更新建议
+
+当返回 \`IMPROVE_EXISTING\` 操作时，会额外提供 \`updateSuggestion\` 字段，包含具体的更新建议：
+
+\`\`\`json
+{
+  "action": "IMPROVE_EXISTING",
+  "skill": "data-processor",
+  "confidence": 0.35,
+  "reason": "找到部分匹配的技能...",
+  "updateSuggestion": {
+    "reason": "missing_feature",
+    "confidence": 0.35,
+    "suggestedChanges": [
+      "技能可能缺少任务所需的功能，考虑扩展技能内容",
+      "考虑在描述中添加以下关键词: csv, json, 转换",
+      "先读取技能内容: sx-skill action=read name=\\"data-processor\\"",
+      "分析差距后使用 sx-skill action=update 更新技能"
+    ],
+    "missingFeatures": ["csv", "json", "转换"],
+    "matchedKeywords": ["数据", "处理"],
+    "unmatchedKeywords": ["csv", "json", "转换", "格式"]
+  }
+}
+\`\`\`
+
+### updateSuggestion 字段说明
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| reason | string | 建议更新的原因类型 |
+| confidence | number | 置信度 (0-1) |
+| suggestedChanges | string[] | 具体的更新建议列表 |
+| missingFeatures | string[] | 缺失的功能（可选） |
+| matchedKeywords | string[] | 已匹配的关键词（可选） |
+| unmatchedKeywords | string[] | 未匹配的关键词（可选） |
+
+### reason 类型说明
+
+| 类型 | 说明 |
+|------|------|
+| partial_match | 部分匹配，通用情况 |
+| missing_feature | 功能缺失 |
+| outdated | 技能过时 |
+| low_description_match | 描述匹配度低 |
+| low_tag_match | 标签匹配度低 |
 `;

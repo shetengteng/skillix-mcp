@@ -7,6 +7,7 @@ import { sxConfigDefinition } from './configs/index.js';
 import { sxHelpDefinition } from './helps/index.js';
 import { sxMarketDefinition } from './markets/index.js';
 import { sxDispatchDefinition } from './dispatches/index.js';
+import { sxFeedbackDefinition } from './feedbacks/index.js';
 
 // 导出工具函数和类型
 export { sxSkill, sxSkillDefinition, type SxSkillParams } from './skills/index.js';
@@ -14,6 +15,7 @@ export { sxConfig, sxConfigDefinition, type SxConfigParams } from './configs/ind
 export { sxHelp, sxHelpDefinition, type SxHelpParams } from './helps/index.js';
 export { sxMarket, sxMarketDefinition, type SxMarketParams } from './markets/index.js';
 export { sxDispatch, sxDispatchDefinition, type SxDispatchParams } from './dispatches/index.js';
+export { sxFeedback, sxFeedbackDefinition, type SxFeedbackParams } from './feedbacks/index.js';
 
 /**
  * 工具配置列表
@@ -26,6 +28,7 @@ export const toolDefinitions = [
   sxHelpDefinition,
   sxMarketDefinition,
   sxDispatchDefinition,
+  sxFeedbackDefinition,
 ];
 
 /**

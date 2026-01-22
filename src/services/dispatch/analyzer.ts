@@ -12,15 +12,91 @@
  * - 最终决策由 AI 根据返回信息自行判断
  */
 
-import type { DispatchResult, SkillMatch, AnalyzeParams, ScoredSkill } from '../types.js';
+import type { DispatchResult, SkillMatch, AnalyzeParams, ScoredSkill, UpdateSuggestion, UpdateSuggestionReason } from '../types.js';
 import { collectLocalSkills, collectMarketSkills } from './collector.js';
-import { calculateMatchScore } from './matcher.js';
+import { calculateMatchScore, extractKeywords } from './matcher.js';
 
 // 导出类型
 export type { AnalyzeParams } from '../types.js';
 
 // 导出领域同义词（供外部使用）
 export { DOMAIN_SYNONYMS } from './synonyms.js';
+
+/**
+ * 生成更新建议
+ * 
+ * 分析任务和技能的差异，生成具体的更新建议
+ */
+function generateUpdateSuggestion(task: string, skill: ScoredSkill): UpdateSuggestion {
+  const { scoreDetails } = skill;
+  const suggestedChanges: string[] = [];
+  const missingFeatures: string[] = [];
+  
+  // 提取任务关键词
+  const taskKeywords = extractKeywords(task);
+  const skillKeywords = extractKeywords(`${skill.name} ${skill.description}`);
+  
+  // 找出未匹配的关键词（任务中有但技能没有的）
+  const unmatchedKeywords = taskKeywords.filter(
+    keyword => !skillKeywords.some(sk => 
+      sk.includes(keyword) || keyword.includes(sk)
+    )
+  );
+  
+  // 确定主要原因
+  let reason: UpdateSuggestionReason = 'partial_match';
+  
+  // 分析各维度得分，生成针对性建议
+  if (scoreDetails.descriptionScore < 0.3) {
+    reason = 'low_description_match';
+    suggestedChanges.push('更新技能描述，添加更多相关关键词以提高匹配度');
+    
+    if (unmatchedKeywords.length > 0) {
+      suggestedChanges.push(`考虑在描述中添加以下关键词: ${unmatchedKeywords.slice(0, 5).join(', ')}`);
+    }
+  }
+  
+  if (scoreDetails.tagScore < 0.2 && skill.tags && skill.tags.length > 0) {
+    if (reason === 'partial_match') {
+      reason = 'low_tag_match';
+    }
+    suggestedChanges.push('更新技能标签，添加更相关的标签以提高发现率');
+    
+    if (unmatchedKeywords.length > 0) {
+      const suggestedTags = unmatchedKeywords.slice(0, 3);
+      suggestedChanges.push(`建议添加标签: ${suggestedTags.join(', ')}`);
+    }
+  }
+  
+  if (scoreDetails.nameScore < 0.5 && scoreDetails.descriptionScore < 0.5) {
+    reason = 'missing_feature';
+    suggestedChanges.push('技能可能缺少任务所需的功能，考虑扩展技能内容');
+    
+    // 从未匹配的关键词中提取可能缺失的功能
+    if (unmatchedKeywords.length > 0) {
+      missingFeatures.push(...unmatchedKeywords.slice(0, 5));
+    }
+  }
+  
+  // 如果没有具体建议，添加通用建议
+  if (suggestedChanges.length === 0) {
+    suggestedChanges.push('检查技能内容是否涵盖任务需求');
+    suggestedChanges.push('考虑添加更详细的使用说明');
+  }
+  
+  // 添加通用的更新建议
+  suggestedChanges.push('先读取技能内容: sx-skill action=read name="' + skill.name + '"');
+  suggestedChanges.push('分析差距后使用 sx-skill action=update 更新技能');
+  
+  return {
+    reason,
+    confidence: scoreDetails.total,
+    suggestedChanges,
+    missingFeatures: missingFeatures.length > 0 ? missingFeatures : undefined,
+    matchedKeywords: scoreDetails.matchedKeywords.length > 0 ? scoreDetails.matchedKeywords : undefined,
+    unmatchedKeywords: unmatchedKeywords.length > 0 ? unmatchedKeywords : undefined,
+  };
+}
 
 /**
  * 分流分析
@@ -136,6 +212,9 @@ export function analyze(params: AnalyzeParams): DispatchResult {
 
   // 低分匹配 (>= 0.3) - 可能需要改进现有技能
   if (bestMatch && bestScore >= 0.3 && bestMatch.scope !== 'market') {
+    // 生成更新建议
+    const updateSuggestion = generateUpdateSuggestion(task, bestMatch);
+    
     return {
       action: 'IMPROVE_EXISTING',
       skill: bestMatch.name,
@@ -143,6 +222,7 @@ export function analyze(params: AnalyzeParams): DispatchResult {
       confidence: bestScore,
       reason: `找到部分匹配的技能 "${bestMatch.name}"（匹配度: ${(bestScore * 100).toFixed(0)}%），可能需要改进以满足需求`,
       matchDetails,
+      updateSuggestion,
     };
   }
 

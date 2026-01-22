@@ -57,7 +57,7 @@ export interface SxConfigParams {
  * sx-help 工具参数
  */
 export interface SxHelpParams {
-  topic?: 'overview' | 'skill' | 'config' | 'market' | 'dispatch' | 'all';
+  topic?: 'overview' | 'skill' | 'config' | 'market' | 'dispatch' | 'feedback' | 'all';
 }
 
 /**
@@ -96,4 +96,26 @@ export interface SxDispatchParams {
   hints?: string[];
   /** 项目根目录 */
   projectRoot?: string;
+}
+
+/**
+ * sx-feedback 工具参数
+ */
+export interface SxFeedbackParams {
+  /** 操作类型 */
+  action: 'record' | 'list' | 'analyze' | 'clear';
+  /** 技能名称（record/list/analyze 时需要） */
+  skillName?: string;
+  /** 执行结果（record 时需要） */
+  result?: 'success' | 'failure' | 'partial';
+  /** 任务描述（record 时可选） */
+  task?: string;
+  /** 备注信息（record 时可选） */
+  notes?: string;
+  /** 技能范围 */
+  scope?: 'global' | 'project';
+  /** 项目根目录 */
+  projectRoot?: string;
+  /** 时间范围（list/analyze 时可选，单位：天） */
+  days?: number;
 }

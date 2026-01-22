@@ -8,1297 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!-- Inter + Geist Mono (shadcn style) + 思源黑体 -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            /* shadcn/ui Design System - Light Theme */
-            --background: #ffffff;
-            --foreground: #09090b;
-            --card: #ffffff;
-            --card-foreground: #09090b;
-            --popover: #ffffff;
-            --popover-foreground: #09090b;
-            --primary: #18181b;
-            --primary-foreground: #fafafa;
-            --secondary: #f4f4f5;
-            --secondary-foreground: #18181b;
-            --muted: #f4f4f5;
-            --muted-foreground: #71717a;
-            --accent: #f4f4f5;
-            --accent-foreground: #18181b;
-            --destructive: #ef4444;
-            --destructive-foreground: #fafafa;
-            --border: #e4e4e7;
-            --input: #e4e4e7;
-            --ring: #a1a1aa;
-            
-            /* Extended colors */
-            --success: #22c55e;
-            --warning: #eab308;
-            --info: #3b82f6;
-        }
-
-        /* Dark theme */
-        [data-theme="dark"] {
-            --background: #09090b;
-            --foreground: #fafafa;
-            --card: #09090b;
-            --card-foreground: #fafafa;
-            --popover: #09090b;
-            --popover-foreground: #fafafa;
-            --primary: #fafafa;
-            --primary-foreground: #18181b;
-            --secondary: #27272a;
-            --secondary-foreground: #fafafa;
-            --muted: #27272a;
-            --muted-foreground: #a1a1aa;
-            --accent: #27272a;
-            --accent-foreground: #fafafa;
-            --destructive: #7f1d1d;
-            --destructive-foreground: #fafafa;
-            --border: #27272a;
-            --input: #27272a;
-            --ring: #d4d4d8;
-        }
-
-        :root {
-            
-            /* Spacing */
-            --space-1: 4px;
-            --space-2: 8px;
-            --space-3: 12px;
-            --space-4: 16px;
-            --space-5: 20px;
-            --space-6: 24px;
-            --space-8: 32px;
-            --space-10: 40px;
-            --space-12: 48px;
-            --space-16: 64px;
-            --space-20: 80px;
-            --space-24: 96px;
-            
-            /* Border radius (shadcn uses subtle radius) */
-            --radius: 8px;
-            --radius-sm: 6px;
-            --radius-lg: 12px;
-            --radius-xl: 16px;
-            --radius-full: 9999px;
-            
-            /* Typography - Inter (shadcn default) + 思源黑体 */
-            --font-sans: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-            --font-zh: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            
-            /* Shadows (subtle, shadcn style) */
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: var(--font-sans);
-            background: var(--background);
-            color: var(--foreground);
-            line-height: 1.6;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        /* Language switcher styles */
-        [data-lang="zh"] .lang-en,
-        [data-lang="en"] .lang-zh {
-            display: none !important;
-        }
-
-        [data-lang="zh"] .lang-zh,
-        [data-lang="en"] .lang-en {
-            display: inline !important;
-        }
-
-        /* 中文字体优化 */
-        [data-lang="zh"] {
-            font-family: var(--font-zh);
-        }
-
-        /* Skip link for accessibility */
-        .skip-link {
-            position: fixed;
-            top: -100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--primary);
-            color: var(--primary-foreground);
-            padding: var(--space-3) var(--space-5);
-            border-radius: var(--radius);
-            font-weight: 500;
-            font-size: 0.875rem;
-            z-index: 9999;
-            transition: top 0.3s ease;
-            text-decoration: none;
-        }
-
-        .skip-link:focus {
-            top: var(--space-4);
-            outline: 2px solid var(--ring);
-            outline-offset: 2px;
-        }
-
-        /* Scroll progress indicator */
-        .scroll-progress {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--info), var(--success));
-            width: 0%;
-            z-index: 9999;
-            transition: width 0.1s ease-out;
-        }
-
-        /* Loading animation */
-        .page-loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #09090b;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
-        }
-
-        .page-loader .loader-logo {
-            color: #fafafa;
-        }
-
-        .page-loader.loaded {
-            opacity: 0;
-            visibility: hidden;
-        }
-
-        .loader-logo {
-            font-weight: 700;
-            font-size: 2rem;
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.5; transform: scale(0.98); }
-            50% { opacity: 1; transform: scale(1); }
-        }
-
-        /* Smooth scroll indicator */
-        .scroll-indicator {
-            position: absolute;
-            bottom: var(--space-8);
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: var(--space-2);
-            color: var(--muted-foreground);
-            font-size: 0.75rem;
-            animation: bounce 2s infinite;
-        }
-
-        .scroll-indicator svg {
-            width: 20px;
-            height: 20px;
-            stroke: var(--muted-foreground);
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
-            40% { transform: translateX(-50%) translateY(-10px); }
-            60% { transform: translateX(-50%) translateY(-5px); }
-        }
-
-        /* Animated grid background */
-        .bg-grid {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
-            background-size: 64px 64px;
-            pointer-events: none;
-            z-index: 0;
-            animation: gridMove 20s linear infinite;
-        }
-
-        [data-theme="dark"] .bg-grid {
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-        }
-
-        @keyframes gridMove {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(64px, 64px); }
-        }
-
-        /* Gradient orbs with animation */
-        .bg-gradient {
-            position: fixed;
-            width: 600px;
-            height: 600px;
-            border-radius: 50%;
-            filter: blur(150px);
-            opacity: 0.08;
-            pointer-events: none;
-            z-index: 0;
-            animation: float 15s ease-in-out infinite;
-        }
-
-        [data-theme="dark"] .bg-gradient {
-            opacity: 0.15;
-        }
-
-        .bg-gradient-1 {
-            top: -200px;
-            right: -200px;
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-        }
-
-        .bg-gradient-2 {
-            bottom: -200px;
-            left: -200px;
-            background: linear-gradient(135deg, #22c55e 0%, #3b82f6 100%);
-            opacity: 0.05;
-            animation-delay: -7.5s;
-        }
-
-        [data-theme="dark"] .bg-gradient-2 {
-            opacity: 0.1;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            25% { transform: translate(30px, -30px) scale(1.05); }
-            50% { transform: translate(0, 20px) scale(1); }
-            75% { transform: translate(-30px, -10px) scale(0.95); }
-        }
-
-        /* Particle effect */
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
-        }
-
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: var(--muted-foreground);
-            border-radius: 50%;
-            opacity: 0;
-            animation: particleFloat 8s ease-in-out infinite;
-        }
-
-        [data-theme="dark"] .particle {
-            background: var(--ring);
-        }
-
-        @keyframes particleFloat {
-            0% { opacity: 0; transform: translateY(100vh) scale(0); }
-            10% { opacity: 0.6; }
-            90% { opacity: 0.6; }
-            100% { opacity: 0; transform: translateY(-100px) scale(1); }
-        }
-
-        /* Glow line effect */
-        .glow-line {
-            position: fixed;
-            top: 0;
-            left: 50%;
-            width: 1px;
-            height: 100%;
-            background: linear-gradient(180deg, transparent 0%, var(--border) 50%, transparent 100%);
-            opacity: 0.3;
-            pointer-events: none;
-            z-index: 0;
-            animation: glowPulse 3s ease-in-out infinite;
-        }
-
-        [data-theme="dark"] .glow-line {
-            background: linear-gradient(180deg, transparent 0%, var(--ring) 50%, transparent 100%);
-            opacity: 0.1;
-        }
-
-        @keyframes glowPulse {
-            0%, 100% { opacity: 0.05; }
-            50% { opacity: 0.15; }
-        }
-
-        [data-theme="light"] .glow-line {
-            animation: glowPulseLight 3s ease-in-out infinite;
-        }
-
-        @keyframes glowPulseLight {
-            0%, 100% { opacity: 0.1; }
-            50% { opacity: 0.3; }
-        }
-
-        /* Navigation - shadcn style */
-        nav {
-            position: fixed;
-            top: var(--space-4);
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-full);
-            padding: var(--space-2) var(--space-4);
-            display: flex;
-            align-items: center;
-            gap: var(--space-6);
-        }
-
-        [data-theme="dark"] nav {
-            background: rgba(9, 9, 11, 0.8);
-        }
-
-        .nav-logo {
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: var(--foreground);
-            letter-spacing: -0.02em;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: var(--space-1);
-            list-style: none;
-        }
-
-        .nav-links a {
-            color: var(--muted-foreground);
-            text-decoration: none;
-            font-size: 0.875rem;
-            font-weight: 500;
-            padding: var(--space-2) var(--space-3);
-            border-radius: var(--radius-sm);
-            transition: all 150ms ease;
-            cursor: pointer;
-        }
-
-        .nav-links a:hover {
-            color: var(--foreground);
-            background: var(--accent);
-        }
-
-        .nav-links a:focus-visible {
-            outline: 2px solid var(--ring);
-            outline-offset: 2px;
-        }
-
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: var(--space-3);
-        }
-
-        /* Unified height for all nav-right buttons: 32px */
-        .lang-switch {
-            display: flex;
-            align-items: center;
-            background: var(--secondary);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-full);
-            padding: 2px;
-            gap: 2px;
-            height: 32px;
-        }
-
-        .lang-btn {
-            background: transparent;
-            border: none;
-            color: var(--muted-foreground);
-            padding: 0 var(--space-3);
-            height: 26px;
-            line-height: 26px;
-            border-radius: var(--radius-full);
-            font-size: 0.75rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
-            font-family: var(--font-sans);
-            position: relative;
-            z-index: 1;
-        }
-
-        .lang-btn.active {
-            background: var(--background);
-            color: var(--foreground);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .lang-btn:hover:not(.active) {
-            color: var(--foreground);
-            background: rgba(0, 0, 0, 0.05);
-        }
-
-        [data-theme="dark"] .lang-btn:hover:not(.active) {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .lang-btn:focus-visible {
-            outline: 2px solid var(--ring);
-            outline-offset: 1px;
-        }
-
-        /* Theme toggle button - circular, same height as other buttons */
-        .theme-toggle {
-            width: 32px;
-            height: 32px;
-            background: var(--secondary);
-            border: 1px solid var(--border);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 200ms ease;
-            color: var(--muted-foreground);
-            flex-shrink: 0;
-        }
-
-        .theme-toggle:hover {
-            background: var(--accent);
-            color: var(--foreground);
-            transform: rotate(15deg);
-        }
-
-        .theme-toggle:focus-visible {
-            outline: 2px solid var(--ring);
-            outline-offset: 2px;
-        }
-
-        .theme-toggle svg {
-            width: 16px;
-            height: 16px;
-            transition: transform 200ms ease;
-        }
-
-        .theme-toggle:hover svg {
-            transform: scale(1.1);
-        }
-
-        /* Sun icon for dark mode, moon icon for light mode */
-        .theme-toggle .sun-icon {
-            display: none;
-        }
-
-        .theme-toggle .moon-icon {
-            display: block;
-        }
-
-        [data-theme="dark"] .theme-toggle .sun-icon {
-            display: block;
-        }
-
-        [data-theme="dark"] .theme-toggle .moon-icon {
-            display: none;
-        }
-
-        .nav-cta {
-            background: var(--primary);
-            color: var(--primary-foreground);
-            padding: 0 var(--space-4);
-            height: 32px;
-            line-height: 32px;
-            border-radius: var(--radius-full);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.8rem;
-            transition: all 200ms ease;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            white-space: nowrap;
-        }
-
-        .nav-cta:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-
-        .nav-cta:focus-visible {
-            outline: 2px solid var(--ring);
-            outline-offset: 2px;
-        }
-
-        /* Hero Section */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: var(--space-24) var(--space-4);
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero-content {
-            max-width: 900px;
-            text-align: center;
-        }
-
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: var(--space-2);
-            background: var(--secondary);
-            border: 1px solid var(--border);
-            padding: var(--space-1) var(--space-3);
-            border-radius: var(--radius-full);
-            font-size: 0.8rem;
-            color: var(--muted-foreground);
-            margin-bottom: var(--space-6);
-            animation: fadeIn 0.5s ease;
-        }
-
-        .hero-badge-dot {
-            width: 6px;
-            height: 6px;
-            background: var(--success);
-            border-radius: 50%;
-        }
-
-        .hero-title {
-            font-size: clamp(2.5rem, 8vw, 4.5rem);
-            font-weight: 700;
-            line-height: 1.1;
-            letter-spacing: -0.03em;
-            margin-bottom: var(--space-4);
-            animation: fadeIn 0.5s ease 0.1s both;
-        }
-
-        .hero-title-muted {
-            color: var(--muted-foreground);
-        }
-
-        .hero-subtitle {
-            font-size: 1.125rem;
-            color: var(--muted-foreground);
-            max-width: 600px;
-            margin: 0 auto var(--space-8);
-            line-height: 1.7;
-            animation: fadeIn 0.5s ease 0.2s both;
-        }
-
-        .hero-cta-group {
-            display: flex;
-            gap: var(--space-3);
-            justify-content: center;
-            flex-wrap: wrap;
-            animation: fadeIn 0.5s ease 0.3s both;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: var(--primary-foreground);
-            padding: var(--space-3) var(--space-5);
-            border-radius: var(--radius-full);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.875rem;
-            display: inline-flex;
-            align-items: center;
-            gap: var(--space-2);
-            transition: all 200ms ease;
-            cursor: pointer;
-            border: none;
-        }
-
-        .btn-primary:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: var(--foreground);
-            padding: var(--space-3) var(--space-5);
-            border-radius: var(--radius-full);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.875rem;
-            border: 1px solid var(--border);
-            display: inline-flex;
-            align-items: center;
-            gap: var(--space-2);
-            transition: all 200ms ease;
-            cursor: pointer;
-        }
-
-        .btn-secondary:hover {
-            background: var(--accent);
-            border-color: var(--accent);
-            transform: translateY(-2px);
-        }
-
-        /* Code Block - shadcn style */
-        .hero-code {
-            margin-top: var(--space-12);
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            text-align: left;
-            animation: fadeIn 0.5s ease 0.4s both;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .code-header {
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            padding: var(--space-3) var(--space-4);
-            background: var(--secondary);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .code-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-        }
-
-        .code-dot-red { background: #ef4444; }
-        .code-dot-yellow { background: #eab308; }
-        .code-dot-green { background: #22c55e; }
-
-        .code-title {
-            margin-left: var(--space-2);
-            font-family: var(--font-mono);
-            font-size: 0.75rem;
-            color: var(--muted-foreground);
-        }
-
-        .code-body {
-            padding: var(--space-4);
-            font-family: var(--font-mono);
-            font-size: 0.8rem;
-            line-height: 1.7;
-            overflow-x: auto;
-        }
-
-        .code-comment { color: var(--muted-foreground); }
-        .code-key { color: #a78bfa; }
-        .code-string { color: #4ade80; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Typing cursor effect for hero badge */
-        .hero-badge::after {
-            content: '';
-            display: inline-block;
-            width: 2px;
-            height: 14px;
-            background: var(--foreground);
-            margin-left: 4px;
-            animation: blink 1s step-end infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
-        /* Gradient text animation */
-        .hero-title-gradient {
-            background: linear-gradient(90deg, var(--foreground), #a1a1aa, var(--foreground));
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradientShift 3s ease-in-out infinite;
-        }
-
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% center; }
-            50% { background-position: 100% center; }
-        }
-
-        /* Button hover glow */
-        .btn-primary {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-primary::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: width 0.6s ease, height 0.6s ease;
-        }
-
-        .btn-primary:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-
-        .btn-primary:focus-visible,
-        .btn-secondary:focus-visible {
-            outline: 2px solid var(--ring);
-            outline-offset: 2px;
-        }
-
-        /* Code block shimmer effect */
-        .hero-code {
-            position: relative;
-        }
-
-        .hero-code::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
-            animation: shimmer 3s infinite;
-            pointer-events: none;
-        }
-
-        @keyframes shimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
-        /* Section Styles */
-        section {
-            padding: var(--space-20) var(--space-4);
-            position: relative;
-            z-index: 1;
-        }
-
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
-        .section-header {
-            text-align: center;
-            margin-bottom: var(--space-12);
-        }
-
-        .section-label {
-            font-size: 0.8rem;
-            color: var(--muted-foreground);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            font-weight: 500;
-            margin-bottom: var(--space-3);
-        }
-
-        .section-title {
-            font-size: clamp(1.75rem, 4vw, 2.5rem);
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            margin-bottom: var(--space-3);
-        }
-
-        .section-desc {
-            color: var(--muted-foreground);
-            max-width: 550px;
-            margin: 0 auto;
-            font-size: 1rem;
-        }
-
-        /* Features Grid */
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: var(--space-4);
-        }
-
-        .feature-card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: var(--space-6);
-            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--ring), transparent);
-            opacity: 0;
-            transition: opacity 300ms ease;
-        }
-
-        .feature-card:hover {
-            border-color: var(--ring);
-            background: var(--secondary);
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.3);
-        }
-
-        .feature-card:hover::before {
-            opacity: 1;
-        }
-
-        .feature-card:focus-visible {
-            outline: 2px solid var(--ring);
-            outline-offset: 2px;
-        }
-
-        .feature-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--secondary);
-            border-radius: var(--radius);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: var(--space-4);
-        }
-
-        .feature-icon svg {
-            width: 20px;
-            height: 20px;
-            stroke: var(--foreground);
-            stroke-width: 2;
-            fill: none;
-        }
-
-        .feature-title {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: var(--space-2);
-            letter-spacing: -0.01em;
-        }
-
-        .feature-desc {
-            color: var(--muted-foreground);
-            font-size: 0.875rem;
-            line-height: 1.6;
-        }
-
-        /* Tools Section */
-        .tools {
-            background: var(--secondary);
-            border-top: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: var(--space-4);
-        }
-
-        .tool-card {
-            background: var(--background);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: var(--space-5);
-            transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            position: relative;
-        }
-
-        .tool-card::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: var(--radius-lg);
-            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255,255,255,0.06) 0%, transparent 50%);
-            opacity: 0;
-            transition: opacity 300ms ease;
-            pointer-events: none;
-        }
-
-        .tool-card:hover {
-            border-color: var(--ring);
-            transform: translateY(-2px);
-        }
-
-        .tool-card:hover::after {
-            opacity: 1;
-        }
-
-        .tool-card:focus-visible {
-            outline: 2px solid var(--ring);
-            outline-offset: 2px;
-        }
-
-        .tool-name {
-            font-family: var(--font-mono);
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--foreground);
-            margin-bottom: var(--space-2);
-        }
-
-        .tool-desc {
-            color: var(--muted-foreground);
-            font-size: 0.8rem;
-            margin-bottom: var(--space-3);
-            line-height: 1.5;
-        }
-
-        .tool-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: var(--space-1);
-        }
-
-        .tool-action {
-            background: var(--secondary);
-            padding: 4px 8px;
-            border-radius: var(--radius-sm);
-            font-family: var(--font-mono);
-            font-size: 0.7rem;
-            color: var(--muted-foreground);
-        }
-
-        /* Workflow Section */
-        .workflow-demo {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .workflow-header {
-            background: var(--secondary);
-            padding: var(--space-4) var(--space-5);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            gap: var(--space-3);
-        }
-
-        .workflow-icon {
-            width: 36px;
-            height: 36px;
-            background: var(--background);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .workflow-icon svg {
-            width: 18px;
-            height: 18px;
-            stroke: var(--foreground);
-            stroke-width: 2;
-            fill: none;
-        }
-
-        .workflow-title {
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .workflow-steps {
-            padding: var(--space-5);
-        }
-
-        .workflow-step {
-            display: flex;
-            gap: var(--space-4);
-            padding: var(--space-4) 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .workflow-step:last-child {
-            border-bottom: none;
-        }
-
-        .step-number {
-            width: 32px;
-            height: 32px;
-            background: var(--secondary);
-            border: 1px solid var(--border);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            font-weight: 600;
-            flex-shrink: 0;
-            color: var(--muted-foreground);
-        }
-
-        .step-content h4 {
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: var(--space-1);
-        }
-
-        .step-content p {
-            color: var(--muted-foreground);
-            font-size: 0.8rem;
-        }
-
-        .step-code {
-            background: var(--secondary);
-            padding: var(--space-2) var(--space-3);
-            border-radius: var(--radius-sm);
-            font-family: var(--font-mono);
-            font-size: 0.75rem;
-            margin-top: var(--space-2);
-            color: var(--success);
-            display: inline-block;
-        }
-
-        /* Stats Section */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: var(--space-6);
-            text-align: center;
-        }
-
-        .stat-item {
-            padding: var(--space-4);
-        }
-
-        .stat-value {
-            font-size: 3rem;
-            font-weight: 700;
-            letter-spacing: -0.03em;
-            margin-bottom: var(--space-1);
-            background: linear-gradient(135deg, var(--foreground) 0%, var(--muted-foreground) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .stat-item:hover .stat-value {
-            animation: countPulse 0.5s ease;
-        }
-
-        @keyframes countPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        .stat-label {
-            color: var(--muted-foreground);
-            font-size: 0.875rem;
-        }
-
-        /* CTA Section */
-        .cta-box {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: var(--space-12) var(--space-6);
-            max-width: 700px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .cta-title {
-            font-size: clamp(1.5rem, 3vw, 2rem);
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            margin-bottom: var(--space-3);
-        }
-
-        .cta-desc {
-            color: var(--muted-foreground);
-            margin-bottom: var(--space-6);
-            max-width: 450px;
-            margin-left: auto;
-            margin-right: auto;
-            font-size: 0.95rem;
-        }
-
-        .cta-code {
-            background: var(--secondary);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: var(--space-3) var(--space-4);
-            font-family: var(--font-mono);
-            font-size: 0.875rem;
-            display: inline-flex;
-            align-items: center;
-            gap: var(--space-3);
-            margin-bottom: var(--space-6);
-        }
-
-        .cta-code-text {
-            color: var(--foreground);
-        }
-
-        .cta-copy {
-            background: var(--background);
-            border: 1px solid var(--border);
-            padding: var(--space-1) var(--space-2);
-            border-radius: var(--radius-sm);
-            color: var(--muted-foreground);
-            cursor: pointer;
-            font-family: var(--font-sans);
-            font-size: 0.75rem;
-            transition: all 150ms ease;
-        }
-
-        .cta-copy:hover {
-            background: var(--accent);
-            color: var(--foreground);
-        }
-
-        /* Footer */
-        footer {
-            padding: var(--space-12) var(--space-4) var(--space-6);
-            border-top: 1px solid var(--border);
-            position: relative;
-            z-index: 1;
-        }
-
-        .footer-content {
-            max-width: 1100px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: var(--space-4);
-        }
-
-        .footer-logo {
-            font-weight: 700;
-            font-size: 1rem;
-            color: var(--foreground);
-        }
-
-        .footer-links {
-            display: flex;
-            gap: var(--space-6);
-            list-style: none;
-        }
-
-        .footer-links a {
-            color: var(--muted-foreground);
-            text-decoration: none;
-            font-size: 0.8rem;
-            transition: color 150ms ease;
-            cursor: pointer;
-        }
-
-        .footer-links a:hover {
-            color: var(--foreground);
-        }
-
-        .footer-copy {
-            color: var(--muted-foreground);
-            font-size: 0.75rem;
-        }
-
-        /* Scroll Animation */
-        .animate-on-scroll {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.6s ease;
-        }
-
-        .animate-on-scroll.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            nav {
-                padding: var(--space-2) var(--space-3);
-                gap: var(--space-3);
-            }
-
-            .nav-links {
-                display: none;
-            }
-
-            .hero {
-                padding: var(--space-20) var(--space-4);
-            }
-
-            section {
-                padding: var(--space-16) var(--space-4);
-            }
-
-            .features-grid,
-            .tools-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .footer-content {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .footer-links {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-        }
-
-        /* Reduced motion */
-        @media (prefers-reduced-motion: reduce) {
-            *,
-            *::before,
-            *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body data-lang="en" data-theme="dark">
     <!-- Page loader -->
@@ -1455,7 +165,7 @@
             </div>
 
             <div class="features-grid">
-                <div class="feature-card animate-on-scroll" tabindex="0" role="article">
+                <div class="feature-card animate-on-scroll clickable" tabindex="0" role="article" data-example="skill-management" onclick="navigateToExample('skill-management')">
                     <div class="feature-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                     </div>
@@ -1467,9 +177,13 @@
                         <span class="lang-en">Create, read, update, and delete local skills with built-in version control and automatic backup.</span>
                         <span class="lang-zh">创建、读取、更新和删除本地技能，内置版本控制和自动备份。</span>
                     </p>
+                    <span class="feature-link-hint">
+                        <span class="lang-en">View Example →</span>
+                        <span class="lang-zh">查看案例 →</span>
+                    </span>
                 </div>
 
-                <div class="feature-card animate-on-scroll" tabindex="0" role="article">
+                <div class="feature-card animate-on-scroll clickable" tabindex="0" role="article" data-example="smart-dispatch" onclick="navigateToExample('smart-dispatch')">
                     <div class="feature-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
                     </div>
@@ -1481,9 +195,13 @@
                         <span class="lang-en">Intelligent task analysis that automatically recommends the best skill for your task.</span>
                         <span class="lang-zh">智能任务分析，自动推荐最适合的技能。</span>
                     </p>
+                    <span class="feature-link-hint">
+                        <span class="lang-en">View Example →</span>
+                        <span class="lang-zh">查看案例 →</span>
+                    </span>
                 </div>
 
-                <div class="feature-card animate-on-scroll" tabindex="0" role="article">
+                <div class="feature-card animate-on-scroll clickable" tabindex="0" role="article" data-example="skill-market" onclick="navigateToExample('skill-market')">
                     <div class="feature-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
                     </div>
@@ -1495,9 +213,13 @@
                         <span class="lang-en">Search, install, and share skills from remote sources with the community.</span>
                         <span class="lang-zh">从远程源搜索、安装技能，与社区分享。</span>
                     </p>
+                    <span class="feature-link-hint">
+                        <span class="lang-en">View Example →</span>
+                        <span class="lang-zh">查看案例 →</span>
+                    </span>
                 </div>
 
-                <div class="feature-card animate-on-scroll" tabindex="0" role="article">
+                <div class="feature-card animate-on-scroll clickable" tabindex="0" role="article" data-example="local-first" onclick="navigateToExample('local-first')">
                     <div class="feature-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
                     </div>
@@ -1509,9 +231,13 @@
                         <span class="lang-en">Project skills take precedence over global skills for context-aware resolution.</span>
                         <span class="lang-zh">项目技能优先于全局技能，实现上下文感知。</span>
                     </p>
+                    <span class="feature-link-hint">
+                        <span class="lang-en">View Example →</span>
+                        <span class="lang-zh">查看案例 →</span>
+                    </span>
                 </div>
 
-                <div class="feature-card animate-on-scroll" tabindex="0" role="article">
+                <div class="feature-card animate-on-scroll clickable" tabindex="0" role="article" data-example="version-rollback" onclick="navigateToExample('version-rollback')">
                     <div class="feature-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
                     </div>
@@ -1523,9 +249,13 @@
                         <span class="lang-en">Built-in backup and version history. Never lose your skill improvements.</span>
                         <span class="lang-zh">内置备份和版本历史，永不丢失改进。</span>
                     </p>
+                    <span class="feature-link-hint">
+                        <span class="lang-en">View Example →</span>
+                        <span class="lang-zh">查看案例 →</span>
+                    </span>
                 </div>
 
-                <div class="feature-card animate-on-scroll" tabindex="0" role="article">
+                <div class="feature-card animate-on-scroll clickable" tabindex="0" role="article" data-example="configuration" onclick="navigateToExample('configuration')">
                     <div class="feature-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
                     </div>
@@ -1537,6 +267,642 @@
                         <span class="lang-en">Flexible global and project-level configuration with multiple skill sources.</span>
                         <span class="lang-zh">灵活的全局和项目级配置，支持多个技能源。</span>
                     </p>
+                    <span class="feature-link-hint">
+                        <span class="lang-en">View Example →</span>
+                        <span class="lang-zh">查看案例 →</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Usage Examples Section -->
+            <div class="examples-section animate-on-scroll" id="examples">
+                <div class="section-header" style="margin-top: var(--space-16); padding-top: var(--space-12); border-top: 1px solid var(--border);">
+                    <p class="section-label">
+                        <span class="lang-en">Usage Examples</span>
+                        <span class="lang-zh">使用案例</span>
+                    </p>
+                    <h2 class="section-title">
+                        <span class="lang-en">See Skillix in Action</span>
+                        <span class="lang-zh">查看 Skillix 实战案例</span>
+                    </h2>
+                    <p class="section-desc">
+                        <span class="lang-en">Natural conversations with Cursor AI to manage your skills.</span>
+                        <span class="lang-zh">与 Cursor AI 自然对话来管理你的技能。</span>
+                    </p>
+                </div>
+
+                <!-- Example Tabs -->
+                <div class="example-tabs">
+                    <button class="example-tab active" data-tab="skill-management" onclick="switchExampleTab('skill-management')">
+                        <span class="lang-en">Skill Management</span>
+                        <span class="lang-zh">技能管理</span>
+                    </button>
+                    <button class="example-tab" data-tab="smart-dispatch" onclick="switchExampleTab('smart-dispatch')">
+                        <span class="lang-en">Smart Dispatch</span>
+                        <span class="lang-zh">智能分流</span>
+                    </button>
+                    <button class="example-tab" data-tab="skill-market" onclick="switchExampleTab('skill-market')">
+                        <span class="lang-en">Skill Market</span>
+                        <span class="lang-zh">技能市场</span>
+                    </button>
+                    <button class="example-tab" data-tab="local-first" onclick="switchExampleTab('local-first')">
+                        <span class="lang-en">Local-First</span>
+                        <span class="lang-zh">本地优先</span>
+                    </button>
+                    <button class="example-tab" data-tab="version-rollback" onclick="switchExampleTab('version-rollback')">
+                        <span class="lang-en">Version Rollback</span>
+                        <span class="lang-zh">版本回退</span>
+                    </button>
+                    <button class="example-tab" data-tab="configuration" onclick="switchExampleTab('configuration')">
+                        <span class="lang-en">Configuration</span>
+                        <span class="lang-zh">配置管理</span>
+                    </button>
+                </div>
+
+                <!-- Example Panels -->
+                <div class="example-panels">
+                    <!-- Skill Management -->
+                    <div class="example-panel active" data-panel="skill-management">
+                        <div class="example-card">
+                            <div class="example-card-header">
+                                <div class="example-card-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                                </div>
+                                <div class="example-card-info">
+                                    <h3>
+                                        <span class="lang-en">Skill Management</span>
+                                        <span class="lang-zh">技能管理</span>
+                                    </h3>
+                                    <p>
+                                        <span class="lang-en">Create, read, update, and delete skills through natural conversation</span>
+                                        <span class="lang-zh">通过自然对话创建、读取、更新和删除技能</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="example-card-body">
+                                <div class="chat-demo">
+                                    <div class="chat-demo-header">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                        <span>Cursor Chat</span>
+                                    </div>
+                                    <div class="chat-demo-body">
+                                        <div class="chat-msg user">
+                                            <div class="chat-avatar">U</div>
+                                            <div class="chat-bubble">
+                                                <span class="lang-en">I want to create a skill for processing Excel files</span>
+                                                <span class="lang-zh">我想创建一个处理 Excel 文件的技能</span>
+                                            </div>
+                                        </div>
+                                        <div class="chat-msg ai">
+                                            <div class="chat-avatar">AI</div>
+                                            <div class="chat-bubble">
+                                                <span class="lang-en">Great! Let me help you create an Excel processing skill. What features do you need?</span>
+                                                <span class="lang-zh">好的！让我帮你创建 Excel 处理技能。你需要哪些功能？</span>
+                                                <div class="ai-options">
+                                                    <span>1. <span class="lang-en">Read and write data</span><span class="lang-zh">读取和写入数据</span></span>
+                                                    <span>2. <span class="lang-en">Format conversion (xlsx/csv/json)</span><span class="lang-zh">格式转换（xlsx/csv/json）</span></span>
+                                                    <span>3. <span class="lang-en">Data analysis and statistics</span><span class="lang-zh">数据分析和统计</span></span>
+                                                    <span>4. <span class="lang-en">Chart generation</span><span class="lang-zh">图表生成</span></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="chat-msg user">
+                                            <div class="chat-avatar">U</div>
+                                            <div class="chat-bubble">
+                                                <span class="lang-en">I need 1 and 2, plus batch processing support</span>
+                                                <span class="lang-zh">主要是 1 和 2，还需要支持批量处理</span>
+                                            </div>
+                                        </div>
+                                        <div class="chat-msg ai">
+                                            <div class="chat-avatar">AI</div>
+                                            <div class="chat-bubble">
+                                                <span class="lang-en">Got it! I've planned the following skill structure for you:</span>
+                                                <span class="lang-zh">明白了！我为你规划了以下技能结构：</span>
+                                                <div class="skill-preview">
+                                                    <div class="skill-preview-header">
+                                                        <code>excel-handler</code>
+                                                        <span class="skill-version">v1.0.0</span>
+                                                    </div>
+                                                    <ul class="skill-features">
+                                                        <li><span class="lang-en">Read Excel/CSV files</span><span class="lang-zh">读取 Excel/CSV 文件</span></li>
+                                                        <li><span class="lang-en">Write and create Excel files</span><span class="lang-zh">写入和创建 Excel 文件</span></li>
+                                                        <li><span class="lang-en">Format conversion (xlsx ↔ csv ↔ json)</span><span class="lang-zh">格式转换（xlsx ↔ csv ↔ json）</span></li>
+                                                        <li><span class="lang-en">Batch file processing</span><span class="lang-zh">批量文件处理</span></li>
+                                                    </ul>
+                                                </div>
+                                                <span class="lang-en">Confirm creation?</span>
+                                                <span class="lang-zh">确认创建吗？</span>
+                                            </div>
+                                        </div>
+                                        <div class="chat-msg user">
+                                            <div class="chat-avatar">U</div>
+                                            <div class="chat-bubble">
+                                                <span class="lang-en">Yes</span>
+                                                <span class="lang-zh">是</span>
+                                            </div>
+                                        </div>
+                                        <div class="chat-msg ai">
+                                            <div class="chat-avatar">AI</div>
+                                            <div class="chat-bubble">
+                                                <div class="tool-indicator">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                                                    <span class="lang-en">Calling sx-skill create</span>
+                                                    <span class="lang-zh">调用 sx-skill create</span>
+                                                </div>
+                                                <div class="result-indicator success">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                                    <div class="result-list">
+                                                        <span class="lang-en">Skill created successfully!</span>
+                                                        <span class="lang-zh">技能创建成功！</span>
+                                                        <ul>
+                                                            <li><span class="lang-en">Location: .skillix/skills/excel-handler/</span><span class="lang-zh">位置：.skillix/skills/excel-handler/</span></li>
+                                                            <li><span class="lang-en">Files: SKILL.md, scripts/, references/</span><span class="lang-zh">文件：SKILL.md, scripts/, references/</span></li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Smart Dispatch -->
+                    <div class="example-panel" data-panel="smart-dispatch">
+                        <div class="example-card">
+                            <div class="example-card-header">
+                                <div class="example-card-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                                </div>
+                                <div class="example-card-info">
+                                    <h3>
+                                        <span class="lang-en">Smart Dispatch</span>
+                                        <span class="lang-zh">智能分流</span>
+                                    </h3>
+                                    <p>
+                                        <span class="lang-en">AI automatically analyzes tasks and recommends the best action</span>
+                                        <span class="lang-zh">AI 自动分析任务并推荐最佳操作</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="example-card-body">
+                                <div class="chat-demo">
+                                    <div class="chat-demo-header">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                        <span>Cursor Chat</span>
+                                    </div>
+                                    <div class="chat-demo-body">
+                                        <div class="chat-msg user">
+                                            <div class="chat-avatar">U</div>
+                                            <div class="chat-bubble">
+                                                <span class="lang-en">Help me convert this CSV file to JSON format</span>
+                                                <span class="lang-zh">帮我把这个 CSV 文件转换成 JSON 格式</span>
+                                            </div>
+                                        </div>
+                                        <div class="chat-msg ai">
+                                            <div class="chat-avatar">AI</div>
+                                            <div class="chat-bubble">
+                                                <span class="lang-en">Let me analyze this task and find the best approach...</span>
+                                                <span class="lang-zh">让我分析这个任务并找到最佳方案...</span>
+                                                <div class="tool-indicator">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                                                    <span class="lang-en">Calling sx-dispatch</span>
+                                                    <span class="lang-zh">调用 sx-dispatch</span>
+                                                </div>
+                                                <div class="result-indicator success">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                                    <div class="dispatch-result">
+                                                        <div class="dispatch-action">
+                                                            <span class="action-type use">USE_EXISTING</span>
+                                                            <span class="confidence high">85%</span>
+                                                        </div>
+                                                        <div class="dispatch-skill">
+                                                            <span class="lang-en">Recommended: </span>
+                                                            <span class="lang-zh">推荐：</span>
+                                                            <code>excel-handler</code>
+                                                            <span class="skill-source global">global</span>
+                                                        </div>
+                                                        <p class="dispatch-reason">
+                                                            <span class="lang-en">Found highly matching skill "excel-handler" (85% match), supports CSV to JSON conversion</span>
+                                                            <span class="lang-zh">找到高度匹配的技能 "excel-handler"（匹配度 85%），支持 CSV 转 JSON</span>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="chat-msg ai">
+                                            <div class="chat-avatar">AI</div>
+                                            <div class="chat-bubble">
+                                                <span class="lang-en">Loading the skill and executing the conversion...</span>
+                                                <span class="lang-zh">正在加载技能并执行转换...</span>
+                                                <div class="tool-indicator">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                                                    <span class="lang-en">Calling sx-skill read</span>
+                                                    <span class="lang-zh">调用 sx-skill read</span>
+                                                </div>
+                                                <div class="result-indicator">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                                    <span class="lang-en">Converted data.csv → data.json (1,234 records)</span>
+                                                    <span class="lang-zh">已转换 data.csv → data.json（1,234 条记录）</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Skill Market -->
+                    <div class="example-panel" data-panel="skill-market">
+                        <div class="example-card">
+                            <div class="example-card-header">
+                                <div class="example-card-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                                </div>
+                                <div class="example-card-info">
+                                    <h3>
+                                        <span class="lang-en">Skill Market</span>
+                                        <span class="lang-zh">技能市场</span>
+                                    </h3>
+                                    <p>
+                                        <span class="lang-en">Add skill sources, sync cache, search and install skills</span>
+                                        <span class="lang-zh">添加技能源、同步缓存、搜索和安装技能</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="example-card-body">
+                                <div class="chat-demo">
+                                    <div class="chat-demo-header">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                        <span>Cursor Chat</span>
+                                    </div>
+                                    <div class="chat-demo-body">
+                                        <div class="chat-msg user">
+                                            <div class="chat-avatar">U</div>
+                                            <div class="chat-bubble">
+                                                <span class="lang-en">Add this skill source: https://github.com/company/team-skills</span>
+                                                <span class="lang-zh">添加这个技能源：https://github.com/company/team-skills</span>
+                                            </div>
+                                        </div>
+                                        <div class="chat-msg ai">
+                                            <div class="chat-avatar">AI</div>
+                                            <div class="chat-bubble">
+                                                <span class="lang-en">I'll add this GitHub repository as a skill source...</span>
+                                                <span class="lang-zh">我来把这个 GitHub 仓库添加为技能源...</span>
+                                                <div class="tool-indicator">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                                                    <span class="lang-en">Calling sx-config sources add</span>
+                                                    <span class="lang-zh">调用 sx-config sources add</span>
+                                                </div>
+                                                <div class="result-indicator">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                                    <span class="lang-en">Added source "team-skills" successfully</span>
+                                                    <span class="lang-zh">成功添加技能源 "team-skills"</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="chat-msg ai">
+                                            <div class="chat-avatar">AI</div>
+                                            <div class="chat-bubble">
+                                                <span class="lang-en">Now syncing the skill source to local cache...</span>
+                                                <span class="lang-zh">正在同步技能源到本地缓存...</span>
+                                                <div class="tool-indicator">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                                                    <span class="lang-en">Calling sx-market sync</span>
+                                                    <span class="lang-zh">调用 sx-market sync</span>
+                                                </div>
+                                                <div class="result-indicator success">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                                    <div class="result-list">
+                                                        <span class="lang-en">Sync completed:</span>
+                                                        <span class="lang-zh">同步完成：</span>
+                                                        <ul>
+                                                            <li><span class="lang-en">Source: team-skills</span><span class="lang-zh">源：team-skills</span></li>
+                                                            <li><span class="lang-en">Skills found: 12</span><span class="lang-zh">发现技能：12 个</span></li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="chat-msg user">
+                                            <div class="chat-avatar">U</div>
+                                            <div class="chat-bubble">
+                                                <span class="lang-en">Search for UI design skills</span>
+                                                <span class="lang-zh">搜索 UI 设计相关的技能</span>
+                                            </div>
+                                        </div>
+                                        <div class="chat-msg ai">
+                                            <div class="chat-avatar">AI</div>
+                                            <div class="chat-bubble">
+                                                <span class="lang-en">Searching in local cache...</span>
+                                                <span class="lang-zh">在本地缓存中搜索...</span>
+                                                <div class="tool-indicator">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                                                    <span class="lang-en">Calling sx-market search</span>
+                                                    <span class="lang-zh">调用 sx-market search</span>
+                                                </div>
+                                                <div class="result-indicator success">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                                    <div class="market-results">
+                                                        <span class="lang-en">Found 2 skills from "team-skills":</span>
+                                                        <span class="lang-zh">从 "team-skills" 找到 2 个技能：</span>
+                                                        <div class="market-skill">
+                                                            <code>ui-ux-pro-max</code>
+                                                            <span class="market-desc"><span class="lang-en">Comprehensive UI/UX design guidelines</span><span class="lang-zh">全面的 UI/UX 设计指南</span></span>
+                                                            <span class="market-tags">#ui #design #ux</span>
+                                                        </div>
+                                                        <div class="market-skill">
+                                                            <code>tailwind-helper</code>
+                                                            <span class="market-desc"><span class="lang-en">Tailwind CSS utility assistant</span><span class="lang-zh">Tailwind CSS 工具助手</span></span>
+                                                            <span class="market-tags">#css #tailwind</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="chat-msg user">
+                                            <div class="chat-avatar">U</div>
+                                            <div class="chat-bubble">
+                                                <span class="lang-en">Install ui-ux-pro-max</span>
+                                                <span class="lang-zh">安装 ui-ux-pro-max</span>
+                                            </div>
+                                        </div>
+                                        <div class="chat-msg ai">
+                                            <div class="chat-avatar">AI</div>
+                                            <div class="chat-bubble">
+                                                <div class="tool-indicator">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                                                    <span class="lang-en">Calling sx-market install</span>
+                                                    <span class="lang-zh">调用 sx-market install</span>
+                                                </div>
+                                                <div class="result-indicator success">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                                    <div class="result-list">
+                                                        <span class="lang-en">Installed to ~/.skillix/skills/ui-ux-pro-max/</span>
+                                                        <span class="lang-zh">已安装到 ~/.skillix/skills/ui-ux-pro-max/</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Local-First -->
+                    <div class="example-panel" data-panel="local-first">
+                        <div class="example-card">
+                            <div class="example-card-header">
+                                <div class="example-card-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                                </div>
+                                <div class="example-card-info">
+                                    <h3>
+                                        <span class="lang-en">Local-First Strategy</span>
+                                        <span class="lang-zh">本地优先策略</span>
+                                    </h3>
+                                    <p>
+                                        <span class="lang-en">Project skills override global skills, ensuring team consistency</span>
+                                        <span class="lang-zh">项目技能覆盖全局技能，确保团队一致性</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="example-card-body">
+                                <div class="chat-demo">
+                                    <div class="chat-demo-header">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                        <span>Cursor Chat</span>
+                                    </div>
+                                    <div class="chat-demo-body">
+                                        <div class="chat-msg user">
+                                            <div class="chat-avatar">U</div>
+                                            <div class="chat-bubble">
+                                                <span class="lang-en">Show me all available skills for this project</span>
+                                                <span class="lang-zh">显示这个项目可用的所有技能</span>
+                                            </div>
+                                        </div>
+                                        <div class="chat-msg ai">
+                                            <div class="chat-avatar">AI</div>
+                                            <div class="chat-bubble">
+                                                <span class="lang-en">Let me list all skills with their sources...</span>
+                                                <span class="lang-zh">让我列出所有技能及其来源...</span>
+                                                <div class="tool-indicator">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                                                    <span class="lang-en">Calling sx-skill list</span>
+                                                    <span class="lang-zh">调用 sx-skill list</span>
+                                                </div>
+                                                <div class="result-indicator success">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                                    <div class="result-list">
+                                                        <span class="lang-en">Found 4 skills:</span>
+                                                        <span class="lang-zh">找到 4 个技能：</span>
+                                                        <ul>
+                                                            <li><code>api-generator</code> <span class="skill-source project">project</span></li>
+                                                            <li><code>pdf-converter</code> <span class="skill-source project">project</span></li>
+                                                            <li><code>pdf-converter</code> <span class="skill-source global">global</span> <span class="skill-override">(overridden)</span></li>
+                                                            <li><code>code-reviewer</code> <span class="skill-source global">global</span></li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="chat-msg user">
+                                            <div class="chat-avatar">U</div>
+                                            <div class="chat-bubble">
+                                                <span class="lang-en">Use pdf-converter to convert my document</span>
+                                                <span class="lang-zh">使用 pdf-converter 转换我的文档</span>
+                                            </div>
+                                        </div>
+                                        <div class="chat-msg ai">
+                                            <div class="chat-avatar">AI</div>
+                                            <div class="chat-bubble">
+                                                <span class="lang-en">Using project-level pdf-converter (takes priority over global)...</span>
+                                                <span class="lang-zh">使用项目级 pdf-converter（优先于全局）...</span>
+                                                <div class="tool-indicator">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                                                    <span class="lang-en">Calling sx-skill read</span>
+                                                    <span class="lang-zh">调用 sx-skill read</span>
+                                                </div>
+                                                <div class="result-indicator">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                                    <span class="lang-en">Loaded from .skillix/skills/pdf-converter/ (project scope)</span>
+                                                    <span class="lang-zh">从 .skillix/skills/pdf-converter/ 加载（项目范围）</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Version Rollback -->
+                    <div class="example-panel" data-panel="version-rollback">
+                        <div class="example-card">
+                            <div class="example-card-header">
+                                <div class="example-card-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                                </div>
+                                <div class="example-card-info">
+                                    <h3>
+                                        <span class="lang-en">Version Control</span>
+                                        <span class="lang-zh">版本控制</span>
+                                    </h3>
+                                    <p>
+                                        <span class="lang-en">Automatic backup and version management for your skills</span>
+                                        <span class="lang-zh">技能的自动备份和版本管理</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="example-card-body">
+                                <div class="chat-demo">
+                                    <div class="chat-demo-header">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                        <span>Cursor Chat</span>
+                                    </div>
+                                    <div class="chat-demo-body">
+                                        <div class="chat-msg user">
+                                            <div class="chat-avatar">U</div>
+                                            <div class="chat-bubble">
+                                                <span class="lang-en">Update the pdf-converter skill to add watermark support</span>
+                                                <span class="lang-zh">更新 pdf-converter 技能，添加水印支持</span>
+                                            </div>
+                                        </div>
+                                        <div class="chat-msg ai">
+                                            <div class="chat-avatar">AI</div>
+                                            <div class="chat-bubble">
+                                                <span class="lang-en">I'll update the skill with watermark functionality. The previous version will be automatically backed up.</span>
+                                                <span class="lang-zh">我来更新技能添加水印功能。之前的版本会自动备份。</span>
+                                                <div class="tool-indicator">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                                                    <span class="lang-en">Calling sx-skill update</span>
+                                                    <span class="lang-zh">调用 sx-skill update</span>
+                                                </div>
+                                                <div class="result-indicator success">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                                    <div class="result-list">
+                                                        <span class="lang-en">Skill updated successfully:</span>
+                                                        <span class="lang-zh">技能更新成功：</span>
+                                                        <ul>
+                                                            <li><span class="lang-en">Version: 1.0.0 → 1.1.0</span><span class="lang-zh">版本：1.0.0 → 1.1.0</span></li>
+                                                            <li><span class="lang-en">Backup created at .skillix/backups/</span><span class="lang-zh">备份已创建到 .skillix/backups/</span></li>
+                                                            <li><span class="lang-en">Added: watermark feature</span><span class="lang-zh">新增：水印功能</span></li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="chat-msg user">
+                                            <div class="chat-avatar">U</div>
+                                            <div class="chat-bubble">
+                                                <span class="lang-en">The new version has a bug, rollback to previous version</span>
+                                                <span class="lang-zh">新版本有问题，回退到之前的版本</span>
+                                            </div>
+                                        </div>
+                                        <div class="chat-msg ai">
+                                            <div class="chat-avatar">AI</div>
+                                            <div class="chat-bubble">
+                                                <span class="lang-en">I'll restore the previous version from backup...</span>
+                                                <span class="lang-zh">我来从备份恢复之前的版本...</span>
+                                                <div class="tool-indicator">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                                                    <span class="lang-en">Calling sx-skill update (restore)</span>
+                                                    <span class="lang-zh">调用 sx-skill update（恢复）</span>
+                                                </div>
+                                                <div class="result-indicator">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                                    <span class="lang-en">Restored to version 1.0.0 from backup</span>
+                                                    <span class="lang-zh">已从备份恢复到版本 1.0.0</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Configuration -->
+                    <div class="example-panel" data-panel="configuration">
+                        <div class="example-card">
+                            <div class="example-card-header">
+                                <div class="example-card-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                                </div>
+                                <div class="example-card-info">
+                                    <h3>
+                                        <span class="lang-en">Configuration</span>
+                                        <span class="lang-zh">配置管理</span>
+                                    </h3>
+                                    <p>
+                                        <span class="lang-en">Initialize project and manage skill sources</span>
+                                        <span class="lang-zh">初始化项目并管理技能源</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="example-card-body">
+                                <div class="chat-demo">
+                                    <div class="chat-demo-header">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                        <span>Cursor Chat</span>
+                                    </div>
+                                    <div class="chat-demo-body">
+                                        <div class="chat-msg user">
+                                            <div class="chat-avatar">U</div>
+                                            <div class="chat-bubble">
+                                                <span class="lang-en">Initialize Skillix for this project and add our team's skill source</span>
+                                                <span class="lang-zh">为这个项目初始化 Skillix，并添加我们团队的技能源</span>
+                                            </div>
+                                        </div>
+                                        <div class="chat-msg ai">
+                                            <div class="chat-avatar">AI</div>
+                                            <div class="chat-bubble">
+                                                <span class="lang-en">I'll set up Skillix and configure your team's skill source...</span>
+                                                <span class="lang-zh">我来设置 Skillix 并配置你们团队的技能源...</span>
+                                                <div class="tool-indicator">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                                                    <span class="lang-en">Calling sx-config init</span>
+                                                    <span class="lang-zh">调用 sx-config init</span>
+                                                </div>
+                                                <div class="result-indicator success">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                                    <div class="result-list">
+                                                        <span class="lang-en">Project initialized:</span>
+                                                        <span class="lang-zh">项目已初始化：</span>
+                                                        <ul>
+                                                            <li><span class="lang-en">Created .skillix/ directory</span><span class="lang-zh">已创建 .skillix/ 目录</span></li>
+                                                            <li><span class="lang-en">Created config.json</span><span class="lang-zh">已创建 config.json</span></li>
+                                                            <li><span class="lang-en">Installed Cursor Rule</span><span class="lang-zh">已安装 Cursor Rule</span></li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="chat-msg ai">
+                                            <div class="chat-avatar">AI</div>
+                                            <div class="chat-bubble">
+                                                <span class="lang-en">Now adding your team's skill source...</span>
+                                                <span class="lang-zh">现在添加你们团队的技能源...</span>
+                                                <div class="tool-indicator">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                                                    <span class="lang-en">Calling sx-config sources add</span>
+                                                    <span class="lang-zh">调用 sx-config sources add</span>
+                                                </div>
+                                                <div class="result-indicator">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                                    <span class="lang-en">Added source "team-skills" from github.com/company/skills</span>
+                                                    <span class="lang-zh">已添加技能源 "team-skills"，来自 github.com/company/skills</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1930,161 +1296,6 @@
         </div>
     </footer>
 
-    <script>
-        // Language switcher
-        function setLanguage(lang) {
-            document.body.setAttribute('data-lang', lang);
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.getAttribute('data-lang-btn') === lang);
-            });
-            document.title = lang === 'zh' 
-                ? 'Skillix - 混合技能，智能赋能' 
-                : 'Skillix - Mix Skills, Empower AI';
-            localStorage.setItem('skillix-lang', lang);
-        }
-
-        function initLanguage() {
-            const savedLang = localStorage.getItem('skillix-lang');
-            if (savedLang) {
-                setLanguage(savedLang);
-            } else {
-                const browserLang = navigator.language.toLowerCase();
-                setLanguage(browserLang.startsWith('zh') ? 'zh' : 'en');
-            }
-        }
-
-        document.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                setLanguage(btn.getAttribute('data-lang-btn'));
-            });
-        });
-
-        initLanguage();
-
-        // Theme toggle
-        function setTheme(theme) {
-            document.body.setAttribute('data-theme', theme);
-            localStorage.setItem('skillix-theme', theme);
-        }
-
-        function initTheme() {
-            const savedTheme = localStorage.getItem('skillix-theme');
-            if (savedTheme) {
-                setTheme(savedTheme);
-            } else {
-                // Check system preference
-                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                setTheme(prefersDark ? 'dark' : 'light');
-            }
-        }
-
-        document.getElementById('themeToggle').addEventListener('click', () => {
-            const currentTheme = document.body.getAttribute('data-theme');
-            setTheme(currentTheme === 'dark' ? 'light' : 'dark');
-        });
-
-        // Listen for system theme changes
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            if (!localStorage.getItem('skillix-theme')) {
-                setTheme(e.matches ? 'dark' : 'light');
-            }
-        });
-
-        initTheme();
-
-        // Copy to clipboard
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                const btn = event.target.closest('.cta-copy');
-                const lang = document.body.getAttribute('data-lang');
-                const originalHTML = btn.innerHTML;
-                btn.innerHTML = lang === 'zh' ? '已复制!' : 'Copied!';
-                setTimeout(() => { btn.innerHTML = originalHTML; }, 2000);
-            });
-        }
-
-        // Scroll animation
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-
-        document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
-
-        // Smooth scroll
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            });
-        });
-
-        // Create particles
-        function createParticles() {
-            const container = document.getElementById('particles');
-            const particleCount = 20;
-            
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 8 + 's';
-                particle.style.animationDuration = (6 + Math.random() * 4) + 's';
-                container.appendChild(particle);
-            }
-        }
-        createParticles();
-
-        // Mouse tracking for tool cards
-        document.querySelectorAll('.tool-card').forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = ((e.clientX - rect.left) / rect.width) * 100;
-                const y = ((e.clientY - rect.top) / rect.height) * 100;
-                card.style.setProperty('--mouse-x', x + '%');
-                card.style.setProperty('--mouse-y', y + '%');
-            });
-        });
-
-        // Parallax effect for gradient orbs
-        document.addEventListener('mousemove', (e) => {
-            const moveX = (e.clientX - window.innerWidth / 2) * 0.01;
-            const moveY = (e.clientY - window.innerHeight / 2) * 0.01;
-            
-            document.querySelectorAll('.bg-gradient').forEach((orb, i) => {
-                const factor = i === 0 ? 1 : -1;
-                orb.style.transform = `translate(${moveX * factor}px, ${moveY * factor}px)`;
-            });
-        });
-
-        // Page loader
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.getElementById('pageLoader').classList.add('loaded');
-            }, 500);
-        });
-
-        // Scroll progress indicator
-        window.addEventListener('scroll', () => {
-            const scrollTop = window.scrollY;
-            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const scrollPercent = (scrollTop / docHeight) * 100;
-            document.getElementById('scrollProgress').style.width = scrollPercent + '%';
-        });
-
-        // Hide scroll indicator after scrolling
-        let scrollIndicator = document.querySelector('.scroll-indicator');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 100) {
-                scrollIndicator.style.opacity = '0';
-            } else {
-                scrollIndicator.style.opacity = '1';
-            }
-        }, { passive: true });
-    </script>
+    <script src="main.js"></script>
 </body>
 </html>

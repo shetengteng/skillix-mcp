@@ -257,6 +257,7 @@ Configuration management tool.
 | `set` | Set configuration value |
 | `init` | Initialize project configuration and install Cursor Rule |
 | `sources` | Manage skill sources (list/add/remove) |
+| `refresh` | Refresh Cursor Rule to the latest version |
 
 **Examples:**
 
@@ -266,6 +267,9 @@ sx-config action=get scope=global
 
 # Initialize project (creates .skillix/ and .cursor/rules/skillix.mdc)
 sx-config action=init projectRoot=/path/to/project
+
+# Refresh Cursor Rule to latest version
+sx-config action=refresh projectRoot=/path/to/project
 
 # Add a skill source
 sx-config action=sources sourceAction=add source={"name":"my-source","url":"https://github.com/user/skills"}
@@ -277,7 +281,7 @@ sx-config action=sources sourceAction=list
 sx-config action=sources sourceAction=remove sourceName=my-source
 ```
 
-**Note:** The `init` action now automatically installs a Cursor Rule (`.cursor/rules/skillix.mdc`) that guides AI to use `sx-dispatch` for task analysis at the start of each session.
+**Note:** The `init` action automatically installs a Cursor Rule (`.cursor/rules/skillix.mdc`) that guides AI to use `sx-dispatch` for task analysis. Use `refresh` to update the Cursor Rule to the latest version.
 
 ### sx-feedback
 

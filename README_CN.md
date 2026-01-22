@@ -210,8 +210,9 @@ sx-market action=status
 |------|------|
 | `get` | 获取全局或项目配置 |
 | `set` | 设置配置值 |
-| `init` | 初始化项目配置 |
+| `init` | 初始化项目配置并安装 Cursor Rule |
 | `sources` | 管理技能源（列出/添加/删除） |
+| `refresh` | 刷新 Cursor Rule 到最新版本 |
 
 **使用示例：**
 
@@ -219,8 +220,11 @@ sx-market action=status
 # 获取配置
 sx-config action=get scope=global
 
-# 初始化项目
+# 初始化项目（创建 .skillix/ 和 .cursor/rules/skillix.mdc）
 sx-config action=init projectRoot=/path/to/project
+
+# 刷新 Cursor Rule 到最新版本
+sx-config action=refresh projectRoot=/path/to/project
 
 # 添加技能源
 sx-config action=sources sourceAction=add source={"name":"my-source","url":"https://github.com/user/skills"}
@@ -231,6 +235,8 @@ sx-config action=sources sourceAction=list
 # 删除技能源
 sx-config action=sources sourceAction=remove sourceName=my-source
 ```
+
+**注意：** `init` 操作会自动安装 Cursor Rule（`.cursor/rules/skillix.mdc`），引导 AI 使用 `sx-dispatch` 进行任务分析。使用 `refresh` 可以将 Cursor Rule 更新到最新版本。
 
 ### sx-feedback
 
